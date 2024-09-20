@@ -3,15 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Image Upload and Convert Tool</title>
+    <title>Advanced Image Wizard</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <script src="https://cdn.lordicon.com/bhenfmcm.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="YOUR_DROPBOX_APP_KEY"></script>
     <style>
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
         .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4a00e0 0%, #8e2de2 100%);
         }
         .hover-scale {
             transition: transform 0.3s ease-in-out;
@@ -19,41 +25,55 @@
         .hover-scale:hover {
             transform: scale(1.05);
         }
+        .loader {
+            border-top-color: #8e2de2;
+            -webkit-animation: spinner 1.5s linear infinite;
+            animation: spinner 1.5s linear infinite;
+        }
+        @-webkit-keyframes spinner {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
+        }
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
-    <div class="bg-white rounded-lg shadow-2xl w-full max-w-md animate__animated animate__fadeIn">
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="bg-gray-800 rounded-lg shadow-2xl w-full max-w-lg animate__animated animate__fadeIn">
         <div class="gradient-bg p-6 rounded-t-lg">
-            <h1 class="text-3xl font-bold text-white text-center">Image Wizard</h1>
+            <h1 class="text-4xl font-bold text-white text-center">Image Wizard</h1>
             <p class="text-gray-200 text-center mt-2">Upload, Convert, Download</p>
         </div>
         
         <div class="p-6">
-            <div class="mb-6">
-                <label for="fileInput" class="block cursor-pointer hover-scale">
-                    <lord-icon
-                        src="https://cdn.lordicon.com/wloilxuq.json"
-                        trigger="hover"
-                        colors="primary:#764ba2,secondary:#667eea"
-                        style="width:80px;height:80px;display:block;margin:0 auto;">
-                    </lord-icon>
-                    <span class="text-center block mt-2 text-gray-600">Upload Image</span>
-                </label>
-                <input type="file" id="fileInput" accept="image/*" class="hidden">
+            <div class="mb-6 flex justify-center space-x-4">
+                <button id="uploadLocal" class="bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50">
+                    Local Upload
+                </button>
+                <button id="uploadGDrive" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50">
+                    Google Drive
+                </button>
+                <button id="uploadDropbox" class="bg-blue-400 text-white py-2 px-4 rounded hover:bg-blue-500 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
+                    Dropbox
+                </button>
             </div>
+
+            <input type="file" id="fileInput" accept="image/*" class="hidden">
 
             <div id="imagePreview" class="mb-6 hidden animate__animated animate__fadeIn">
-                <img id="preview" src="" alt="Preview" class="w-full h-48 object-cover rounded shadow-md">
+                <img id="preview" src="" alt="Preview" class="w-full h-64 object-contain rounded shadow-md">
             </div>
 
             <div class="mb-6 animate__animated animate__fadeIn">
-                <label for="fileName" class="block mb-2 text-gray-700">Rename Image:</label>
-                <input type="text" id="fileName" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="Enter new file name">
+                <label for="fileName" class="block mb-2 text-gray-300">Rename Image:</label>
+                <input type="text" id="fileName" class="w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="Enter new file name">
             </div>
 
             <div class="mb-6 animate__animated animate__fadeIn">
-                <label for="formatSelect" class="block mb-2 text-gray-700">Select Format:</label>
-                <select id="formatSelect" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-600">
+                <label for="formatSelect" class="block mb-2 text-gray-300">Select Format:</label>
+                <select id="formatSelect" class="w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-purple-600">
                     <option value="png">PNG</option>
                     <option value="jpg">JPG</option>
                     <option value="webp">WebP</option>
@@ -67,6 +87,12 @@
         </div>
     </div>
 
+    <div id="loader" class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-50 overflow-hidden bg-gray-900 opacity-75 flex flex-col items-center justify-center hidden">
+        <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
+        <h2 class="text-center text-white text-xl font-semibold">Loading...</h2>
+        <p class="w-1/3 text-center text-white">This may take a few seconds, please don't close this page.</p>
+    </div>
+
     <script>
         const { jsPDF } = window.jspdf;
         const fileInput = document.getElementById('fileInput');
@@ -75,21 +101,105 @@
         const fileName = document.getElementById('fileName');
         const formatSelect = document.getElementById('formatSelect');
         const downloadBtn = document.getElementById('downloadBtn');
+        const uploadLocal = document.getElementById('uploadLocal');
+        const uploadGDrive = document.getElementById('uploadGDrive');
+        const uploadDropbox = document.getElementById('uploadDropbox');
+        const loader = document.getElementById('loader');
 
         let uploadedImage = null;
 
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
+        uploadLocal.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', handleFileSelect);
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
             if (file) {
+                showLoader();
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     preview.src = e.target.result;
                     imagePreview.classList.remove('hidden');
                     uploadedImage = file;
                     fileName.value = file.name.split('.')[0];
+                    hideLoader();
                 };
                 reader.readAsDataURL(file);
             }
+        }
+
+        // Google Drive integration
+        function loadGoogleDriveAPI() {
+            gapi.load('auth2', () => {
+                gapi.auth2.init({
+                    client_id: 'YOUR_GOOGLE_DRIVE_CLIENT_ID',
+                });
+            });
+            gapi.load('picker');
+        }
+
+        uploadGDrive.addEventListener('click', () => {
+            showLoader();
+            gapi.auth2.getAuthInstance().signIn().then(() => {
+                const token = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token;
+                const picker = new google.picker.PickerBuilder()
+                    .addView(google.picker.ViewId.DOCS_IMAGES)
+                    .setOAuthToken(token)
+                    .setCallback(pickerCallback)
+                    .build();
+                picker.setVisible(true);
+                hideLoader();
+            });
+        });
+
+        function pickerCallback(data) {
+            if (data.action === google.picker.Action.PICKED) {
+                showLoader();
+                const fileId = data.docs[0].id;
+                gapi.client.drive.files.get({
+                    fileId: fileId,
+                    alt: 'media'
+                }).then(function(response) {
+                    const blob = new Blob([response.body], {type: 'image/jpeg'});
+                    uploadedImage = new File([blob], data.docs[0].name, {type: 'image/jpeg'});
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        preview.src = e.target.result;
+                        imagePreview.classList.remove('hidden');
+                        fileName.value = data.docs[0].name.split('.')[0];
+                        hideLoader();
+                    };
+                    reader.readAsDataURL(blob);
+                });
+            }
+        }
+
+        // Dropbox integration
+        uploadDropbox.addEventListener('click', () => {
+            showLoader();
+            Dropbox.choose({
+                success: function(files) {
+                    fetch(files[0].link)
+                        .then(response => response.blob())
+                        .then(blob => {
+                            uploadedImage = new File([blob], files[0].name, {type: 'image/jpeg'});
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                                preview.src = e.target.result;
+                                imagePreview.classList.remove('hidden');
+                                fileName.value = files[0].name.split('.')[0];
+                                hideLoader();
+                            };
+                            reader.readAsDataURL(blob);
+                        });
+                },
+                cancel: function() {
+                    hideLoader();
+                },
+                linkType: "direct",
+                multiselect: false,
+                extensions: ['.jpg', '.jpeg', '.png', '.gif'],
+            });
         });
 
         downloadBtn.addEventListener('click', () => {
@@ -101,14 +211,7 @@
             const format = formatSelect.value;
             const newFileName = fileName.value || 'image';
 
-            swal({
-                title: "Processing...",
-                text: "Please wait while we prepare your image.",
-                icon: "info",
-                buttons: false,
-                closeOnClickOutside: false,
-                closeOnEsc: false,
-            });
+            showLoader();
 
             setTimeout(() => {
                 if (format === 'pdf') {
@@ -136,8 +239,9 @@
                         a.download = `${fileName}.${format}`;
                         a.click();
                         URL.revokeObjectURL(url);
+                        hideLoader();
                         swal("Success!", "Your image has been downloaded.", "success");
-                    }, `image/${format}`);
+                    }, `image/${format}`, 1.0);  // Set quality to 1.0 for maximum quality
                 };
                 img.src = e.target.result;
             };
@@ -165,6 +269,7 @@
                     
                     pdf.addImage(imgData, 'JPEG', 0, 0, img.width, img.height);
                     pdf.save(`${fileName}.pdf`);
+                    hideLoader();
                     swal("Success!", "Your PDF has been downloaded.", "success");
                 };
                 img.src = e.target.result;
@@ -172,30 +277,16 @@
             reader.readAsDataURL(file);
         }
 
-        // Add some animations
-        const animateCSS = (element, animation, prefix = 'animate__') =>
-            new Promise((resolve, reject) => {
-                const animationName = `${prefix}${animation}`;
-                const node = document.querySelector(element);
+        function showLoader() {
+            loader.classList.remove('hidden');
+        }
 
-                node.classList.add(`${prefix}animated`, animationName);
+        function hideLoader() {
+            loader.classList.add('hidden');
+        }
 
-                function handleAnimationEnd(event) {
-                    event.stopPropagation();
-                    node.classList.remove(`${prefix}animated`, animationName);
-                    resolve('Animation ended');
-                }
-
-                node.addEventListener('animationend', handleAnimationEnd, {once: true});
-            });
-
-        fileInput.addEventListener('change', () => {
-            animateCSS('#imagePreview', 'fadeIn');
-        });
-
-        downloadBtn.addEventListener('click', () => {
-            animateCSS('#downloadBtn', 'pulse');
-        });
+        // Initialize Google Drive API
+        loadGoogleDriveAPI();
     </script>
 </body>
 </html>
