@@ -9,6 +9,9 @@
     <script src="https://cdn.lordicon.com/bhenfmcm.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
         
@@ -67,6 +70,19 @@
         .drag-drop-area.dragover {
             background-color: rgba(168, 85, 247, 0.1);
             border-color: #6366f1;
+        }
+        .benefit-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        .benefit-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        .typed-cursor {
+            color: #a855f7;
         }
     </style>
 </head>
@@ -147,6 +163,43 @@
         </div>
     </div>
 
+    <!-- New Benefits Section with Typing Animation -->
+    <div class="max-w-4xl mx-auto mt-20 mb-16">
+        <h2 class="text-3xl font-bold text-center mb-12 gradient-bg text-transparent bg-clip-text" data-aos="fade-up">Benefits of Denmara Image Wizard</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="100">
+                <lord-icon
+                    src="https://cdn.lordicon.com/qfymvyfb.json"
+                    trigger="hover"
+                    colors="primary:#a855f7,secondary:#6366f1"
+                    style="width:64px;height:64px;">
+                </lord-icon>
+                <h3 class="text-xl font-semibold mt-4 mb-2">Saves Time</h3>
+                <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Rename and download images instantly without delays, streamlining your workflow."]'></span></p>
+            </div>
+            <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="200">
+                <lord-icon
+                    src="https://cdn.lordicon.com/hnevvdkr.json"
+                    trigger="hover"
+                    colors="primary:#a855f7,secondary:#6366f1"
+                    style="width:64px;height:64px;">
+                </lord-icon>
+                <h3 class="text-xl font-semibold mt-4 mb-2">Flexible Formats</h3>
+                <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Easily switch between formats like PDF, PNG, JPG, and WebP to suit different needs."]'></span></p>
+            </div>
+            <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="300">
+                <lord-icon
+                    src="https://cdn.lordicon.com/vfczflna.json"
+                    trigger="hover"
+                    colors="primary:#a855f7,secondary:#6366f1"
+                    style="width:64px;height:64px;">
+                </lord-icon>
+                <h3 class="text-xl font-semibold mt-4 mb-2">Convenient Access</h3>
+                <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Accessible from any device without needing software, allowing quick renaming and downloads on the go."]'></span></p>
+            </div>
+        </div>
+    </div>
+
     <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 overlay">
         <div class="relative">
             <img id="fullSizeImage" src="" alt="Full size preview" class="max-w-full max-h-[80vh] rounded-lg">
@@ -175,6 +228,7 @@
         const overlay = document.getElementById('overlay');
         const fullSizeImage = document.getElementById('fullSizeImage');
         const previewContainer = document.getElementById('previewContainer');
+        <script>
         const closeOverlay = document.getElementById('closeOverlay');
         const deleteImage = document.getElementById('deleteImage');
 
@@ -283,7 +337,8 @@
                         swal("Success!", "Your image has been downloaded.", "success");
                     }, `image/${format}`, 1.0);  // Set quality to 1.0 for maximum quality
                 };
-                img.src = e.target.result;};
+                img.src = e.target.result;
+            };
             reader.readAsDataURL(file);
         }
 
@@ -323,6 +378,28 @@
         function hideLoader() {
             loader.classList.add('hidden');
         }
+
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
+        });
+
+        // Initialize Typed.js for smooth typing animation
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('.typed-text').forEach((element) => {
+                new Typed(element, {
+                    strings: JSON.parse(element.dataset.typed),
+                    typeSpeed: 30,
+                    backSpeed: 0,
+                    loop: false,
+                    showCursor: true,
+                    cursorChar: '|',
+                    autoInsertCss: true,
+                });
+            });
+        });
     </script>
 </body>
 </html>
