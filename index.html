@@ -16,7 +16,6 @@
             font-family: 'Poppins', sans-serif;
             background-color: #0f172a;
             color: #e2e8f0;
-            scroll-behavior: smooth;
         }
         .gradient-bg {
             background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
@@ -50,92 +49,93 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        .scroll-container {
-            scroll-snap-type: y mandatory;
-            overflow-y: scroll;
-            height: 100vh;
-        }
-        .scroll-section {
-            scroll-snap-align: start;
-            height: 100vh;
+        .overlay {
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
         }
     </style>
 </head>
-<body>
-    <div class="scroll-container">
-        <section class="scroll-section flex items-center justify-center p-4 relative overflow-hidden">
-            <div class="blob absolute top-0 left-0 w-64 h-64 opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
-            <div class="blob absolute bottom-0 right-0 w-96 h-96 opacity-50 translate-x-1/2 translate-y-1/2"></div>
-            
-            <div class="bg-gray-800 rounded-3xl shadow-2xl w-full max-w-md animate__animated animate__fadeIn relative z-10">
-                <div class="gradient-bg p-8 rounded-t-3xl">
-                    <h1 class="text-4xl font-bold text-white text-center">Image Wizard</h1>
-                    <p class="text-gray-200 text-center mt-2">Transform Your Images</p>
-                </div>
-                
-                <div class="p-8">
-                    <div class="mb-8 flex flex-col items-center">
-                        <label for="fileInput" class="cursor-pointer hover-scale">
-                            <lord-icon
-                                src="https://cdn.lordicon.com/nxooksci.json"
-                                trigger="hover"
-                                colors="primary:#a855f7,secondary:#6366f1"
-                                style="width:64px;height:64px;">
-                            </lord-icon>
-                        </label>
-                        <span class="mt-2 text-sm text-gray-400">Choose files</span>
-                        <input type="file" id="fileInput" accept="image/*" class="hidden">
-                    </div>
-
-                    <div id="imagePreview" class="mb-8 hidden animate__animated animate__fadeIn">
-                        <div class="image-preview-container p-2 rounded-2xl">
-                            <img id="preview" src="" alt="Preview" class="w-full h-48 object-cover rounded-xl">
-                        </div>
-                    </div>
-
-                    <div class="mb-6 animate__animated animate__fadeIn">
-                        <label for="fileName" class="block mb-2 text-gray-300">
-                            <lord-icon
-                                src="https://cdn.lordicon.com/wloilxuq.json"
-                                trigger="hover"
-                                colors="primary:#a855f7,secondary:#6366f1"
-                                style="width:32px;height:32px;vertical-align:middle;display:inline-block;">
-                            </lord-icon>
-                            <span class="ml-2">Rename Image:</span>
-                        </label>
-                        <input type="text" id="fileName" class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="Enter new file name">
-                    </div>
-
-                    <div class="mb-8 animate__animated animate__fadeIn">
-                        <label for="formatSelect" class="block mb-2 text-gray-300">
-                            <lord-icon
-                                src="https://cdn.lordicon.com/nocovwne.json"
-                                trigger="hover"
-                                colors="primary:#a855f7,secondary:#6366f1"
-                                style="width:32px;height:32px;vertical-align:middle;display:inline-block;">
-                            </lord-icon>
-                            <span class="ml-2">Select Format:</span>
-                        </label>
-                        <select id="formatSelect" class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600">
-                            <option value="png">PNG</option>
-                            <option value="jpg">JPG</option>
-                            <option value="webp">WebP</option>
-                            <option value="pdf">PDF</option>
-                        </select>
-                    </div>
-
-                    <button id="downloadBtn" class="w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 rounded-lg hover:from-purple-600 hover:to-indigo-600 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 flex items-center justify-center">
-                        <lord-icon
-                            src="https://cdn.lordicon.com/xsdtfyne.json"
-                            trigger="hover"
-                            colors="primary:#ffffff"
-                            style="width:32px;height:32px;">
-                        </lord-icon>
-                        <span class="ml-2">Download</span>
-                    </button>
-                </div>
+<body class="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+    <div class="blob absolute top-0 left-0 w-64 h-64 opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
+    <div class="blob absolute bottom-0 right-0 w-96 h-96 opacity-50 translate-x-1/2 translate-y-1/2"></div>
+    
+    <div class="bg-gray-800 rounded-3xl shadow-2xl w-full max-w-md animate__animated animate__fadeIn relative z-10">
+        <div class="gradient-bg p-8 rounded-t-3xl">
+            <h1 class="text-4xl font-bold text-white text-center">Image Wizard</h1>
+            <p class="text-gray-200 text-center mt-2">Transform Your Images</p>
+        </div>
+        
+        <div class="p-8">
+            <div class="mb-8 flex flex-col items-center">
+                <label for="fileInput" class="cursor-pointer hover-scale">
+                    <lord-icon
+                        src="https://cdn.lordicon.com/nxooksci.json"
+                        trigger="hover"
+                        colors="primary:#a855f7,secondary:#6366f1"
+                        style="width:64px;height:64px;">
+                    </lord-icon>
+                </label>
+                <span class="mt-2 text-sm text-gray-400">Choose files</span>
+                <input type="file" id="fileInput" accept="image/*" class="hidden">
             </div>
-        </section>
+
+            <div id="imagePreview" class="mb-8 hidden animate__animated animate__fadeIn">
+                <div class="image-preview-container p-2 rounded-2xl cursor-pointer" id="previewContainer">
+                    <img id="preview" src="" alt="Preview" class="w-full h-32 object-cover rounded-xl">
+                </div>
+                <p class="text-center text-sm text-gray-400 mt-2">Click to view full image</p>
+            </div>
+
+            <div class="mb-6 animate__animated animate__fadeIn">
+                <label for="fileName" class="block mb-2 text-gray-300">
+                    <lord-icon
+                        src="https://cdn.lordicon.com/wloilxuq.json"
+                        trigger="hover"
+                        colors="primary:#a855f7,secondary:#6366f1"
+                        style="width:32px;height:32px;vertical-align:middle;display:inline-block;">
+                    </lord-icon>
+                    <span class="ml-2">Rename Image:</span>
+                </label>
+                <input type="text" id="fileName" class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="Enter new file name">
+            </div>
+
+            <div class="mb-8 animate__animated animate__fadeIn">
+                <label for="formatSelect" class="block mb-2 text-gray-300">
+                    <lord-icon
+                        src="https://cdn.lordicon.com/nocovwne.json"
+                        trigger="hover"
+                        colors="primary:#a855f7,secondary:#6366f1"
+                        style="width:32px;height:32px;vertical-align:middle;display:inline-block;">
+                    </lord-icon>
+                    <span class="ml-2">Select Format:</span>
+                </label>
+                <select id="formatSelect" class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600">
+                    <option value="png">PNG</option>
+                    <option value="jpg">JPG</option>
+                    <option value="webp">WebP</option>
+                    <option value="pdf">PDF</option>
+                </select>
+            </div>
+
+            <button id="downloadBtn" class="w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 rounded-lg hover:from-purple-600 hover:to-indigo-600 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 flex items-center justify-center">
+                <lord-icon
+                    src="https://cdn.lordicon.com/xsdtfyne.json"
+                    trigger="hover"
+                    colors="primary:#ffffff"
+                    style="width:32px;height:32px;">
+                </lord-icon>
+                <span class="ml-2">Download</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 overlay">
+        <div class="relative">
+            <img id="fullSizeImage" src="" alt="Full size preview" class="max-w-full max-h-[80vh] rounded-lg">
+            <button id="closeOverlay" class="absolute top-2 right-2 text-white bg-red-500 rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-600 focus:outline-none">
+                &times;
+            </button>
+        </div>
     </div>
 
     <div id="loader" class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-50 overflow-hidden bg-gray-900 opacity-75 flex flex-col items-center justify-center hidden">
@@ -153,10 +153,19 @@
         const formatSelect = document.getElementById('formatSelect');
         const downloadBtn = document.getElementById('downloadBtn');
         const loader = document.getElementById('loader');
+        const overlay = document.getElementById('overlay');
+        const fullSizeImage = document.getElementById('fullSizeImage');
+        const previewContainer = document.getElementById('previewContainer');
+        const closeOverlay = document.getElementById('closeOverlay');
 
         let uploadedImage = null;
 
         fileInput.addEventListener('change', handleFileSelect);
+        previewContainer.addEventListener('click', showOverlay);
+        closeOverlay.addEventListener('click', hideOverlay);
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) hideOverlay();
+        });
 
         function handleFileSelect(event) {
             const file = event.target.files[0];
@@ -165,6 +174,7 @@
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     preview.src = e.target.result;
+                    fullSizeImage.src = e.target.result;
                     imagePreview.classList.remove('hidden');
                     uploadedImage = file;
                     fileName.value = file.name.split('.')[0];
@@ -172,6 +182,16 @@
                 };
                 reader.readAsDataURL(file);
             }
+        }
+
+        function showOverlay() {
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+        }
+
+        function hideOverlay() {
+            overlay.classList.add('hidden');
+            overlay.classList.remove('flex');
         }
 
         downloadBtn.addEventListener('click', () => {
