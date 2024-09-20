@@ -216,189 +216,190 @@
     </div>
 
     <script>
-        const { jsPDF } = window.jspdf;
-        const fileInput = document.getElementById('fileInput');
-        const dragDropArea = document.getElementById('dragDropArea');
-        const imagePreview = document.getElementById('imagePreview');
-        const preview = document.getElementById('preview');
-        const fileName = document.getElementById('fileName');
-        const formatSelect = document.getElementById('formatSelect');
-        const downloadBtn = document.getElementById('downloadBtn');
-        const loader = document.getElementById('loader');
-        const overlay = document.getElementById('overlay');
-        const fullSizeImage = document.getElementById('fullSizeImage');
-        const previewContainer = document.getElementById('previewContainer');
-        const closeOverlay = document.getElementById('closeOverlay');
-        const deleteImage = document.getElementById('deleteImage');
+    const { jsPDF } = window.jspdf;
+    const fileInput = document.getElementById('fileInput');
+    const dragDropArea = document.getElementById('dragDropArea');
+    const imagePreview = document.getElementById('imagePreview');
+    const preview = document.getElementById('preview');
+    const fileName = document.getElementById('fileName');
+    const formatSelect = document.getElementById('formatSelect');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const loader = document.getElementById('loader');
+    const overlay = document.getElementById('overlay');
+    const fullSizeImage = document.getElementById('fullSizeImage');
+    const previewContainer = document.getElementById('previewContainer');
+    const closeOverlay = document.getElementById('closeOverlay');
+    const deleteImage = document.getElementById('deleteImage');
 
-        let uploadedImage = null;
+    let uploadedImage = null;
 
-        // File input change event
-        fileInput.addEventListener('change', handleFileSelect);
+    // File input change event
+    fileInput.addEventListener('change', handleFileSelect);
 
-        // Drag and drop events
-        dragDropArea.addEventListener('click', () => fileInput.click());
-        dragDropArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dragDropArea.classList.add('dragover');
-        });
-        dragDropArea.addEventListener('dragleave', () => {
-            dragDropArea.classList.remove('dragover');
-        });
-        dragDropArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dragDropArea.classList.remove('dragover');
-            handleFileSelect({ target: { files: e.dataTransfer.files } });
-        });
+    // Drag and drop events
+    dragDropArea.addEventListener('click', () => fileInput.click());
+    dragDropArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dragDropArea.classList.add('dragover');
+    });
+    dragDropArea.addEventListener('dragleave', () => {
+        dragDropArea.classList.remove('dragover');
+    });
+    dragDropArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dragDropArea.classList.remove('dragover');
+        handleFileSelect({ target: { files: e.dataTransfer.files } });
+    });
 
-        // Preview and overlay events
-        previewContainer.addEventListener('click', showOverlay);
-        closeOverlay.addEventListener('click', hideOverlay);
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) hideOverlay();
-        });
+    // Preview and overlay events
+    previewContainer.addEventListener('click', showOverlay);
+    closeOverlay.addEventListener('click', hideOverlay);
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) hideOverlay();
+    });
 
-        // Delete image event
-        deleteImage.addEventListener('click', (e) => {
-            e.stopPropagation();
-            uploadedImage = null;
-            imagePreview.classList.add('hidden');
-            dragDropArea.classList.remove('hidden');
-            fileInput.value = '';
-            fileName.value = '';
-        });
+    // Delete image event
+    deleteImage.addEventListener('click', (e) => {
+        e.stopPropagation();
+        uploadedImage = null;
+        imagePreview.classList.add('hidden');
+        dragDropArea.classList.remove('hidden');
+        fileInput.value = '';
+        fileName.value = '';
+    });
 
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    preview.src = e.target.result;
-                    fullSizeImage.src = e.target.result;
-                    imagePreview.classList.remove('hidden');
-                    dragDropArea.classList.add('hidden');
-                    uploadedImage = file;
-                    fileName.value = file.name.split('.')[0];
-                    imagePreview.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function showOverlay() {
-            overlay.classList.remove('hidden');
-            overlay.classList.add('flex');
-        }
-
-        function hideOverlay() {
-            overlay.classList.add('hidden');
-            overlay.classList.remove('flex');
-        }
-
-        downloadBtn.addEventListener('click', () => {
-            if (!uploadedImage) {
-                swal("Oops!", "Please upload an image first!", "warning");
-                return;
-            }
-
-            const format = formatSelect.value;
-            const newFileName = fileName.value || 'image';
-
-            showLoader();
-
-            setTimeout(() => {
-                if (format === 'pdf') {
-                    convertToPDF(uploadedImage, newFileName);
-                } else {
-                    convertToImage(uploadedImage, newFileName, format);
-                }
-            }, 1000);
-        });
-
-        function convertToImage(file, fileName, format) {
+    function handleFileSelect(event) {
+        const file = event.target.files[0];
+        if (file) {
             const reader = new FileReader();
             reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0);
-                    canvas.toBlob((blob) => {
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = ${fileName}.${format};
-                        a.click();
-                        URL.revokeObjectURL(url);
-                        hideLoader();
-                        swal("Success!", "Your image has been downloaded.", "success");
-                    }, image/${format}, 1.0);  // Set quality to 1.0 for maximum quality
-                };
-                img.src = e.target.result;
+                preview.src = e.target.result;
+                fullSizeImage.src = e.target.result;
+                imagePreview.classList.remove('hidden');
+                dragDropArea.classList.add('hidden');
+                uploadedImage = file;
+                fileName.value = file.name.split('.')[0];
+                imagePreview.scrollIntoView({ behavior: 'smooth', block: 'start' });
             };
             reader.readAsDataURL(file);
         }
+    }
 
-        function convertToPDF(file, fileName) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const scale = 2; // Increase resolution
-                    canvas.width = img.width * scale;
-                    canvas.height = img.height * scale;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
-                    
-                    const pdf = new jsPDF({
-                        orientation: img.width > img.height ? 'l' : 'p',
-                        unit: 'px',
-                        format: [img.width, img.height]
-                    });
-                    
-                    pdf.addImage(imgData, 'JPEG', 0, 0, img.width, img.height);
-                    pdf.save(${fileName}.pdf);
+    function showOverlay() {
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+    }
+
+    function hideOverlay() {
+        overlay.classList.add('hidden');
+        overlay.classList.remove('flex');
+    }
+
+    downloadBtn.addEventListener('click', () => {
+        if (!uploadedImage) {
+            swal("Oops!", "Please upload an image first!", "warning");
+            return;
+        }
+
+        const format = formatSelect.value;
+        const newFileName = fileName.value || 'image';
+
+        showLoader();
+
+        setTimeout(() => {
+            if (format === 'pdf') {
+                convertToPDF(uploadedImage, newFileName);
+            } else {
+                convertToImage(uploadedImage, newFileName, format);
+            }
+        }, 1000);
+    });
+
+    function convertToImage(file, fileName, format) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${fileName}.${format}`;  // Corrected interpolation
+                    a.click();
+                    URL.revokeObjectURL(url);
                     hideLoader();
-                    swal("Success!", "Your PDF has been downloaded.", "success");
-                };
-                img.src = e.target.result;
+                    swal("Success!", "Your image has been downloaded.", "success");
+                }, `image/${format}`, 1.0);  // Set quality to 1.0 for maximum quality
             };
-            reader.readAsDataURL(file);
-        }
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
 
-        function showLoader() {
-            loader.classList.remove('hidden');
-        }
-
-        function hideLoader() {
-            loader.classList.add('hidden');
-        }
-
-        // Initialize AOS
-        AOS.init({
-            duration: 1000,
-            once: true,
-            offset: 100
-        });
-
-        // Initialize Typed.js for smooth typing animation
-        document.addEventListener('DOMContentLoaded', (event) => {
-            document.querySelectorAll('.typed-text').forEach((element) => {
-                new Typed(element, {
-                    strings: JSON.parse(element.dataset.typed),
-                    typeSpeed: 30,
-                    backSpeed: 0,
-                    loop: false,
-                    showCursor: true,
-                    cursorChar: '|',
-                    autoInsertCss: true,
+    function convertToPDF(file, fileName) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const scale = 2; // Increase resolution
+                canvas.width = img.width * scale;
+                canvas.height = img.height * scale;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                
+                const pdf = new jsPDF({
+                    orientation: img.width > img.height ? 'l' : 'p',
+                    unit: 'px',
+                    format: [img.width, img.height]
                 });
+                
+                pdf.addImage(imgData, 'JPEG', 0, 0, img.width, img.height);
+                pdf.save(`${fileName}.pdf`);  // Corrected interpolation
+                hideLoader();
+                swal("Success!", "Your PDF has been downloaded.", "success");
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function showLoader() {
+        loader.classList.remove('hidden');
+    }
+
+    function hideLoader() {
+        loader.classList.add('hidden');
+    }
+
+    // Initialize AOS
+    AOS.init({
+        duration: 1000,
+        once: true,
+        offset: 100
+    });
+
+    // Initialize Typed.js for smooth typing animation
+    document.addEventListener('DOMContentLoaded', (event) => {
+        document.querySelectorAll('.typed-text').forEach((element) => {
+            new Typed(element, {
+                strings: JSON.parse(element.dataset.typed),
+                typeSpeed: 30,
+                backSpeed: 0,
+                loop: false,
+                showCursor: true,
+                cursorChar: '|',
+                autoInsertCss: true,
             });
         });
-    </script>
+    });
+</script>
+
 </body>
 </html>
