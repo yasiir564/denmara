@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Image Upload and Convert Tool</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://cdn.lordicon.com/bhenfmcm.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .hover-scale {
+            transition: transform 0.3s ease-in-out;
+        }
+        .hover-scale:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg shadow-2xl w-full max-w-md animate__animated animate__fadeIn">
+        <div class="gradient-bg p-6 rounded-t-lg">
+            <h1 class="text-3xl font-bold text-white text-center">Image Wizard</h1>
+            <p class="text-gray-200 text-center mt-2">Upload, Convert, Download</p>
+        </div>
+        
+        <div class="p-6">
+            <div class="mb-6">
+                <label for="fileInput" class="block cursor-pointer hover-scale">
+                    <lord-icon
+                        src="https://cdn.lordicon.com/wloilxuq.json"
+                        trigger="hover"
+                        colors="primary:#764ba2,secondary:#667eea"
+                        style="width:80px;height:80px;display:block;margin:0 auto;">
+                    </lord-icon>
+                    <span class="text-center block mt-2 text-gray-600">Upload Image</span>
+                </label>
+                <input type="file" id="fileInput" accept="image/*" class="hidden">
+            </div>
+
+            <div id="imagePreview" class="mb-6 hidden animate__animated animate__fadeIn">
+                <img id="preview" src="" alt="Preview" class="w-full h-48 object-cover rounded shadow-md">
+            </div>
+
+            <div class="mb-6 animate__animated animate__fadeIn">
+                <label for="fileName" class="block mb-2 text-gray-700">Rename Image:</label>
+                <input type="text" id="fileName" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="Enter new file name">
+            </div>
+
+            <div class="mb-6 animate__animated animate__fadeIn">
+                <label for="formatSelect" class="block mb-2 text-gray-700">Select Format:</label>
+                <select id="formatSelect" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-600">
+                    <option value="png">PNG</option>
+                    <option value="jpg">JPG</option>
+                    <option value="webp">WebP</option>
+                    <option value="pdf">PDF</option>
+                </select>
+            </div>
+
+            <button id="downloadBtn" class="w-full bg-purple-600 text-white py-3 rounded hover:bg-purple-700 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50">
+                Download
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const { jsPDF } = window.jspdf;
+        const fileInput = document.getElementById('fileInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const preview = document.getElementById('preview');
+        const fileName = document.getElementById('fileName');
+        const formatSelect = document.getElementById('formatSelect');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        let uploadedImage = null;
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    preview.src = e.target.result;
+                    imagePreview.classList.remove('hidden');
+                    uploadedImage = file;
+                    fileName.value = file.name.split('.')[0];
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            if (!uploadedImage) {
+                swal("Oops!", "Please upload an image first!", "warning");
+                return;
+            }
+
+            const format = formatSelect.value;
+            const newFileName = fileName.value || 'image';
+
+            swal({
+                title: "Processing...",
+                text: "Please wait while we prepare your image.",
+                icon: "info",
+                buttons: false,
+                closeOnClickOutside: false,
+                closeOnEsc: false,
+            });
+
+            setTimeout(() => {
+                if (format === 'pdf') {
+                    convertToPDF(uploadedImage, newFileName);
+                } else {
+                    convertToImage(uploadedImage, newFileName, format);
+                }
+            }, 1000);
+        });
+
+        function convertToImage(file, fileName, format) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    canvas.toBlob((blob) => {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${fileName}.${format}`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        swal("Success!", "Your image has been downloaded.", "success");
+                    }, `image/${format}`);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function convertToPDF(file, fileName) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const scale = 2; // Increase resolution
+                    canvas.width = img.width * scale;
+                    canvas.height = img.height * scale;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                    
+                    const pdf = new jsPDF({
+                        orientation: img.width > img.height ? 'l' : 'p',
+                        unit: 'px',
+                        format: [img.width, img.height]
+                    });
+                    
+                    pdf.addImage(imgData, 'JPEG', 0, 0, img.width, img.height);
+                    pdf.save(`${fileName}.pdf`);
+                    swal("Success!", "Your PDF has been downloaded.", "success");
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Add some animations
+        const animateCSS = (element, animation, prefix = 'animate__') =>
+            new Promise((resolve, reject) => {
+                const animationName = `${prefix}${animation}`;
+                const node = document.querySelector(element);
+
+                node.classList.add(`${prefix}animated`, animationName);
+
+                function handleAnimationEnd(event) {
+                    event.stopPropagation();
+                    node.classList.remove(`${prefix}animated`, animationName);
+                    resolve('Animation ended');
+                }
+
+                node.addEventListener('animationend', handleAnimationEnd, {once: true});
+            });
+
+        fileInput.addEventListener('change', () => {
+            animateCSS('#imagePreview', 'fadeIn');
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            animateCSS('#downloadBtn', 'pulse');
+        });
+    </script>
+</body>
+</html>
