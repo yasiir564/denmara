@@ -16,6 +16,7 @@
             font-family: 'Poppins', sans-serif;
             background-color: #0f172a;
             color: #e2e8f0;
+            scroll-behavior: smooth;
         }
         .gradient-bg {
             background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
@@ -42,85 +43,99 @@
         .blob {
             border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
             background: linear-gradient(45deg, #6366f1 0%, #a855f7 100%);
+            filter: blur(40px);
         }
         .image-preview-container {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
+        .scroll-container {
+            scroll-snap-type: y mandatory;
+            overflow-y: scroll;
+            height: 100vh;
+        }
+        .scroll-section {
+            scroll-snap-align: start;
+            height: 100vh;
+        }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-    <div class="blob absolute top-0 left-0 w-64 h-64 opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
-    <div class="blob absolute bottom-0 right-0 w-96 h-96 opacity-50 translate-x-1/2 translate-y-1/2"></div>
-    
-    <div class="bg-gray-800 rounded-3xl shadow-2xl w-full max-w-md animate__animated animate__fadeIn relative z-10">
-        <div class="gradient-bg p-8 rounded-t-3xl">
-            <h1 class="text-4xl font-bold text-white text-center">Image Wizard</h1>
-            <p class="text-gray-200 text-center mt-2">Transform Your Images</p>
-        </div>
-        
-        <div class="p-8">
-            <div class="mb-8 flex flex-col items-center">
-                <label for="fileInput" class="cursor-pointer hover-scale">
-                    <lord-icon
-                        src="https://cdn.lordicon.com/nxooksci.json"
-                        trigger="hover"
-                        colors="primary:#a855f7,secondary:#6366f1"
-                        style="width:64px;height:64px;">
-                    </lord-icon>
-                </label>
-                <span class="mt-2 text-sm text-gray-400">Choose files</span>
-                <input type="file" id="fileInput" accept="image/*" class="hidden">
-            </div>
+<body>
+    <div class="scroll-container">
+        <section class="scroll-section flex items-center justify-center p-4 relative overflow-hidden">
+            <div class="blob absolute top-0 left-0 w-64 h-64 opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
+            <div class="blob absolute bottom-0 right-0 w-96 h-96 opacity-50 translate-x-1/2 translate-y-1/2"></div>
+            
+            <div class="bg-gray-800 rounded-3xl shadow-2xl w-full max-w-md animate__animated animate__fadeIn relative z-10">
+                <div class="gradient-bg p-8 rounded-t-3xl">
+                    <h1 class="text-4xl font-bold text-white text-center">Image Wizard</h1>
+                    <p class="text-gray-200 text-center mt-2">Transform Your Images</p>
+                </div>
+                
+                <div class="p-8">
+                    <div class="mb-8 flex flex-col items-center">
+                        <label for="fileInput" class="cursor-pointer hover-scale">
+                            <lord-icon
+                                src="https://cdn.lordicon.com/nxooksci.json"
+                                trigger="hover"
+                                colors="primary:#a855f7,secondary:#6366f1"
+                                style="width:64px;height:64px;">
+                            </lord-icon>
+                        </label>
+                        <span class="mt-2 text-sm text-gray-400">Choose files</span>
+                        <input type="file" id="fileInput" accept="image/*" class="hidden">
+                    </div>
 
-            <div id="imagePreview" class="mb-8 hidden animate__animated animate__fadeIn">
-                <div class="image-preview-container p-2 rounded-2xl">
-                    <img id="preview" src="" alt="Preview" class="w-full h-64 object-contain rounded-xl">
+                    <div id="imagePreview" class="mb-8 hidden animate__animated animate__fadeIn">
+                        <div class="image-preview-container p-2 rounded-2xl">
+                            <img id="preview" src="" alt="Preview" class="w-full h-48 object-cover rounded-xl">
+                        </div>
+                    </div>
+
+                    <div class="mb-6 animate__animated animate__fadeIn">
+                        <label for="fileName" class="block mb-2 text-gray-300">
+                            <lord-icon
+                                src="https://cdn.lordicon.com/wloilxuq.json"
+                                trigger="hover"
+                                colors="primary:#a855f7,secondary:#6366f1"
+                                style="width:32px;height:32px;vertical-align:middle;display:inline-block;">
+                            </lord-icon>
+                            <span class="ml-2">Rename Image:</span>
+                        </label>
+                        <input type="text" id="fileName" class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="Enter new file name">
+                    </div>
+
+                    <div class="mb-8 animate__animated animate__fadeIn">
+                        <label for="formatSelect" class="block mb-2 text-gray-300">
+                            <lord-icon
+                                src="https://cdn.lordicon.com/nocovwne.json"
+                                trigger="hover"
+                                colors="primary:#a855f7,secondary:#6366f1"
+                                style="width:32px;height:32px;vertical-align:middle;display:inline-block;">
+                            </lord-icon>
+                            <span class="ml-2">Select Format:</span>
+                        </label>
+                        <select id="formatSelect" class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600">
+                            <option value="png">PNG</option>
+                            <option value="jpg">JPG</option>
+                            <option value="webp">WebP</option>
+                            <option value="pdf">PDF</option>
+                        </select>
+                    </div>
+
+                    <button id="downloadBtn" class="w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 rounded-lg hover:from-purple-600 hover:to-indigo-600 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 flex items-center justify-center">
+                        <lord-icon
+                            src="https://cdn.lordicon.com/xsdtfyne.json"
+                            trigger="hover"
+                            colors="primary:#ffffff"
+                            style="width:32px;height:32px;">
+                        </lord-icon>
+                        <span class="ml-2">Download</span>
+                    </button>
                 </div>
             </div>
-
-            <div class="mb-6 animate__animated animate__fadeIn">
-                <label for="fileName" class="block mb-2 text-gray-300">
-                    <lord-icon
-                        src="https://cdn.lordicon.com/wloilxuq.json"
-                        trigger="hover"
-                        colors="primary:#a855f7,secondary:#6366f1"
-                        style="width:32px;height:32px;vertical-align:middle;display:inline-block;">
-                    </lord-icon>
-                    <span class="ml-2">Rename Image:</span>
-                </label>
-                <input type="text" id="fileName" class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="Enter new file name">
-            </div>
-
-            <div class="mb-8 animate__animated animate__fadeIn">
-                <label for="formatSelect" class="block mb-2 text-gray-300">
-                    <lord-icon
-                        src="https://cdn.lordicon.com/nocovwne.json"
-                        trigger="hover"
-                        colors="primary:#a855f7,secondary:#6366f1"
-                        style="width:32px;height:32px;vertical-align:middle;display:inline-block;">
-                    </lord-icon>
-                    <span class="ml-2">Select Format:</span>
-                </label>
-                <select id="formatSelect" class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600">
-                    <option value="png">PNG</option>
-                    <option value="jpg">JPG</option>
-                    <option value="webp">WebP</option>
-                    <option value="pdf">PDF</option>
-                </select>
-            </div>
-
-            <button id="downloadBtn" class="w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 rounded-lg hover:from-purple-600 hover:to-indigo-600 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 flex items-center justify-center">
-                <lord-icon
-                    src="https://cdn.lordicon.com/xsdtfyne.json"
-                    trigger="hover"
-                    colors="primary:#ffffff"
-                    style="width:32px;height:32px;">
-                </lord-icon>
-                <span class="ml-2">Download</span>
-            </button>
-        </div>
+        </section>
     </div>
 
     <div id="loader" class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-50 overflow-hidden bg-gray-900 opacity-75 flex flex-col items-center justify-center hidden">
@@ -128,8 +143,6 @@
         <h2 class="text-center text-white text-xl font-semibold">Processing...</h2>
         <p class="w-1/3 text-center text-white">This may take a few seconds, please don't close this page.</p>
     </div>
-
-   
 
     <script>
         const { jsPDF } = window.jspdf;
