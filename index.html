@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,97 +15,119 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-        
+
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #0f172a;
             color: #e2e8f0;
         }
+
         .gradient-bg {
             background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
         }
+
         .hover-scale {
             transition: transform 0.3s ease-in-out;
         }
+
         .hover-scale:hover {
             transform: scale(1.05);
         }
+
         .loader {
             border-top-color: #a855f7;
             -webkit-animation: spinner 1.5s linear infinite;
             animation: spinner 1.5s linear infinite;
         }
+
         @-webkit-keyframes spinner {
-            0% { -webkit-transform: rotate(0deg); }
-            100% { -webkit-transform: rotate(360deg); }
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
         }
+
         @keyframes spinner {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
+
         .blob {
             border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
             background: linear-gradient(45deg, #6366f1 0%, #a855f7 100%);
             filter: blur(40px);
         }
+
         .image-preview-container {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
+
         .overlay {
             background-color: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(5px);
         }
+
         .scrollbar-hide::-webkit-scrollbar {
             display: none;
         }
+
         .scrollbar-hide {
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
         .drag-drop-area {
             border: 2px dashed #a855f7;
             transition: all 0.3s ease;
         }
+
         .drag-drop-area.dragover {
             background-color: rgba(168, 85, 247, 0.1);
             border-color: #6366f1;
         }
+
         .benefit-card {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             transition: all 0.3s ease;
         }
+
         .benefit-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
+
         .typed-cursor {
             color: #a855f7;
         }
     </style>
 </head>
+
 <body class="min-h-screen p-4 relative overflow-x-hidden scrollbar-hide">
     <div class="blob fixed top-0 left-0 w-64 h-64 opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
     <div class="blob fixed bottom-0 right-0 w-96 h-96 opacity-50 translate-x-1/2 translate-y-1/2"></div>
-    
+
     <div class="bg-gray-800 rounded-3xl shadow-2xl w-full max-w-md mx-auto my-8 animate__animated animate__fadeIn relative z-10">
         <div class="gradient-bg p-8 rounded-t-3xl">
             <h1 class="text-4xl font-bold text-white text-center">Image Wizard</h1>
             <p class="text-gray-200 text-center mt-2">Transform Your Images</p>
         </div>
-        
+
         <div class="p-8">
             <div id="dragDropArea" class="mb-8 flex flex-col items-center justify-center h-40 drag-drop-area rounded-lg cursor-pointer">
                 <input type="file" id="fileInput" accept="image/*" class="hidden">
-                <lord-icon
-                    src="https://cdn.lordicon.com/nxooksci.json"
-                    trigger="hover"
-                    colors="primary:#a855f7,secondary:#6366f1"
-                    style="width:64px;height:64px;">
-                </lord-icon>
+                <lord-icon src="https://cdn.lordicon.com/nxooksci.json" trigger="hover" colors="primary:#a855f7,secondary:#6366f1" style="width:64px;height:64px;"></lord-icon>
                 <p class="mt-2 text-sm text-gray-400 text-center">Choose files or<br>Drag and Drop here!</p>
             </div>
 
@@ -122,12 +145,7 @@
 
             <div class="mb-6 animate__animated animate__fadeIn">
                 <label for="fileName" class="block mb-2 text-gray-300">
-                    <lord-icon
-                        src="https://cdn.lordicon.com/wloilxuq.json"
-                        trigger="hover"
-                        colors="primary:#a855f7,secondary:#6366f1"
-                        style="width:32px;height:32px;vertical-align:middle;display:inline-block;">
-                    </lord-icon>
+                    <lord-icon src="https://cdn.lordicon.com/wloilxuq.json" trigger="hover" colors="primary:#a855f7,secondary:#6366f1" style="width:32px;height:32px;vertical-align:middle;display:inline-block;"></lord-icon>
                     <span class="ml-2">Rename Image:</span>
                 </label>
                 <input type="text" id="fileName" class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="Enter new file name">
@@ -135,271 +153,110 @@
 
             <div class="mb-8 animate__animated animate__fadeIn">
                 <label for="formatSelect" class="block mb-2 text-gray-300">
-                    <lord-icon
-                        src="https://cdn.lordicon.com/nocovwne.json"
-                        trigger="hover"
-                        colors="primary:#a855f7,secondary:#6366f1"
-                        style="width:32px;height:32px;vertical-align:middle;display:inline-block;">
-                    </lord-icon>
+                    <lord-icon src="https://cdn.lordicon.com/nocovwne.json" trigger="hover" colors="primary:#a855f7,secondary:#6366f1" style="width:32px;height:32px;vertical-align:middle;display:inline-block;"></lord-icon>
                     <span class="ml-2">Select Format:</span>
                 </label>
                 <select id="formatSelect" class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600">
                     <option value="png">PNG</option>
                     <option value="jpg">JPG</option>
-                    <option value="webp">WebP</option>
-                    <option value="pdf">PDF</option>
+                    <option value="webp">WEBP</option>
                 </select>
             </div>
 
-            <button id="downloadBtn" class="w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 rounded-lg hover:from-purple-600 hover:to-indigo-600 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 flex items-center justify-center">
-                <lord-icon
-                    src="https://cdn.lordicon.com/xsdtfyne.json"
-                    trigger="hover"
-                    colors="primary:#ffffff"
-                    style="width:32px;height:32px;">
-                </lord-icon>
-                <span class="ml-2">Download</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- New Benefits Section with Typing Animation -->
-    <div class="max-w-4xl mx-auto mt-20 mb-16">
-        <h2 class="text-3xl font-bold text-center mb-12 gradient-bg text-transparent bg-clip-text" data-aos="fade-up">Benefits of Denmara Image Wizard</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="100">
-                <lord-icon
-                    src="https://cdn.lordicon.com/qfymvyfb.json"
-                    trigger="hover"
-                    colors="primary:#a855f7,secondary:#6366f1"
-                    style="width:64px;height:64px;">
-                </lord-icon>
-                <h3 class="text-xl font-semibold mt-4 mb-2">Saves Time</h3>
-                <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Rename and download images instantly without delays, streamlining your workflow."]'></span></p>
-            </div>
-            <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="200">
-                <lord-icon
-                    src="https://cdn.lordicon.com/hnevvdkr.json"
-                    trigger="hover"
-                    colors="primary:#a855f7,secondary:#6366f1"
-                    style="width:64px;height:64px;">
-                </lord-icon>
-                <h3 class="text-xl font-semibold mt-4 mb-2">Flexible Formats</h3>
-                <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Easily switch between formats like PDF, PNG, JPG, and WebP to suit different needs."]'></span></p>
-            </div>
-            <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="300">
-                <lord-icon
-                    src="https://cdn.lordicon.com/vfczflna.json"
-                    trigger="hover"
-                    colors="primary:#a855f7,secondary:#6366f1"
-                    style="width:64px;height:64px;">
-                </lord-icon>
-                <h3 class="text-xl font-semibold mt-4 mb-2">Convenient Access</h3>
-                <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Accessible from any device without needing software, allowing quick renaming and downloads on the go."]'></span></p>
+            <div class="flex justify-center">
+                <button id="downloadBtn" class="bg-purple-600 text-white py-2 px-6 rounded-lg shadow-lg hover:bg-purple-700 transition focus:outline-none">Download</button>
             </div>
         </div>
     </div>
 
-    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 overlay">
-        <div class="relative">
-            <img id="fullSizeImage" src="" alt="Full size preview" class="max-w-full max-h-[80vh] rounded-lg">
-            <button id="closeOverlay" class="absolute top-2 right-2 text-white bg-red-500 rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-600 focus:outline-none">
-                &times;
-            </button>
-        </div>
-    </div>
-
-    <div id="loader" class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-50 overflow-hidden bg-gray-900 opacity-75 flex flex-col items-center justify-center hidden">
-        <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
-        <h2 class="text-center text-white text-xl font-semibold">Processing...</h2>
-        <p class="w-1/3 text-center text-white">This may take a few seconds, please don't close this page.</p>
+    <div id="overlay" class="overlay hidden fixed top-0 left-0 w-full h-full z-20 flex justify-center items-center p-4">
+        <img id="enlargedImage" class="rounded-xl max-w-full max-h-full">
     </div>
 
     <script>
-        const { jsPDF } = window.jspdf;
-        const fileInput = document.getElementById('fileInput');
-        const dragDropArea = document.getElementById('dragDropArea');
-        const imagePreview = document.getElementById('imagePreview');
-        const preview = document.getElementById('preview');
-        const fileName = document.getElementById('fileName');
-        const formatSelect = document.getElementById('formatSelect');
-        const downloadBtn = document.getElementById('downloadBtn');
-        const loader = document.getElementById('loader');
-        const overlay = document.getElementById('overlay');
-        const fullSizeImage = document.getElementById('fullSizeImage');
-        const previewContainer = document.getElementById('previewContainer');
-        <script>
-        const closeOverlay = document.getElementById('closeOverlay');
-        const deleteImage = document.getElementById('deleteImage');
+        document.addEventListener('DOMContentLoaded', function () {
+            // Typed.js initialization for dynamic text
+            const typed = new Typed('.text-animated', {
+                strings: ['Image Wizard', 'Transform your images', 'Drag and Drop your files'],
+                typeSpeed: 50,
+                backSpeed: 25,
+                loop: true,
+            });
 
-        let uploadedImage = null;
+            const dragDropArea = document.getElementById('dragDropArea');
+            const fileInput = document.getElementById('fileInput');
+            const imagePreview = document.getElementById('imagePreview');
+            const preview = document.getElementById('preview');
+            const overlay = document.getElementById('overlay');
+            const enlargedImage = document.getElementById('enlargedImage');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const formatSelect = document.getElementById('formatSelect');
+            const fileNameInput = document.getElementById('fileName');
 
-        // File input change event
-        fileInput.addEventListener('change', handleFileSelect);
+            let selectedFile;
 
-        // Drag and drop events
-        dragDropArea.addEventListener('click', () => fileInput.click());
-        dragDropArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dragDropArea.classList.add('dragover');
-        });
-        dragDropArea.addEventListener('dragleave', () => {
-            dragDropArea.classList.remove('dragover');
-        });
-        dragDropArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dragDropArea.classList.remove('dragover');
-            handleFileSelect({ target: { files: e.dataTransfer.files } });
-        });
+            dragDropArea.addEventListener('click', () => fileInput.click());
 
-        // Preview and overlay events
-        previewContainer.addEventListener('click', showOverlay);
-        closeOverlay.addEventListener('click', hideOverlay);
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) hideOverlay();
-        });
+            fileInput.addEventListener('change', handleFiles);
+            dragDropArea.addEventListener('dragover', handleDragOver);
+            dragDropArea.addEventListener('drop', handleFileDrop);
 
-        // Delete image event
-        deleteImage.addEventListener('click', (e) => {
-            e.stopPropagation();
-            uploadedImage = null;
-            imagePreview.classList.add('hidden');
-            dragDropArea.classList.remove('hidden');
-            fileInput.value = '';
-            fileName.value = '';
-        });
+            function handleFiles(event) {
+                selectedFile = event.target.files[0];
+                displayImage(selectedFile);
+            }
 
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (file) {
+            function handleDragOver(event) {
+                event.preventDefault();
+                dragDropArea.classList.add('dragover');
+            }
+
+            function handleFileDrop(event) {
+                event.preventDefault();
+                dragDropArea.classList.remove('dragover');
+                const droppedFile = event.dataTransfer.files[0];
+                displayImage(droppedFile);
+                selectedFile = droppedFile;
+            }
+
+            function displayImage(file) {
                 const reader = new FileReader();
-                reader.onload = (e) => {
+                reader.onload = function (e) {
                     preview.src = e.target.result;
-                    fullSizeImage.src = e.target.result;
+                    enlargedImage.src = e.target.result;
                     imagePreview.classList.remove('hidden');
-                    dragDropArea.classList.add('hidden');
-                    uploadedImage = file;
-                    fileName.value = file.name.split('.')[0];
-                    imagePreview.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 };
                 reader.readAsDataURL(file);
             }
-        }
 
-        function showOverlay() {
-            overlay.classList.remove('hidden');
-            overlay.classList.add('flex');
-        }
+            // Image enlargement functionality
+            preview.addEventListener('click', () => overlay.classList.remove('hidden'));
+            overlay.addEventListener('click', () => overlay.classList.add('hidden'));
 
-        function hideOverlay() {
-            overlay.classList.add('hidden');
-            overlay.classList.remove('flex');
-        }
-
-        downloadBtn.addEventListener('click', () => {
-            if (!uploadedImage) {
-                swal("Oops!", "Please upload an image first!", "warning");
-                return;
-            }
-
-            const format = formatSelect.value;
-            const newFileName = fileName.value || 'image';
-
-            showLoader();
-
-            setTimeout(() => {
-                if (format === 'pdf') {
-                    convertToPDF(uploadedImage, newFileName);
-                } else {
-                    convertToImage(uploadedImage, newFileName, format);
-                }
-            }, 1000);
-        });
-
-        function convertToImage(file, fileName, format) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
+            // Download functionality
+            downloadBtn.addEventListener('click', () => {
+                const fileName = fileNameInput.value || 'download';
+                const format = formatSelect.value || 'png';
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
                 const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
+                img.onload = function () {
                     canvas.width = img.width;
                     canvas.height = img.height;
-                    const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0);
-                    canvas.toBlob((blob) => {
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `${fileName}.${format}`;
-                        a.click();
-                        URL.revokeObjectURL(url);
-                        hideLoader();
-                        swal("Success!", "Your image has been downloaded.", "success");
-                    }, `image/${format}`, 1.0);  // Set quality to 1.0 for maximum quality
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = canvas.toDataURL(`image/${format}`);
+                    downloadLink.download = `${fileName}.${format}`;
+                    downloadLink.click();
                 };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function convertToPDF(file, fileName) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const scale = 2; // Increase resolution
-                    canvas.width = img.width * scale;
-                    canvas.height = img.height * scale;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
-                    
-                    const pdf = new jsPDF({
-                        orientation: img.width > img.height ? 'l' : 'p',
-                        unit: 'px',
-                        format: [img.width, img.height]
-                    });
-                    
-                    pdf.addImage(imgData, 'JPEG', 0, 0, img.width, img.height);
-                    pdf.save(`${fileName}.pdf`);
-                    hideLoader();
-                    swal("Success!", "Your PDF has been downloaded.", "success");
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function showLoader() {
-            loader.classList.remove('hidden');
-        }
-
-        function hideLoader() {
-            loader.classList.add('hidden');
-        }
-
-        // Initialize AOS
-        AOS.init({
-            duration: 1000,
-            once: true,
-            offset: 100
-        });
-
-        // Initialize Typed.js for smooth typing animation
-        document.addEventListener('DOMContentLoaded', (event) => {
-            document.querySelectorAll('.typed-text').forEach((element) => {
-                new Typed(element, {
-                    strings: JSON.parse(element.dataset.typed),
-                    typeSpeed: 30,
-                    backSpeed: 0,
-                    loop: false,
-                    showCursor: true,
-                    cursorChar: '|',
-                    autoInsertCss: true,
-                });
+                img.src = preview.src;
             });
+
+            // Drag drop area hover effects
+            dragDropArea.addEventListener('dragleave', () => dragDropArea.classList.remove('dragover'));
         });
     </script>
 </body>
+
 </html>
+
