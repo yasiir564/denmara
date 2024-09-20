@@ -3,21 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Image Wizard</title>
+    <title>Modern Image Wizard</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <script src="https://cdn.lordicon.com/bhenfmcm.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://apis.google.com/js/api.js"></script>
-    <script src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="YOUR_DROPBOX_APP_KEY"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        
         body {
-            background-color: #121212;
-            color: #e0e0e0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #0f172a;
+            color: #e2e8f0;
         }
         .gradient-bg {
-            background: linear-gradient(135deg, #4a00e0 0%, #8e2de2 100%);
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
         }
         .hover-scale {
             transition: transform 0.3s ease-in-out;
@@ -26,7 +27,7 @@
             transform: scale(1.05);
         }
         .loader {
-            border-top-color: #8e2de2;
+            border-top-color: #a855f7;
             -webkit-animation: spinner 1.5s linear infinite;
             animation: spinner 1.5s linear infinite;
         }
@@ -38,42 +39,63 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .blob {
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            background: linear-gradient(45deg, #6366f1 0%, #a855f7 100%);
+        }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
-    <div class="bg-gray-800 rounded-lg shadow-2xl w-full max-w-lg animate__animated animate__fadeIn">
-        <div class="gradient-bg p-6 rounded-t-lg">
+<body class="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+    <div class="blob absolute top-0 left-0 w-64 h-64 opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
+    <div class="blob absolute bottom-0 right-0 w-96 h-96 opacity-50 translate-x-1/2 translate-y-1/2"></div>
+    
+    <div class="bg-gray-800 rounded-3xl shadow-2xl w-full max-w-md animate__animated animate__fadeIn relative z-10">
+        <div class="gradient-bg p-8 rounded-t-3xl">
             <h1 class="text-4xl font-bold text-white text-center">Image Wizard</h1>
-            <p class="text-gray-200 text-center mt-2">Upload, Convert, Download</p>
+            <p class="text-gray-200 text-center mt-2">Transform Your Images</p>
         </div>
         
-        <div class="p-6">
-            <div class="mb-6 flex justify-center space-x-4">
-                <button id="uploadLocal" class="bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50">
-                    Local Upload
-                </button>
-                <button id="uploadGDrive" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50">
-                    Google Drive
-                </button>
-                <button id="uploadDropbox" class="bg-blue-400 text-white py-2 px-4 rounded hover:bg-blue-500 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
-                    Dropbox
-                </button>
+        <div class="p-8">
+            <div class="mb-8 flex justify-center">
+                <label for="fileInput" class="cursor-pointer hover-scale">
+                    <lord-icon
+                        src="https://cdn.lordicon.com/nxooksci.json"
+                        trigger="hover"
+                        colors="primary:#a855f7,secondary:#6366f1"
+                        style="width:64px;height:64px;">
+                    </lord-icon>
+                </label>
+                <input type="file" id="fileInput" accept="image/*" class="hidden">
             </div>
 
-            <input type="file" id="fileInput" accept="image/*" class="hidden">
-
-            <div id="imagePreview" class="mb-6 hidden animate__animated animate__fadeIn">
-                <img id="preview" src="" alt="Preview" class="w-full h-64 object-contain rounded shadow-md">
-            </div>
-
-            <div class="mb-6 animate__animated animate__fadeIn">
-                <label for="fileName" class="block mb-2 text-gray-300">Rename Image:</label>
-                <input type="text" id="fileName" class="w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="Enter new file name">
+            <div id="imagePreview" class="mb-8 hidden animate__animated animate__fadeIn">
+                <img id="preview" src="" alt="Preview" class="w-full h-64 object-contain rounded-2xl shadow-lg">
             </div>
 
             <div class="mb-6 animate__animated animate__fadeIn">
-                <label for="formatSelect" class="block mb-2 text-gray-300">Select Format:</label>
-                <select id="formatSelect" class="w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-purple-600">
+                <label for="fileName" class="block mb-2 text-gray-300">
+                    <lord-icon
+                        src="https://cdn.lordicon.com/wloilxuq.json"
+                        trigger="hover"
+                        colors="primary:#a855f7,secondary:#6366f1"
+                        style="width:32px;height:32px;vertical-align:middle;display:inline-block;">
+                    </lord-icon>
+                    <span class="ml-2">Rename Image:</span>
+                </label>
+                <input type="text" id="fileName" class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="Enter new file name">
+            </div>
+
+            <div class="mb-8 animate__animated animate__fadeIn">
+                <label for="formatSelect" class="block mb-2 text-gray-300">
+                    <lord-icon
+                        src="https://cdn.lordicon.com/nocovwne.json"
+                        trigger="hover"
+                        colors="primary:#a855f7,secondary:#6366f1"
+                        style="width:32px;height:32px;vertical-align:middle;display:inline-block;">
+                    </lord-icon>
+                    <span class="ml-2">Select Format:</span>
+                </label>
+                <select id="formatSelect" class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600">
                     <option value="png">PNG</option>
                     <option value="jpg">JPG</option>
                     <option value="webp">WebP</option>
@@ -81,15 +103,21 @@
                 </select>
             </div>
 
-            <button id="downloadBtn" class="w-full bg-purple-600 text-white py-3 rounded hover:bg-purple-700 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50">
-                Download
+            <button id="downloadBtn" class="w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 rounded-lg hover:from-purple-600 hover:to-indigo-600 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 flex items-center justify-center">
+                <lord-icon
+                    src="https://cdn.lordicon.com/xsdtfyne.json"
+                    trigger="hover"
+                    colors="primary:#ffffff"
+                    style="width:32px;height:32px;">
+                </lord-icon>
+                <span class="ml-2">Download</span>
             </button>
         </div>
     </div>
 
     <div id="loader" class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-50 overflow-hidden bg-gray-900 opacity-75 flex flex-col items-center justify-center hidden">
         <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
-        <h2 class="text-center text-white text-xl font-semibold">Loading...</h2>
+        <h2 class="text-center text-white text-xl font-semibold">Processing...</h2>
         <p class="w-1/3 text-center text-white">This may take a few seconds, please don't close this page.</p>
     </div>
 
@@ -101,14 +129,9 @@
         const fileName = document.getElementById('fileName');
         const formatSelect = document.getElementById('formatSelect');
         const downloadBtn = document.getElementById('downloadBtn');
-        const uploadLocal = document.getElementById('uploadLocal');
-        const uploadGDrive = document.getElementById('uploadGDrive');
-        const uploadDropbox = document.getElementById('uploadDropbox');
         const loader = document.getElementById('loader');
 
         let uploadedImage = null;
-
-        uploadLocal.addEventListener('click', () => fileInput.click());
 
         fileInput.addEventListener('change', handleFileSelect);
 
@@ -127,80 +150,6 @@
                 reader.readAsDataURL(file);
             }
         }
-
-        // Google Drive integration
-        function loadGoogleDriveAPI() {
-            gapi.load('auth2', () => {
-                gapi.auth2.init({
-                    client_id: '756877988396-baakls5n8vdaddbju777fd6r55oi0b8i.apps.googleusercontent.com',
-                });
-            });
-            gapi.load('picker');
-        }
-
-        uploadGDrive.addEventListener('click', () => {
-            showLoader();
-            gapi.auth2.getAuthInstance().signIn().then(() => {
-                const token = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token;
-                const picker = new google.picker.PickerBuilder()
-                    .addView(google.picker.ViewId.DOCS_IMAGES)
-                    .setOAuthToken(token)
-                    .setCallback(pickerCallback)
-                    .build();
-                picker.setVisible(true);
-                hideLoader();
-            });
-        });
-
-        function pickerCallback(data) {
-            if (data.action === google.picker.Action.PICKED) {
-                showLoader();
-                const fileId = data.docs[0].id;
-                gapi.client.drive.files.get({
-                    fileId: fileId,
-                    alt: 'media'
-                }).then(function(response) {
-                    const blob = new Blob([response.body], {type: 'image/jpeg'});
-                    uploadedImage = new File([blob], data.docs[0].name, {type: 'image/jpeg'});
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        preview.src = e.target.result;
-                        imagePreview.classList.remove('hidden');
-                        fileName.value = data.docs[0].name.split('.')[0];
-                        hideLoader();
-                    };
-                    reader.readAsDataURL(blob);
-                });
-            }
-        }
-
-        // Dropbox integration
-        uploadDropbox.addEventListener('click', () => {
-            showLoader();
-            Dropbox.choose({
-                success: function(files) {
-                    fetch(files[0].link)
-                        .then(response => response.blob())
-                        .then(blob => {
-                            uploadedImage = new File([blob], files[0].name, {type: 'image/jpeg'});
-                            const reader = new FileReader();
-                            reader.onload = (e) => {
-                                preview.src = e.target.result;
-                                imagePreview.classList.remove('hidden');
-                                fileName.value = files[0].name.split('.')[0];
-                                hideLoader();
-                            };
-                            reader.readAsDataURL(blob);
-                        });
-                },
-                cancel: function() {
-                    hideLoader();
-                },
-                linkType: "direct",
-                multiselect: false,
-                extensions: ['.jpg', '.jpeg', '.png', '.gif'],
-            });
-        });
 
         downloadBtn.addEventListener('click', () => {
             if (!uploadedImage) {
@@ -284,9 +233,6 @@
         function hideLoader() {
             loader.classList.add('hidden');
         }
-
-        // Initialize Google Drive API
-        loadGoogleDriveAPI();
     </script>
 </body>
 </html>
