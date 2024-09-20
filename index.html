@@ -53,9 +53,24 @@
             background-color: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(5px);
         }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .drag-drop-area {
+            border: 2px dashed #a855f7;
+            transition: all 0.3s ease;
+        }
+        .drag-drop-area.dragover {
+            background-color: rgba(168, 85, 247, 0.1);
+            border-color: #6366f1;
+        }
     </style>
 </head>
-<body class="min-h-screen p-4 relative overflow-x-hidden">
+<body class="min-h-screen p-4 relative overflow-x-hidden scrollbar-hide">
     <div class="blob fixed top-0 left-0 w-64 h-64 opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
     <div class="blob fixed bottom-0 right-0 w-96 h-96 opacity-50 translate-x-1/2 translate-y-1/2"></div>
     
@@ -66,24 +81,27 @@
         </div>
         
         <div class="p-8">
-            <div class="mb-8 flex flex-col items-center">
-                <label for="fileInput" class="cursor-pointer hover-scale">
-                    <lord-icon
-                        src="https://cdn.lordicon.com/nxooksci.json"
-                        trigger="hover"
-                        colors="primary:#a855f7,secondary:#6366f1"
-                        style="width:64px;height:64px;">
-                    </lord-icon>
-                </label>
-                <span class="mt-2 text-sm text-gray-400">Choose files</span>
+            <div id="dragDropArea" class="mb-8 flex flex-col items-center justify-center h-40 drag-drop-area rounded-lg cursor-pointer">
                 <input type="file" id="fileInput" accept="image/*" class="hidden">
+                <lord-icon
+                    src="https://cdn.lordicon.com/nxooksci.json"
+                    trigger="hover"
+                    colors="primary:#a855f7,secondary:#6366f1"
+                    style="width:64px;height:64px;">
+                </lord-icon>
+                <p class="mt-2 text-sm text-gray-400 text-center">Choose file or<br>drag and drop here</p>
             </div>
 
             <div id="imagePreview" class="mb-8 hidden animate__animated animate__fadeIn">
-                <div class="image-preview-container p-2 rounded-2xl cursor-pointer" id="previewContainer">
-                    <img id="preview" src="" alt="Preview" class="w-full h-32 object-cover rounded-xl">
+                <div class="image-preview-container p-2 rounded-2xl cursor-pointer relative" id="previewContainer">
+                    <img id="preview" src="" alt="Preview" class="w-full h-40 object-cover rounded-xl">
+                    <button id="deleteImage" class="absolute top-4 right-4 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
                 </div>
-                <p class="text-center text-sm text-gray-400 mt-2">Preview</p>
+                <p class="text-center text-sm text-gray-400 mt-2">Preview (Click to enlarge)</p>
             </div>
 
             <div class="mb-6 animate__animated animate__fadeIn">
@@ -147,6 +165,7 @@
     <script>
         const { jsPDF } = window.jspdf;
         const fileInput = document.getElementById('fileInput');
+        const dragDropArea = document.getElementById('dragDropArea');
         const imagePreview = document.getElementById('imagePreview');
         const preview = document.getElementById('preview');
         const fileName = document.getElementById('fileName');
@@ -157,14 +176,43 @@
         const fullSizeImage = document.getElementById('fullSizeImage');
         const previewContainer = document.getElementById('previewContainer');
         const closeOverlay = document.getElementById('closeOverlay');
+        const deleteImage = document.getElementById('deleteImage');
 
         let uploadedImage = null;
 
+        // File input change event
         fileInput.addEventListener('change', handleFileSelect);
+
+        // Drag and drop events
+        dragDropArea.addEventListener('click', () => fileInput.click());
+        dragDropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dragDropArea.classList.add('dragover');
+        });
+        dragDropArea.addEventListener('dragleave', () => {
+            dragDropArea.classList.remove('dragover');
+        });
+        dragDropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dragDropArea.classList.remove('dragover');
+            handleFileSelect({ target: { files: e.dataTransfer.files } });
+        });
+
+        // Preview and overlay events
         previewContainer.addEventListener('click', showOverlay);
         closeOverlay.addEventListener('click', hideOverlay);
         overlay.addEventListener('click', (e) => {
             if (e.target === overlay) hideOverlay();
+        });
+
+        // Delete image event
+        deleteImage.addEventListener('click', (e) => {
+            e.stopPropagation();
+            uploadedImage = null;
+            imagePreview.classList.add('hidden');
+            dragDropArea.classList.remove('hidden');
+            fileInput.value = '';
+            fileName.value = '';
         });
 
         function handleFileSelect(event) {
@@ -175,9 +223,10 @@
                     preview.src = e.target.result;
                     fullSizeImage.src = e.target.result;
                     imagePreview.classList.remove('hidden');
+                    dragDropArea.classList.add('hidden');
                     uploadedImage = file;
                     fileName.value = file.name.split('.')[0];
-                    imagePreview.scrollIntoView({ behavior: 'smooth' });
+                    imagePreview.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 };
                 reader.readAsDataURL(file);
             }
@@ -234,8 +283,7 @@
                         swal("Success!", "Your image has been downloaded.", "success");
                     }, `image/${format}`, 1.0);  // Set quality to 1.0 for maximum quality
                 };
-                img.src = e.target.result;
-            };
+                img.src = e.target.result;};
             reader.readAsDataURL(file);
         }
 
