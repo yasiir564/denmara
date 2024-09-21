@@ -13,6 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
         
@@ -92,14 +93,20 @@
             max-height: 70vh;
             margin: 0 auto;
         }
+        .crop-control-btn {
+            @apply bg-purple-600 text-white p-2 rounded-lg hover:bg-purple-700 transition duration-300 flex items-center justify-center;
+        }
+        .crop-control-btn i {
+            font-size: 1.2rem;
+        }
     </style>
 </head>
 <body class="min-h-screen p-4 relative overflow-x-hidden scrollbar-hide flex flex-col">
     <header class="header fixed top-0 left-0 right-0 z-50 py-4 px-6">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
             <a href="/" class="flex items-center">
-                <img src="/api/placeholder/70/70" alt="Denmara Logo" class="w-16 h-16">
-                <span class="ml-2 text-2xl font-bold text-white">Denmara</span>
+                <img src="/api/placeholder/70/70" alt="Denmara Logo" class="w-12 h-12 sm:w-16 sm:h-16">
+                <span class="ml-2 text-xl sm:text-2xl font-bold text-white">Denmara</span>
             </a>
             <a href="/login" class="text-white hover:text-purple-400 transition duration-300">Login</a>
         </div>
@@ -110,12 +117,12 @@
         <div class="blob fixed bottom-0 right-0 w-96 h-96 opacity-50 translate-x-1/2 translate-y-1/2"></div>
         
         <div class="bg-gray-800 rounded-3xl shadow-2xl w-full max-w-4xl mx-auto my-8 animate__animated animate__fadeIn relative z-10">
-            <div class="gradient-bg p-8 rounded-t-3xl">
-                <h1 class="text-4xl font-bold text-white text-center">Image Crop Tool</h1>
+            <div class="gradient-bg p-6 sm:p-8 rounded-t-3xl">
+                <h1 class="text-3xl sm:text-4xl font-bold text-white text-center">Image Crop Tool</h1>
                 <p class="text-gray-200 text-center mt-2">Crop your images with precision</p>
             </div>
             
-            <div class="p-8">
+            <div class="p-6 sm:p-8">
                 <div id="dragDropArea" class="mb-8 flex flex-col items-center justify-center h-40 drag-drop-area rounded-lg cursor-pointer">
                     <input type="file" id="fileInput" accept="image/*" class="hidden">
                     <lord-icon
@@ -128,38 +135,33 @@
                 </div>
 
                 <div id="cropContainer" class="mb-8 hidden">
-                    <img id="image" src="" alt="Image to crop">
+                    <img id="image" src="" alt="Image to crop" class="max-w-full h-auto">
                 </div>
 
                 <div id="cropControls" class="mb-8 hidden">
-                    <div class="flex justify-between items-center mb-4">
-                        <button id="rotateLeft" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition duration-300">Rotate Left</button>
-                        <button id="rotateRight" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition duration-300">Rotate Right</button>
-                        <button id="flipHorizontal" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition duration-300">Flip Horizontal</button>
-                        <button id="flipVertical" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition duration-300">Flip Vertical</button>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
+                        <button id="rotateLeft" class="crop-control-btn"><i class="fas fa-undo"></i></button>
+                        <button id="rotateRight" class="crop-control-btn"><i class="fas fa-redo"></i></button>
+                        <button id="flipHorizontal" class="crop-control-btn"><i class="fas fa-arrows-alt-h"></i></button>
+                        <button id="flipVertical" class="crop-control-btn"><i class="fas fa-arrows-alt-v"></i></button>
                     </div>
-                    <div class="flex justify-between items-center">
-                        <button id="zoomIn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition duration-300">Zoom In</button>
-                        <button id="zoomOut" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition duration-300">Zoom Out</button>
-                        <button id="reset" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-300">Reset</button>
+                    <div class="grid grid-cols-3 gap-4">
+                        <button id="zoomIn" class="crop-control-btn"><i class="fas fa-search-plus"></i></button>
+                        <button id="zoomOut" class="crop-control-btn"><i class="fas fa-search-minus"></i></button>
+                        <button id="reset" class="crop-control-btn"><i class="fas fa-sync-alt"></i></button>
                     </div>
                 </div>
 
                 <button id="cropBtn" class="w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 rounded-lg hover:from-purple-600 hover:to-indigo-600 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 flex items-center justify-center hidden">
-                    <lord-icon
-                        src="https://cdn.lordicon.com/iifryyua.json"
-                        trigger="hover"
-                        colors="primary:#ffffff"
-                        style="width:32px;height:32px;">
-                    </lord-icon>
-                    <span class="ml-2">Crop Image</span>
+                    <i class="fas fa-crop mr-2"></i>
+                    <span>Crop Image</span>
                 </button>
             </div>
         </div>
 
-        <div class="max-w-4xl mx-auto mt-20 mb-16">
-            <h2 class="text-3xl font-bold text-center mb-12 gradient-bg text-transparent bg-clip-text" data-aos="fade-up">Benefits of Denmara Image Crop Tool</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="max-w-4xl mx-auto mt-16 sm:mt-20 mb-16">
+            <h2 class="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12 gradient-bg text-transparent bg-clip-text" data-aos="fade-up">Benefits of Denmara Image Crop Tool</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="100">
                     <lord-icon
                         src="https://cdn.lordicon.com/kbtmbyzy.json"
@@ -197,8 +199,8 @@
     <footer class="footer mt-16 py-6 px-6">
         <div class="max-w-6xl mx-auto flex flex-col items-center">
             <div class="mb-4">
-                <a href="/terms" class="text-gray-300 hover:text-white mx-2">Terms and Conditions</a>
-                <a href="/privacy" class="text-gray-300 hover:text-white mx-2">Privacy Policy</a>
+                <a href="/terms" class="text-gray-300 hover:text-white mx-2">Terms</a>
+                <a href="/privacy" class="text-gray-300 hover:text-white mx-2">Privacy</a>
             </div>
             <div class="text-gray-400 text-sm">
                 &copy;2024 denmara.com
