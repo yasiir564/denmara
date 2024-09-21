@@ -99,6 +99,16 @@
         .crop-control-btn i {
             font-size: 1.2rem;
         }
+         #imageActions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+        }
+        
+        .image-action-btn {
+            @apply bg-gray-800 text-white p-2 rounded-full hover:bg-gray-700 transition duration-300 mr-2;
+        }
     </style>
 </head>
 <body class="min-h-screen p-4 relative overflow-x-hidden scrollbar-hide flex flex-col">
@@ -132,6 +142,13 @@
                         style="width:64px;height:64px;">
                     </lord-icon>
                     <p class="mt-2 text-sm text-gray-400 text-center">Choose files or<br>Drag and Drop here!</p>
+                </div>
+                <div id="cropContainer" class="mb-8 hidden relative">
+                    <img id="image" src="" alt="Image to crop" class="max-w-full h-auto">
+                    <div id="imageActions" class="hidden">
+                        <button id="replaceImage" class="image-action-btn"><i class="fas fa-sync-alt"></i></button>
+                        <button id="deleteImage" class="image-action-btn"><i class="fas fa-trash-alt"></i></button>
+                    </div>
                 </div>
 
                 <div id="cropContainer" class="mb-8 hidden">
@@ -214,13 +231,16 @@
         <p class="w-1/3 text-center text-white">This may take a few seconds, please don't close this page.</p>
     </div>
 
-   <script>
+  <script>
         const fileInput = document.getElementById('fileInput');
         const dragDropArea = document.getElementById('dragDropArea');
         const cropContainer = document.getElementById('cropContainer');
         const cropControls = document.getElementById('cropControls');
         const cropBtn = document.getElementById('cropBtn');
         const loader = document.getElementById('loader');
+        const imageActions = document.getElementById('imageActions');
+        const replaceImageBtn = document.getElementById('replaceImage');
+        const deleteImageBtn = document.getElementById('deleteImage');
 
         let cropper;
 
@@ -247,28 +267,78 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    dragDropArea.classList.add('hidden');
-                    cropContainer.classList.remove('hidden');
-                    cropControls.classList.remove('hidden');
-                    cropBtn.classList.remove('hidden');
-                    
-                    const image = document.getElementById('image');
-                    image.src = e.target.result;
-                    
-                    if (cropper) {
-                        cropper.destroy();
-                    }
-                    
-                    cropper = new Cropper(image, {
-                        aspectRatio: NaN,
-                        viewMode: 1,
-                        minCropBoxWidth: 100,
-                        minCropBoxHeight: 100,
-                    });
+                    showImageEditor(e.target.result);
                 };
                 reader.readAsDataURL(file);
             }
         }
+
+        function showImageEditor(imageSrc) {
+            dragDropArea.classList.add('hidden');
+            cropContainer.classList.remove('hidden');
+            cropControls.classList.remove('hidden');
+            cropBtn.classList.remove('hidden');
+            imageActions.classList.remove('hidden');
+            
+            const image = document.getElementById('image');
+            image.src = imageSrc;
+            
+            if (cropper) {
+                cropper.destroy();
+            }
+            
+            cropper = new Cropper(image, {
+                aspectRatio: NaN,
+                viewMode: 1,
+                minCropBoxWidth: 100,
+                minCropBoxHeight: 100,
+            });
+        }
+
+        function resetImageEditor() {
+            if (cropper) {
+                cropper.destroy();
+            }
+            dragDropArea.classList.remove('hidden');
+            cropContainer.classList.add('hidden');
+            cropControls.classList.add('hidden');
+            cropBtn.classList.add('hidden');
+            imageActions.classList.add('hidden');
+            document.getElementById('image').src = '';
+        }
+
+        // Replace Image
+        replaceImageBtn.addEventListener('click', () => {
+            swal({
+                title: "Replace Image",
+                text: "Are you sure you want to replace the current image?",
+                icon: "warning",
+                buttons: ["Cancel", "Replace"],
+                dangerMode: true,
+            })
+            .then((willReplace) => {
+                if (willReplace) {
+                    fileInput.click();
+                }
+            });
+        });
+
+        // Delete Image
+        deleteImageBtn.addEventListener('click', () => {
+            swal({
+                title: "Delete Image",
+                text: "Are you sure you want to delete the current image?",
+                icon: "warning",
+                buttons: ["Cancel", "Delete"],
+                dangerMode: true,
+            })
+            .then((willDelete) => {
+                if (willDelete) {
+                    resetImageEditor();
+                    swal("Deleted!", "Your image has been deleted.", "success");
+                }
+            });
+        });
 
         // Crop controls
         document.getElementById('rotateLeft').addEventListener('click', () => cropper.rotate(-90));
@@ -310,7 +380,7 @@
             loader.classList.add('hidden');
         }
 
-        // Initialize AOS
+        // Initialize AOS and Typed.js
         document.addEventListener('DOMContentLoaded', function() {
             AOS.init({
                 duration: 1000,
@@ -318,7 +388,6 @@
                 offset: 100
             });
 
-            // Initialize Typed.js for smooth typing animation
             document.querySelectorAll('.typed-text').forEach((element) => {
                 new Typed(element, {
                     strings: JSON.parse(element.dataset.typed),
@@ -332,7 +401,7 @@
             });
         });
 
-        // Add some additional JavaScript for header behavior
+        // Header behavior
         window.addEventListener('scroll', () => {
             const header = document.querySelector('.header');
             if (window.scrollY > 50) {
