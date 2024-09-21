@@ -319,181 +319,179 @@
     </div>
 
   <script>
-        const fileInput = document.getElementById('fileInput');
-        const dragDropArea = document.getElementById('dragDropArea');
-        const cropContainer = document.getElementById('cropContainer');
-        const cropControls = document.getElementById('cropControls');
-        const cropBtn = document.getElementById('cropBtn');
-        const loader = document.getElementById('loader');
-        const imageActions = document.getElementById('imageActions');
-        const replaceImageBtn = document.getElementById('replaceImage');
-        const deleteImageBtn = document.getElementById('deleteImage');
+    const fileInput = document.getElementById('fileInput');
+    const dragDropArea = document.getElementById('dragDropArea');
+    const cropContainer = document.getElementById('cropContainer');
+    const cropControls = document.getElementById('cropControls');
+    const cropBtn = document.getElementById('cropBtn');
+    const loader = document.getElementById('loader');
+    const imageActions = document.getElementById('imageActions');
+    const replaceImageBtn = document.getElementById('replaceImage');
+    const deleteImageBtn = document.getElementById('deleteImage');
+    let cropper;
 
-        let cropper;
+    // File input change event
+    fileInput.addEventListener('change', handleFileSelect);
 
-        // File input change event
-        fileInput.addEventListener('change', handleFileSelect);
+    // Drag and drop events
+    dragDropArea.addEventListener('click', () => fileInput.click());
+    dragDropArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dragDropArea.classList.add('dragover');
+    });
+    dragDropArea.addEventListener('dragleave', () => {
+        dragDropArea.classList.remove('dragover');
+    });
+    dragDropArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dragDropArea.classList.remove('dragover');
+        handleFileSelect({ target: { files: e.dataTransfer.files } });
+    });
 
-        // Drag and drop events
-        dragDropArea.addEventListener('click', () => fileInput.click());
-        dragDropArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dragDropArea.classList.add('dragover');
-        });
-        dragDropArea.addEventListener('dragleave', () => {
-            dragDropArea.classList.remove('dragover');
-        });
-        dragDropArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dragDropArea.classList.remove('dragover');
-            handleFileSelect({ target: { files: e.dataTransfer.files } });
-        });
+    function handleFileSelect(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                showImageEditor(e.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    }
 
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    showImageEditor(e.target.result);
-                };
-                reader.readAsDataURL(file);
-            }
+    function showImageEditor(imageSrc) {
+        dragDropArea.classList.add('hidden');
+        cropContainer.classList.remove('hidden');
+        cropControls.classList.remove('hidden');
+        cropBtn.classList.remove('hidden');
+        imageActions.classList.remove('hidden');
+
+        const image = document.getElementById('image');
+        image.src = imageSrc;
+
+        if (cropper) {
+            cropper.destroy();
         }
 
-        function showImageEditor(imageSrc) {
-            dragDropArea.classList.add('hidden');
-            cropContainer.classList.remove('hidden');
-            cropControls.classList.remove('hidden');
-            cropBtn.classList.remove('hidden');
-            imageActions.classList.remove('hidden');
-            
-            const image = document.getElementById('image');
-            image.src = imageSrc;
-            
-            if (cropper) {
-                cropper.destroy();
-            }
-            
-            cropper = new Cropper(image, {
-                aspectRatio: NaN,
-                viewMode: 1,
-                minCropBoxWidth: 100,
-                minCropBoxHeight: 100,
-            });
-        }
-
-        function resetImageEditor() {
-            if (cropper) {
-                cropper.destroy();
-            }
-            dragDropArea.classList.remove('hidden');
-            cropContainer.classList.add('hidden');
-            cropControls.classList.add('hidden');
-            cropBtn.classList.add('hidden');
-            imageActions.classList.add('hidden');
-            document.getElementById('image').src = '';
-        }
-
-        // Replace Image
-        replaceImageBtn.addEventListener('click', () => {
-            swal({
-                title: "Replace Image",
-                text: "Are you sure you want to replace the current image?",
-                icon: "warning",
-                buttons: ["Cancel", "Replace"],
-                dangerMode: true,
-            })
-            .then((willReplace) => {
-                if (willReplace) {
-                    fileInput.click();
-                }
-            });
+        cropper = new Cropper(image, {
+            aspectRatio: NaN,
+            viewMode: 1,
+            minCropBoxWidth: 100,
+            minCropBoxHeight: 100,
         });
+    }
 
-        // Delete Image
-        deleteImageBtn.addEventListener('click', () => {
-            swal({
-                title: "Delete Image",
-                text: "Are you sure you want to delete the current image?",
-                icon: "warning",
-                buttons: ["Cancel", "Delete"],
-                dangerMode: true,
-            })
-            .then((willDelete) => {
-                if (willDelete) {
-                    resetImageEditor();
-                    swal("Deleted!", "Your image has been deleted.", "success");
-                }
-            });
+    function resetImageEditor() {
+        if (cropper) {
+            cropper.destroy();
+        }
+        dragDropArea.classList.remove('hidden');
+        cropContainer.classList.add('hidden');
+        cropControls.classList.add('hidden');
+        cropBtn.classList.add('hidden');
+        imageActions.classList.add('hidden');
+        document.getElementById('image').src = '';
+    }
+
+    // Replace Image
+    replaceImageBtn.addEventListener('click', () => {
+        swal({
+            title: "Replace Image",
+            text: "Are you sure you want to replace the current image?",
+            icon: "warning",
+            buttons: ["Cancel", "Replace"],
+            dangerMode: true,
+        })
+        .then((willReplace) => {
+            if (willReplace) {
+                fileInput.click();
+            }
         });
+    });
 
-        // Crop controls
-        document.getElementById('rotateLeft').addEventListener('click', () => cropper.rotate(-90));
-        document.getElementById('rotateRight').addEventListener('click', () => cropper.rotate(90));
-        document.getElementById('flipHorizontal').addEventListener('click', () => cropper.scaleX(-cropper.getData().scaleX || -1));
-        document.getElementById('flipVertical').addEventListener('click', () => cropper.scaleY(-cropper.getData().scaleY || -1));
-        document.getElementById('zoomIn').addEventListener('click', () => cropper.zoom(0.1));
-        document.getElementById('zoomOut').addEventListener('click', () => cropper.zoom(-0.1));
-        document.getElementById('reset').addEventListener('click', () => cropper.reset());
+    // Delete Image
+    deleteImageBtn.addEventListener('click', () => {
+        swal({
+            title: "Delete Image",
+            text: "Are you sure you want to delete the current image?",
+            icon: "warning",
+            buttons: ["Cancel", "Delete"],
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+            if (willDelete) {
+                resetImageEditor();
+                swal("Deleted!", "Your image has been deleted.", "success");
+            }
+        });
+    });
 
-        // Crop button
-        cropBtn.addEventListener('click', () => {
-            showLoader();
-            setTimeout(() => {
-                const croppedCanvas = cropper.getCroppedCanvas();
-                if (croppedCanvas) {
-                    croppedCanvas.toBlob((blob) => {
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = 'cropped_image.png';
-                        a.click();
-                        URL.revokeObjectURL(url);
-                        hideLoader();
-                        swal("Success!", "Your cropped image has been downloaded.", "success");
-                    });
-                } else {
+    // Crop controls
+    document.getElementById('rotateLeft').addEventListener('click', () => cropper.rotate(-90));
+    document.getElementById('rotateRight').addEventListener('click', () => cropper.rotate(90));
+    document.getElementById('flipHorizontal').addEventListener('click', () => cropper.scaleX(-cropper.getData().scaleX || -1));
+    document.getElementById('flipVertical').addEventListener('click', () => cropper.scaleY(-cropper.getData().scaleY || -1));
+    document.getElementById('zoomIn').addEventListener('click', () => cropper.zoom(0.1));
+    document.getElementById('zoomOut').addEventListener('click', () => cropper.zoom(-0.1));
+    document.getElementById('reset').addEventListener('click', () => cropper.reset());
+
+    // Crop button
+    cropBtn.addEventListener('click', () => {
+        showLoader();
+        setTimeout(() => {
+            const croppedCanvas = cropper.getCroppedCanvas();
+            if (croppedCanvas) {
+                croppedCanvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'cropped_image.png';
+                    a.click();
+                    URL.revokeObjectURL(url);
                     hideLoader();
-                    swal("Oops!", "Failed to crop the image. Please try again.", "error");
-                }
-            }, 1000);
-        });
-
-        function showLoader() {
-            loader.classList.remove('hidden');
-        }
-
-        function hideLoader() {
-            loader.classList.add('hidden');
-        }
-        // New FAQ functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const faqItems = document.querySelectorAll('.faq-item');
-
-            faqItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    item.classList.toggle('active');
+                    swal("Success!", "Your cropped image has been downloaded.", "success");
                 });
+            } else {
+                hideLoader();
+                swal("Oops!", "Failed to crop the image. Please try again.", "error");
+            }
+        }, 1000);
+    });
+
+    function showLoader() {
+        loader.classList.remove('hidden');
+    }
+
+    function hideLoader() {
+        loader.classList.add('hidden');
+    }
+
+    // FAQ functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const faqItems = document.querySelectorAll('.faq-item');
+
+        faqItems.forEach(item => {
+            item.addEventListener('click', () => {
+                item.classList.toggle('active');
             });
+        });
 
         // Initialize AOS and Typed.js
-        document.addEventListener('DOMContentLoaded', function() {
-            AOS.init({
-                duration: 1000,
-                once: true,
-                offset: 100
-            });
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
+        });
 
-            document.querySelectorAll('.typed-text').forEach((element) => {
-                new Typed(element, {
-                    strings: JSON.parse(element.dataset.typed),
-                    typeSpeed: 30,
-                    backSpeed: 0,
-                    loop: false,
-                    showCursor: true,
-                    cursorChar: '|',
-                    autoInsertCss: true,
-                });
+        document.querySelectorAll('.typed-text').forEach((element) => {
+            new Typed(element, {
+                strings: JSON.parse(element.dataset.typed),
+                typeSpeed: 30,
+                backSpeed: 0,
+                loop: false,
+                showCursor: true,
+                cursorChar: '|',
+                autoInsertCss: true,
             });
         });
 
@@ -506,6 +504,7 @@
                 header.classList.remove('shadow-md');
             }
         });
-    </script>
+    });
+</script>
 </body>
 </html>
