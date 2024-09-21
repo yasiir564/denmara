@@ -108,6 +108,17 @@
         .faq-item.active .faq-icon {
             transform: rotate(180deg);
         }
+        .tool-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
     </style>
 </head>
 <body class="min-h-screen p-4 relative overflow-x-hidden scrollbar-hide">
@@ -286,6 +297,101 @@
                     <p>Currently, Denmara Image Wizard processes one image at a time. However, we're working on adding batch processing capabilities in a future update. Stay tuned!</p>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="max-w-6xl mx-auto mt-20 mb-16">
+        <h2 class="text-3xl font-bold text-center mb-12 gradient-bg text-transparent bg-clip-text" data-aos="fade-up">More Tools</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8" data-aos="fade-up" data-aos-delay="200">
+            <a href="/crop-tool" class="tool-card rounded-lg p-6 flex flex-col items-center text-center hover:text-white">
+                <lord-icon
+                    src="https://cdn.lordicon.com/hromwhkn.json"
+                    trigger="hover"
+                    colors="primary:#a855f7,secondary:#6366f1"
+                    style="width:64px;height:64px;">
+                </lord-icon>
+                <h3 class="text-xl font-semibold mt-4 mb-2">Crop Tool</h3>
+                <p class="text-gray-300">Precisely trim your images for perfect composition</p>
+            </a>
+            <a href="/resize-tool" class="tool-card rounded-lg p-6 flex flex-col items-center text-center hover:text-white">
+                <lord-icon
+                    src="https://cdn.lordicon.com/esekyimn.json"
+                    trigger="hover"
+                    colors="primary:#a855f7,secondary:#6366f1"
+                    style="width:64px;height:64px;">
+                </lord-icon>
+                <h3 class="text-xl font-semibold mt-4 mb-2">Resize Tool</h3>
+                <p class="text-gray-300">Adjust image dimensions while maintaining quality</p>
+            </a>
+            <a href="/filter-tool" class="tool-card rounded-lg p-6 flex flex-col items-center text-center hover:text-white">
+                <lord-icon
+                    src="https://cdn.lordicon.com/jfhbogmw.json"
+                    trigger="hover"
+                    colors="primary:#a855f7,secondary:#6366f1"
+                    style="width:64px;height:64px;">
+                </lord-icon>
+                <h3 class="text-xl font-semibold mt-4 mb-2">Filter Tool</h3>
+                <p class="text-gray-300">Apply stunning filters to enhance your images</p>
+            </a>
+            <a href="/text-tool" class="tool-card rounded-lg p-6 flex flex-col items-center text-center hover:text-white">
+                <lord-icon
+                    src="https://cdn.lordicon.com/aslgozpd.json"
+                    trigger="hover"
+                    colors="primary:#a855f7,secondary:#6366f1"
+                    style="width:64px;height:64px;">
+                </lord-icon>
+                <h3 class="text-xl font-semibold mt-4 mb-2">Text Tool</h3>
+                <p class="text-gray-300">Add customizable text overlays to your images</p>
+            </a>
+            <a href="/collage-maker" class="tool-card rounded-lg p-6 flex flex-col items-center text-center hover:text-white">
+                <lord-icon
+                    src="https://cdn.lordicon.com/wloilxuq.json"
+                    trigger="hover"
+                    colors="primary:#a855f7,secondary:#6366f1"
+                    style="width:64px;height:64px;">
+                </lord-icon>
+                <h3 class="text-xl font-semibold mt-4 mb-2">Collage Maker</h3>
+                <p class="text-gray-300">Create beautiful photo collages with ease</p>
+            </a>
+            <a href="/background-remover" class="tool-card rounded-lg p-6 flex flex-col items-center text-center hover:text-white">
+                <lord-icon
+                    src="https://cdn.lordicon.com/kqvkzklk.json"
+                    trigger="hover"
+                    colors="primary:#a855f7,secondary:#6366f1"
+                    style="width:64px;height:64px;">
+                </lord-icon>
+                <h3 class="text-xl font-semibold mt-4 mb-2">Background Remover</h3>
+                <p class="text-gray-300">Remove backgrounds with AI-powered precision</p>
+            </a>
+            <a href="/color-adjustment" class="tool-card rounded-lg p-6 flex flex-col items-center text-center hover:text-white">
+                <lord-icon
+                    src="https://cdn.lordicon.com/puvaffet.json"
+                    trigger="hover"
+                    colors="primary:#a855f7,secondary:#6366f1"
+                    style="width:64px;height:64px;">
+                </lord-icon>
+                <h3 class="text-xl font-semibold mt-4 mb-2">Color Adjustment</h3>
+                <p class="text-gray-300">Fine-tune colors, brightness, and contrast</p>
+            </a>
+            <a href="/sticker-tool" class="tool-card rounded-lg p-6 flex flex-col items-center text-center hover:text-white">
+                <lord-icon
+                    src="https://cdn.lordicon.com/iiixgoqp.json"
+                    trigger="hover"
+                    colors="primary:#a855f7,secondary:#6366f1"
+                    style="width:64px;height:64px;">
+                </lord-icon>
+                <h3 class="text-xl font-semibold mt-4 mb-2">Sticker Tool</h3>
+                <p class="text-gray-300">Add fun stickers and emojis to your photos</p>
+            </a>
+            <a href="/watermark-tool" class="tool-card rounded-lg p-6 flex flex-col items-center text-center hover:text-white">
+                <lord-icon
+                    src="https://cdn.lordicon.com/huwchbks.json"
+                    trigger="hover"
+                    colors="primary:#a855f7,secondary:#6366f1"
+                    style="width:64px;height:64px;">
+                </lord-icon>
+                <h3 class="text-xl font-semibold mt-4 mb-2">Watermark Tool</h3>
+                <p class="text-gray-300">Protect your images with custom watermarks</p>
+            </a>
         </div>
     </div>
 <script>
