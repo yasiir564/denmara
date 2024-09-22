@@ -163,53 +163,69 @@
         const resultImage = document.getElementById('resultImage');
         const downloadBtn = document.getElementById('downloadBtn');
         const newImageBtn = document.getElementById('newImageBtn');
-        const removeImage = document.getElementById('removeImage');
         const closeOverlay = document.getElementById('closeOverlay');
-        const colorOptions = document.querySelectorAll('.color-option');
-
+        const removeImageBtn = document.getElementById('removeImage');
         let uploadedImage = null;
 
-        // File input change event
-        fileInput.addEventListener('change', handleFileSelect);
+        // Show loader
+        function showLoader() {
+            loader.classList.remove('hidden');
+        }
 
-        // Drag and drop events
+        // Hide loader
+        function hideLoader() {
+            loader.classList.add('hidden');
+        }
+
+        // Show overlay
+        function showOverlay() {
+            overlay.classList.remove('hidden');
+        }
+
+        // Hide overlay
+        function hideOverlay() {
+            overlay.classList.add('hidden');
+        }
+
+        // File input change event
+        fileInput.addEventListener('change', (event) => {
+            uploadedImage = event.target.files[0];
+            if (uploadedImage) {
+                preview.src = URL.createObjectURL(uploadedImage);
+                imagePreview.classList.remove('hidden');
+            }
+        });
+
+        // Drag and drop functionality
         dropArea.addEventListener('click', () => fileInput.click());
-        dropArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
+
+        dropArea.addEventListener('dragover', (event) => {
+            event.preventDefault();
             dropArea.classList.add('border-indigo-500');
         });
+
         dropArea.addEventListener('dragleave', () => {
             dropArea.classList.remove('border-indigo-500');
         });
-        dropArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropArea.classList.remove('border-indigo-500');
-            handleFileSelect({ target: { files: e.dataTransfer.files } });
-        });
 
-        // Remove image event
-        removeImage.addEventListener('click', (e) => {
-            e.stopPropagation();
-            uploadedImage = null;
-            imagePreview.classList.add('hidden');
-            dropArea.classList.remove('hidden');
-            fileInput.value = '';
-        });
-
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
+        dropArea.addEventListener('drop', (event) => {
+            event.preventDefault();
+            const file = event.dataTransfer.files[0];
             if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    preview.src = e.target.result;
-                    imagePreview.classList.remove('hidden');
-                    dropArea.classList.add('hidden');
-                    uploadedImage = file;
-                };
-                reader.readAsDataURL(file);
+                uploadedImage = file;
+                preview.src = URL.createObjectURL(file);
+                imagePreview.classList.remove('hidden');
             }
-        }
+        });
 
+        // Remove image button functionality
+        removeImageBtn.addEventListener('click', () => {
+            uploadedImage = null;
+            fileInput.value = '';
+            imagePreview.classList.add('hidden');
+        });
+
+        // Remove background
         removeBackgroundBtn.addEventListener('click', async () => {
             if (!uploadedImage) {
                 Swal.fire({
@@ -243,8 +259,16 @@
                     hideLoader();
                     showOverlay();
                 } else {
-                    const error = await response.json();
-                    throw new Error(error.errors[0].title);
+                    const errorResponse = await response.json();
+                    console.error('API Error:', errorResponse);
+                    hideLoader();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: `Remove.bg API error: ${errorResponse.errors[0]?.title || 'Unknown error'}`,
+                        background: '#1f2937',
+                        color: '#e2e8f0'
+                    });
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -252,50 +276,31 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
-                    text: `An error occurred: ${error.message}`,
+                    text: `An unexpected error occurred: ${error.message}`,
                     background: '#1f2937',
                     color: '#e2e8f0'
                 });
             }
         });
 
+        // Close overlay
+        closeOverlay.addEventListener('click', hideOverlay);
+
+        // New image button functionality
+        newImageBtn.addEventListener('click', () => {
+            hideOverlay();
+            fileInput.value = '';
+            uploadedImage = null;
+            imagePreview.classList.add('hidden');
+        });
+
+        // Download result image
         downloadBtn.addEventListener('click', () => {
             const link = document.createElement('a');
             link.href = resultImage.src;
-            link.download = 'removed_background.png';
+            link.download = 'background-removed.png';
             link.click();
         });
-
-        newImageBtn.addEventListener('click', () => {
-            uploadedImage = null;
-            imagePreview.classList.add('hidden');
-            dropArea.classList.remove('hidden');
-            overlay.classList.add('hidden');
-            fileInput.value = '';
-        });
-
-        closeOverlay.addEventListener('click', () => {
-            overlay.classList.add('hidden');
-        });
-
-        colorOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                const color = option.getAttribute('data-color');
-                resultImage.style.backgroundColor = color;
-            });
-        });
-
-        function showLoader() {
-            loader.classList.remove('hidden');
-        }
-
-        function hideLoader() {
-            loader.classList.add('hidden');
-        }
-
-        function showOverlay() {
-            overlay.classList.remove('hidden');
-        }
     </script>
 </body>
 </html>
