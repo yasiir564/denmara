@@ -58,12 +58,30 @@
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
-        .bg-option {
-            transition: all 0.3s ease;
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.3s ease;
         }
-        .bg-option:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+        .result-container {
+            position: relative;
+        }
+        .color-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+        .blur-effect {
+            filter: blur(10px);
         }
     </style>
 </head>
@@ -101,37 +119,30 @@
     </div>
 
     <div id="resultContainer" class="w-full max-w-md mx-auto my-8 hidden animate__animated animate__fadeIn">
-        <img id="resultImage" src="" alt="Result" class="w-full rounded-xl shadow-lg">
-        <div class="mt-4 flex justify-center">
+        <div class="result-container rounded-xl shadow-lg overflow-hidden">
+            <div id="colorOverlay" class="color-overlay"></div>
+            <img id="resultImage" src="" alt="Result" class="w-full">
+        </div>
+        <div class="mt-4 flex justify-center items-center">
             <button id="downloadBtn" class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300 mr-4">
                 <i class="fas fa-download mr-2"></i>
                 Download
             </button>
-            <button id="newImageBtn" class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300">
+            <button id="newImageBtn" class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 mr-4">
                 <i class="fas fa-redo-alt mr-2"></i>
                 New Image
             </button>
+            <button id="toggleBlurBtn" class="bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition duration-300">
+                <i class="fas fa-brush mr-2"></i>
+                Toggle Blur
+            </button>
         </div>
-        <div class="mt-8">
-            <h3 class="text-xl font-semibold mb-4">Try these modern backgrounds:</h3>
-            <div class="grid grid-cols-2 gap-4">
-                <div class="bg-option cursor-pointer rounded-lg overflow-hidden">
-                    <img src="/api/placeholder/200/150" alt="Gradient" class="w-full h-auto">
-                    <p class="text-center py-2 bg-gray-700">Gradient</p>
-                </div>
-                <div class="bg-option cursor-pointer rounded-lg overflow-hidden">
-                    <img src="/api/placeholder/200/150" alt="Abstract" class="w-full h-auto">
-                    <p class="text-center py-2 bg-gray-700">Abstract</p>
-                </div>
-                <div class="bg-option cursor-pointer rounded-lg overflow-hidden">
-                    <img src="/api/placeholder/200/150" alt="Nature" class="w-full h-auto">
-                    <p class="text-center py-2 bg-gray-700">Nature</p>
-                </div>
-                <div class="bg-option cursor-pointer rounded-lg overflow-hidden">
-                    <img src="/api/placeholder/200/150" alt="Cityscape" class="w-full h-auto">
-                    <p class="text-center py-2 bg-gray-700">Cityscape</p>
-                </div>
-            </div>
+        <div class="mt-4 flex justify-center space-x-2">
+            <div class="color-option bg-red-500" data-color="#ef4444"></div>
+            <div class="color-option bg-blue-500" data-color="#3b82f6"></div>
+            <div class="color-option bg-green-500" data-color="#22c55e"></div>
+            <div class="color-option bg-yellow-500" data-color="#eab308"></div>
+            <div class="color-option bg-purple-500" data-color="#a855f7"></div>
         </div>
     </div>
 
@@ -152,11 +163,15 @@
         const loader = document.getElementById('loader');
         const resultContainer = document.getElementById('resultContainer');
         const resultImage = document.getElementById('resultImage');
+        const colorOverlay = document.getElementById('colorOverlay');
         const downloadBtn = document.getElementById('downloadBtn');
         const newImageBtn = document.getElementById('newImageBtn');
         const removeImage = document.getElementById('removeImage');
+        const toggleBlurBtn = document.getElementById('toggleBlurBtn');
+        const colorOptions = document.querySelectorAll('.color-option');
 
         let uploadedImage = null;
+        let isBlurred = false;
 
         // File input change event
         fileInput.addEventListener('change', handleFileSelect);
@@ -268,6 +283,21 @@
             dropArea.classList.remove('hidden');
             resultContainer.classList.add('hidden');
             fileInput.value = '';
+            colorOverlay.style.backgroundColor = 'transparent';
+            isBlurred = false;
+            resultImage.classList.remove('blur-effect');
+        });
+
+        toggleBlurBtn.addEventListener('click', () => {
+            isBlurred = !isBlurred;
+            resultImage.classList.toggle('blur-effect', isBlurred);
+        });
+
+        colorOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const color = option.getAttribute('data-color');
+                colorOverlay.style.backgroundColor = color;
+            });
         });
 
         function showLoader() {
