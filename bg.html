@@ -154,7 +154,7 @@
     </div>
 
     <script>
-       document.addEventListener('DOMContentLoaded', () => {
+      document.addEventListener('DOMContentLoaded', () => {
     const fileInput = document.getElementById('fileInput');
     const dropArea = document.getElementById('dropArea');
     const imagePreview = document.getElementById('imagePreview');
@@ -228,13 +228,19 @@
             return;
         }
 
+        // Show the loader and hide result overlay during processing
         loader.classList.remove('hidden');
+        resultOverlay.classList.add('hidden');
 
         try {
             // Simulate background removal process
             setTimeout(() => {
-                loader.classList.add('hidden');
+                loader.classList.add('hidden'); // Hide the loader when done
+
+                // Replace the image's background removal logic here
                 resultImage.src = preview.src; // Simulate the result after background removal
+
+                // Show the result overlay only after background removal
                 resultOverlay.classList.remove('hidden');
             }, 3000);
         } catch (error) {
@@ -268,6 +274,7 @@
         link.click();
     });
 });
+
  </script>
 </body>
 </html>
