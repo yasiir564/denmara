@@ -1,72 +1,188 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Background Remover Tool</title>
+    <title>Enhanced Background Remover Tool</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        
         body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #0f172a;
+            color: #e2e8f0;
         }
-        .container {
-            text-align: center;
-            background-color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        .gradient-bg {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
         }
-        #imageInput {
-            margin-bottom: 1rem;
+        .hover-scale {
+            transition: transform 0.3s ease-in-out;
         }
-        #removeButton {
-            background-color: #4CAF50;
-            border: none;
-            color: white;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
+        .hover-scale:hover {
+            transform: scale(1.05);
         }
-        #result {
-            margin-top: 1rem;
-            max-width: 100%;
+        .loader {
+            border-top-color: #a855f7;
+            -webkit-animation: spinner 1.5s linear infinite;
+            animation: spinner 1.5s linear infinite;
+        }
+        @-webkit-keyframes spinner {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
+        }
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .blob {
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            background: linear-gradient(45deg, #6366f1 0%, #a855f7 100%);
+            filter: blur(40px);
+        }
+        .image-preview-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>Background Remover Tool</h1>
-        <input type="file" id="imageInput" accept="image/*">
-        <button id="removeButton">Remove Background</button>
-        <div id="result"></div>
+<body class="min-h-screen p-4 relative overflow-x-hidden flex flex-col items-center justify-center">
+    <div class="blob fixed top-0 left-0 w-64 h-64 opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
+    <div class="blob fixed bottom-0 right-0 w-96 h-96 opacity-50 translate-x-1/2 translate-y-1/2"></div>
+    
+    <div class="bg-gray-800 rounded-3xl shadow-2xl w-full max-w-md mx-auto my-8 animate__animated animate__fadeIn relative z-10">
+        <div class="gradient-bg p-8 rounded-t-3xl">
+            <h1 class="text-4xl font-bold text-white text-center">Background Remover</h1>
+            <p class="text-gray-200 text-center mt-2">Remove background with ease</p>
+        </div>
+        
+        <div class="p-8">
+            <div id="dropArea" class="mb-8 flex flex-col items-center justify-center h-40 border-2 border-dashed border-purple-500 rounded-lg cursor-pointer hover:border-indigo-500 transition-colors duration-300">
+                <input type="file" id="fileInput" accept="image/*" class="hidden">
+                <svg class="w-12 h-12 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                </svg>
+                <p class="mt-2 text-sm text-gray-400 text-center">Drag and drop an image here<br>or click to select</p>
+            </div>
+
+            <div id="imagePreview" class="mb-8 hidden animate__animated animate__fadeIn">
+                <div class="image-preview-container p-2 rounded-2xl relative">
+                    <img id="preview" src="" alt="Preview" class="w-full h-40 object-cover rounded-xl">
+                    <button id="removeImage" class="absolute top-4 right-4 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <button id="removeBackgroundBtn" class="w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 rounded-lg hover:from-purple-600 hover:to-indigo-600 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 flex items-center justify-center">
+                <span class="mr-2">Remove Background</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div id="resultContainer" class="w-full max-w-md mx-auto my-8 hidden animate__animated animate__fadeIn">
+        <img id="resultImage" src="" alt="Result" class="w-full rounded-xl shadow-lg">
+        <div class="mt-4 flex justify-center">
+            <button id="downloadBtn" class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300 mr-4">
+                Download
+            </button>
+            <button id="newImageBtn" class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300">
+                Remove Another Background
+            </button>
+        </div>
+    </div>
+
+    <div id="loader" class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-50 overflow-hidden bg-gray-900 opacity-75 flex flex-col items-center justify-center hidden">
+        <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
+        <h2 class="text-center text-white text-xl font-semibold">Removing Background...</h2>
+        <p class="w-1/3 text-center text-white">This may take a few seconds, please don't close this page.</p>
     </div>
 
     <script>
-        const apiKey = 'Hfxgrxi1dsHQU71obUEYUpNE';
-        const removeButton = document.getElementById('removeButton');
-        const imageInput = document.getElementById('imageInput');
-        const resultDiv = document.getElementById('result');
+        const apiKey = 'Hfxgrxi1dsHQU71obUEYUpNE'; // Replace with your actual Remove.bg API key
+        const fileInput = document.getElementById('fileInput');
+        const dropArea = document.getElementById('dropArea');
+        const imagePreview = document.getElementById('imagePreview');
+        const preview = document.getElementById('preview');
+        const removeBackgroundBtn = document.getElementById('removeBackgroundBtn');
+        const loader = document.getElementById('loader');
+        const resultContainer = document.getElementById('resultContainer');
+        const resultImage = document.getElementById('resultImage');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const newImageBtn = document.getElementById('newImageBtn');
+        const removeImage = document.getElementById('removeImage');
 
-        removeButton.addEventListener('click', async () => {
-            const file = imageInput.files[0];
-            if (!file) {
-                alert('Please select an image first.');
+        let uploadedImage = null;
+
+        // File input change event
+        fileInput.addEventListener('change', handleFileSelect);
+
+        // Drag and drop events
+        dropArea.addEventListener('click', () => fileInput.click());
+        dropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropArea.classList.add('border-indigo-500');
+        });
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.classList.remove('border-indigo-500');
+        });
+        dropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropArea.classList.remove('border-indigo-500');
+            handleFileSelect({ target: { files: e.dataTransfer.files } });
+        });
+
+        // Remove image event
+        removeImage.addEventListener('click', (e) => {
+            e.stopPropagation();
+            uploadedImage = null;
+            imagePreview.classList.add('hidden');
+            dropArea.classList.remove('hidden');
+            fileInput.value = '';
+        });
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    preview.src = e.target.result;
+                    imagePreview.classList.remove('hidden');
+                    dropArea.classList.add('hidden');
+                    uploadedImage = file;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        removeBackgroundBtn.addEventListener('click', async () => {
+            if (!uploadedImage) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Oops...',
+                    text: 'Please upload an image first!',
+                    background: '#1f2937',
+                    color: '#e2e8f0'
+                });
                 return;
             }
 
-            const formData = new FormData();
-            formData.append('image_file', file);
+            showLoader();
 
             try {
+                const formData = new FormData();
+                formData.append('image_file', uploadedImage);
+
                 const response = await fetch('https://api.remove.bg/v1.0/removebg', {
                     method: 'POST',
                     headers: {
@@ -78,18 +194,61 @@
                 if (response.ok) {
                     const blob = await response.blob();
                     const url = URL.createObjectURL(blob);
-                    const img = document.createElement('img');
-                    img.src = url;
-                    resultDiv.innerHTML = '';
-                    resultDiv.appendChild(img);
+                    resultImage.src = url;
+                    resultContainer.classList.remove('hidden');
+                    hideLoader();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Background removed successfully.',
+                        background: '#1f2937',
+                        color: '#e2e8f0'
+                    });
                 } else {
                     const error = await response.json();
-                    alert(`Error: ${error.errors[0].title}`);
+                    throw new Error(error.errors[0].title);
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('An error occurred. Please try again.');
+                hideLoader();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: `An error occurred: ${error.message}`,
+                    background: '#1f2937',
+                    color: '#e2e8f0'
+                });
             }
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.href = resultImage.src;
+            link.download = 'removed_background.png';
+            link.click();
+        });
+
+        newImageBtn.addEventListener('click', () => {
+            uploadedImage = null;
+            imagePreview.classList.add('hidden');
+            dropArea.classList.remove('hidden');
+            resultContainer.classList.add('hidden');
+            fileInput.value = '';
+        });
+
+        function showLoader() {
+            loader.classList.remove('hidden');
+        }
+
+        function hideLoader() {
+            loader.classList.add('hidden');
+        }
+
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
         });
     </script>
 </body>
