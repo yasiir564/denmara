@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced Background Remover Tool</title>
+    <title>Background Remover with Color Overlay</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
@@ -40,16 +38,6 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .blob {
-            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-            background: linear-gradient(45deg, #6366f1 0%, #a855f7 100%);
-            filter: blur(40px);
-        }
-        .image-preview-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
         .removing-bg-animation {
             animation: pulse 2s infinite;
         }
@@ -59,8 +47,8 @@
             100% { transform: scale(1); }
         }
         .color-option {
-            width: 30px;
-            height: 30px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             cursor: pointer;
             transition: transform 0.3s ease;
@@ -68,28 +56,31 @@
         .color-option:hover {
             transform: scale(1.1);
         }
-        .result-container {
-            position: relative;
-        }
-        .color-overlay {
-            position: absolute;
+        .overlay {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            opacity: 0.5;
-            transition: opacity 0.3s ease;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
-        .blur-effect {
-            filter: blur(10px);
+        .overlay-content {
+            background-color: #1f2937;
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
         }
     </style>
 </head>
-<body class="min-h-screen p-4 relative overflow-x-hidden flex flex-col items-center justify-center">
-    <div class="blob fixed top-0 left-0 w-64 h-64 opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
-    <div class="blob fixed bottom-0 right-0 w-96 h-96 opacity-50 translate-x-1/2 translate-y-1/2"></div>
-    
-    <div class="bg-gray-800 rounded-3xl shadow-2xl w-full max-w-md mx-auto my-8 animate__animated animate__fadeIn relative z-10">
+<body class="min-h-screen p-4 flex flex-col items-center justify-center">
+    <div class="bg-gray-800 rounded-3xl shadow-2xl w-full max-w-md mx-auto my-8 animate__animated animate__fadeIn">
         <div class="gradient-bg p-8 rounded-t-3xl">
             <h1 class="text-4xl font-bold text-white text-center">Background Remover</h1>
             <p class="text-gray-200 text-center mt-2">Remove background with ease</p>
@@ -103,7 +94,7 @@
             </div>
 
             <div id="imagePreview" class="mb-8 hidden animate__animated animate__fadeIn">
-                <div class="image-preview-container p-2 rounded-2xl relative">
+                <div class="p-2 rounded-2xl relative bg-gray-700">
                     <img id="preview" src="" alt="Preview" class="w-full h-40 object-cover rounded-xl">
                     <button id="removeImage" class="absolute top-4 right-4 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 focus:outline-none">
                         <i class="fas fa-times"></i>
@@ -118,31 +109,38 @@
         </div>
     </div>
 
-    <div id="resultContainer" class="w-full max-w-md mx-auto my-8 hidden animate__animated animate__fadeIn">
-        <div class="result-container rounded-xl shadow-lg overflow-hidden">
-            <div id="colorOverlay" class="color-overlay"></div>
-            <img id="resultImage" src="" alt="Result" class="w-full">
-        </div>
-        <div class="mt-4 flex justify-center items-center">
-            <button id="downloadBtn" class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300 mr-4">
-                <i class="fas fa-download mr-2"></i>
-                Download
-            </button>
-            <button id="newImageBtn" class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 mr-4">
-                <i class="fas fa-redo-alt mr-2"></i>
-                New Image
-            </button>
-            <button id="toggleBlurBtn" class="bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition duration-300">
-                <i class="fas fa-brush mr-2"></i>
-                Toggle Blur
-            </button>
-        </div>
-        <div class="mt-4 flex justify-center space-x-2">
-            <div class="color-option bg-red-500" data-color="#ef4444"></div>
-            <div class="color-option bg-blue-500" data-color="#3b82f6"></div>
-            <div class="color-option bg-green-500" data-color="#22c55e"></div>
-            <div class="color-option bg-yellow-500" data-color="#eab308"></div>
-            <div class="color-option bg-purple-500" data-color="#a855f7"></div>
+    <div id="overlay" class="overlay hidden animate__animated animate__fadeIn">
+        <div class="overlay-content">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold">Choose a Background Color</h2>
+                <button id="closeOverlay" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <div class="result-container mb-6">
+                <img id="resultImage" src="" alt="Result" class="w-full rounded-xl shadow-lg">
+            </div>
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <div class="color-option bg-red-500" data-color="#ef4444"></div>
+                <div class="color-option bg-blue-500" data-color="#3b82f6"></div>
+                <div class="color-option bg-green-500" data-color="#22c55e"></div>
+                <div class="color-option bg-yellow-500" data-color="#eab308"></div>
+                <div class="color-option bg-purple-500" data-color="#a855f7"></div>
+                <div class="color-option bg-pink-500" data-color="#ec4899"></div>
+                <div class="color-option bg-indigo-500" data-color="#6366f1"></div>
+                <div class="color-option bg-teal-500" data-color="#14b8a6"></div>
+                <div class="color-option bg-orange-500" data-color="#f97316"></div>
+            </div>
+            <div class="flex justify-center space-x-4">
+                <button id="downloadBtn" class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300">
+                    <i class="fas fa-download mr-2"></i>
+                    Download
+                </button>
+                <button id="newImageBtn" class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300">
+                    <i class="fas fa-redo-alt mr-2"></i>
+                    New Image
+                </button>
+            </div>
         </div>
     </div>
 
@@ -161,17 +159,15 @@
         const preview = document.getElementById('preview');
         const removeBackgroundBtn = document.getElementById('removeBackgroundBtn');
         const loader = document.getElementById('loader');
-        const resultContainer = document.getElementById('resultContainer');
+        const overlay = document.getElementById('overlay');
         const resultImage = document.getElementById('resultImage');
-        const colorOverlay = document.getElementById('colorOverlay');
         const downloadBtn = document.getElementById('downloadBtn');
         const newImageBtn = document.getElementById('newImageBtn');
         const removeImage = document.getElementById('removeImage');
-        const toggleBlurBtn = document.getElementById('toggleBlurBtn');
+        const closeOverlay = document.getElementById('closeOverlay');
         const colorOptions = document.querySelectorAll('.color-option');
 
         let uploadedImage = null;
-        let isBlurred = false;
 
         // File input change event
         fileInput.addEventListener('change', handleFileSelect);
@@ -244,15 +240,8 @@
                     const blob = await response.blob();
                     const url = URL.createObjectURL(blob);
                     resultImage.src = url;
-                    resultContainer.classList.remove('hidden');
                     hideLoader();
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: 'Background removed successfully.',
-                        background: '#1f2937',
-                        color: '#e2e8f0'
-                    });
+                    showOverlay();
                 } else {
                     const error = await response.json();
                     throw new Error(error.errors[0].title);
@@ -281,22 +270,18 @@
             uploadedImage = null;
             imagePreview.classList.add('hidden');
             dropArea.classList.remove('hidden');
-            resultContainer.classList.add('hidden');
+            overlay.classList.add('hidden');
             fileInput.value = '';
-            colorOverlay.style.backgroundColor = 'transparent';
-            isBlurred = false;
-            resultImage.classList.remove('blur-effect');
         });
 
-        toggleBlurBtn.addEventListener('click', () => {
-            isBlurred = !isBlurred;
-            resultImage.classList.toggle('blur-effect', isBlurred);
+        closeOverlay.addEventListener('click', () => {
+            overlay.classList.add('hidden');
         });
 
         colorOptions.forEach(option => {
             option.addEventListener('click', () => {
                 const color = option.getAttribute('data-color');
-                colorOverlay.style.backgroundColor = color;
+                resultImage.style.backgroundColor = color;
             });
         });
 
@@ -308,12 +293,9 @@
             loader.classList.add('hidden');
         }
 
-        // Initialize AOS
-        AOS.init({
-            duration: 1000,
-            once: true,
-            offset: 100
-        });
+        function showOverlay() {
+            overlay.classList.remove('hidden');
+        }
     </script>
 </body>
 </html>
