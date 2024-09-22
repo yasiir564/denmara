@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Background Remover Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 80%;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .upload-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #imageUpload {
+            display: none;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .image-preview {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .image-preview img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+        }
+        #status {
+            text-align: center;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .background-options {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #backgroundOptions {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .bg-option {
+            width: 50px;
+            height: 50px;
+            margin: 5px;
+            cursor: pointer;
+            border: 2px solid #ddd;
+        }
+        #downloadBtn {
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Background Remover Tool</h1>
+        <div class="upload-section">
+            <input type="file" id="imageUpload" accept="image/*">
+            <button id="uploadBtn">Upload Image</button>
+        </div>
+        <div id="status"></div>
+        <div class="image-preview">
+            <img id="originalImage" src="" alt="Original Image">
+            <img id="processedImage" src="" alt="Processed Image">
+        </div>
+        <div class="background-options">
+            <h3>Choose a new background:</h3>
+            <div id="backgroundOptions"></div>
+        </div>
+        <button id="downloadBtn" disabled>Download Processed Image</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const imageUpload = document.getElementById('imageUpload');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const originalImage = document.getElementById('originalImage');
+            const processedImage = document.getElementById('processedImage');
+            const backgroundOptions = document.getElementById('backgroundOptions');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const statusElement = document.getElementById('status');
+
+            let currentProcessedImageUrl = '';
+
+            uploadBtn.addEventListener('click', () => imageUpload.click());
+
+            imageUpload.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        originalImage.src = e.target.result;
+                        removeBackground(e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            async function removeBackground(imageData) {
+                statusElement.textContent = 'Processing image...';
+                downloadBtn.disabled = true;
+
+                try {
+                    const response = await fetch('/remove-background', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ image: imageData })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const data = await response.json();
+                    processedImage.src = data.processedImage;
+                    currentProcessedImageUrl = data.processedImage;
+                    statusElement.textContent = 'Background removed successfully!';
+                    downloadBtn.disabled = false;
+                    generateBackgroundOptions();
+                } catch (error) {
+                    console.error('Error:', error);
+                    statusElement.textContent = 'Error processing image. Please try again.';
+                }
+            }
+
+            function generateBackgroundOptions() {
+                const colors = ['#ffffff', '#000000', '#ff0000', '#00ff00', '#0000ff', '#ffff00'];
+                backgroundOptions.innerHTML = '';
+                colors.forEach(color => {
+                    const div = document.createElement('div');
+                    div.className = 'bg-option';
+                    div.style.backgroundColor = color;
+                    div.addEventListener('click', () => changeBackground(color));
+                    backgroundOptions.appendChild(div);
+                });
+            }
+
+            async function changeBackground(color) {
+                statusElement.textContent = 'Changing background...';
+                downloadBtn.disabled = true;
+
+                try {
+                    const response = await fetch('/change-background', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ 
+                            image: currentProcessedImageUrl, 
+                            backgroundColor: color 
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const data = await response.json();
+                    processedImage.src = data.processedImage;
+                    currentProcessedImageUrl = data.processedImage;
+                    statusElement.textContent = 'Background changed successfully!';
+                    downloadBtn.disabled = false;
+                } catch (error) {
+                    console.error('Error:', error);
+                    statusElement.textContent = 'Error changing background. Please try again.';
+                }
+            }
+
+            downloadBtn.addEventListener('click', () => {
+                if (currentProcessedImageUrl) {
+                    const link = document.createElement('a');
+                    link.href = currentProcessedImageUrl;
+                    link.download = 'processed_image.png';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
