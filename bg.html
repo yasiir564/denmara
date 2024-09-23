@@ -58,16 +58,6 @@
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
-        .color-option {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-        .color-option:hover {
-            transform: scale(1.1);
-        }
         .result-container {
             position: relative;
             overflow: hidden;
@@ -108,6 +98,21 @@
         .color-swatch.active {
             box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #3b82f6;
         }
+        .upload-loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+        .checkerboard-bg {
+            background-image: linear-gradient(45deg, #808080 25%, transparent 25%),
+                              linear-gradient(-45deg, #808080 25%, transparent 25%),
+                              linear-gradient(45deg, transparent 75%, #808080 75%),
+                              linear-gradient(-45deg, transparent 75%, #808080 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
     </style>
 </head>
 <body class="min-h-screen p-4 relative overflow-x-hidden flex flex-col items-center justify-center">
@@ -121,10 +126,13 @@
         </div>
         
         <div class="p-8">
-            <div id="dropArea" class="mb-8 flex flex-col items-center justify-center h-40 border-2 border-dashed border-purple-500 rounded-lg cursor-pointer hover:border-indigo-500 transition-colors duration-300">
+            <div id="dropArea" class="mb-8 flex flex-col items-center justify-center h-40 border-2 border-dashed border-purple-500 rounded-lg cursor-pointer hover:border-indigo-500 transition-colors duration-300 relative">
                 <input type="file" id="fileInput" accept="image/*" class="hidden">
                 <i class="fas fa-cloud-upload-alt text-4xl text-purple-500 mb-2"></i>
                 <p class="mt-2 text-sm text-gray-400 text-center">Drag and drop an image here<br>or click to select</p>
+                <div class="upload-loader">
+                    <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
+                </div>
             </div>
 
             <div id="imagePreview" class="mb-8 hidden animate__animated animate__fadeIn">
@@ -144,7 +152,7 @@
     </div>
 
     <div id="resultContainer" class="w-full max-w-md mx-auto my-8 hidden animate__animated animate__fadeIn">
-        <div class="result-container">
+        <div class="result-container checkerboard-bg">
             <div id="colorOverlay" class="color-overlay"></div>
             <img id="resultImage" src="" alt="Result" class="w-full">
         </div>
@@ -188,6 +196,7 @@
         const removeImage = document.getElementById('removeImage');
         const toggleBlurBtn = document.getElementById('toggleBlurBtn');
         const colorPalette = document.getElementById('colorPalette');
+        const uploadLoader = document.querySelector('.upload-loader');
 
         let uploadedImage = null;
         let isBlurred = false;
@@ -222,12 +231,14 @@
         function handleFileSelect(event) {
             const file = event.target.files[0];
             if (file) {
+                uploadLoader.style.display = 'block';
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     preview.src = e.target.result;
                     imagePreview.classList.remove('hidden');
                     dropArea.classList.add('hidden');
                     uploadedImage = file;
+                    uploadLoader.style.display = 'none';
                 };
                 reader.readAsDataURL(file);
             }
@@ -277,7 +288,9 @@
                     extractColors(url);
                     
                     // Scroll to the result container
-                    resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    setTimeout(() => {
+                        resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 100);
                 } else {
                     const error = await response.json();
                     throw new Error(error.errors[0].title);
@@ -289,109 +302,104 @@
                     icon: 'error',
                     title: 'Oops...',
                     text: `An error occurred: ${error.message}`,
-                    background: '#1f2937',
-                    color: '#e2e8f0'
-                });
-            }
+                     background: '#1f2937',
+            color: '#e2e8f0'
         });
+    }
+});
 
-        downloadBtn.addEventListener('click', () => {
-            const link = document.createElement('a');
-            link.href = resultImage.src;
-            link.download = 'removed_background.png';
-            link.click();
-        });
+downloadBtn.addEventListener('click', () => {
+    const link = document.createElement('a');
+    link.href = resultImage.src;
+    link.download = 'removed_background.png';
+    link.click();
+});
 
-        newImageBtn.addEventListener('click', () => {
-            uploadedImage = null;
-            imagePreview.classList.add('hidden');
-            dropArea.classList.remove('hidden');
-            resultContainer.classList.add('hidden');
-            fileInput.value = '';
-            colorOverlay.style.backgroundColor = 'transparent';
-            isBlurred = false;
-            resultImage.classList.remove('blur-effect');
-            colorPalette.innerHTML = '';
-        });
+newImageBtn.addEventListener('click', () => {
+    uploadedImage = null;
+    imagePreview.classList.add('hidden');
+    dropArea.classList.remove('hidden');
+    resultContainer.classList.add('hidden');
+    fileInput.value = '';
+});
 
-        toggleBlurBtn.addEventListener('click', () => {
-            isBlurred = !isBlurred;
-            resultImage.classList.toggle('blur-effect', isBlurred);
-        });
+toggleBlurBtn.addEventListener('click', () => {
+    isBlurred = !isBlurred;
+    resultImage.classList.toggle('blur-effect', isBlurred);
+});
 
-         function showLoader() {
-            loader.classList.remove('hidden');
+function showLoader() {
+    loader.classList.remove('hidden');
+}
+
+function hideLoader() {
+    loader.classList.add('hidden');
+}
+
+function extractColors(imageUrl) {
+    const img = new Image();
+    img.crossOrigin = "Anonymous";
+    img.src = imageUrl;
+    img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0, img.width, img.height);
+        
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const pixels = imageData.data;
+        const colorCounts = {};
+        
+        for (let i = 0; i < pixels.length; i += 4) {
+            const r = pixels[i];
+            const g = pixels[i + 1];
+            const b = pixels[i + 2];
+            const a = pixels[i + 3];
+            
+            if (a === 0) continue; // Skip transparent pixels
+            
+            const color = `rgb(${r},${g},${b})`;
+            colorCounts[color] = (colorCounts[color] || 0) + 1;
         }
+        
+        const sortedColors = Object.entries(colorCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5)
+            .map(entry => entry[0]);
+        
+        createColorPalette(sortedColors);
+    };
+}
 
-        function hideLoader() {
-            loader.classList.add('hidden');
-        }
-
-        async function extractColors(imageUrl) {
-            const img = new Image();
-            img.crossOrigin = 'Anonymous';
-            img.src = imageUrl;
-            
-            await new Promise(resolve => img.onload = resolve);
-            
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            ctx.drawImage(img, 0, 0, img.width, img.height);
-            
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const pixels = imageData.data;
-            
-            const colorCounts = {};
-            const sampleSize = 10; // Sample every 10th pixel for performance
-            
-            for (let i = 0; i < pixels.length; i += 4 * sampleSize) {
-                const r = pixels[i];
-                const g = pixels[i + 1];
-                const b = pixels[i + 2];
-                const a = pixels[i + 3];
-                
-                // Skip fully transparent pixels
-                if (a === 0) continue;
-                
-                const rgb = `${r},${g},${b}`;
-                colorCounts[rgb] = (colorCounts[rgb] || 0) + 1;
-            }
-            
-            const sortedColors = Object.entries(colorCounts)
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 8) // Get top 8 colors
-                .map(([rgb]) => `rgb(${rgb})`);
-            
-            createColorPalette(sortedColors);
-        }
-
-        function createColorPalette(colors) {
-            colorPalette.innerHTML = '';
-            colors.forEach((color, index) => {
-                const swatch = document.createElement('div');
-                swatch.className = 'color-swatch';
-                swatch.style.backgroundColor = color;
-                swatch.addEventListener('click', () => {
-                    colorOverlay.style.backgroundColor = color;
-                    document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
-                    swatch.classList.add('active');
-                });
-                if (index === 0) {
-                    swatch.classList.add('active');
-                    colorOverlay.style.backgroundColor = color;
-                }
-                colorPalette.appendChild(swatch);
-            });
-        }
-
-        // Initialize AOS
-        AOS.init({
-            duration: 1000,
-            once: true,
-            offset: 100
+function createColorPalette(colors) {
+    colorPalette.innerHTML = '';
+    colors.forEach((color, index) => {
+        const swatch = document.createElement('div');
+        swatch.className = 'color-swatch';
+        swatch.style.backgroundColor = color;
+        swatch.addEventListener('click', () => {
+            colorOverlay.style.backgroundColor = color;
+            document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+            swatch.classList.add('active');
         });
-    </script>
+        if (index === 0) {
+            swatch.classList.add('active');
+            colorOverlay.style.backgroundColor = color;
+        }
+        colorPalette.appendChild(swatch);
+    });
+}
+
+// Initialize AOS
+AOS.init();
+
+// Add this at the end to ensure all elements are loaded before applying animations
+document.addEventListener('DOMContentLoaded', (event) => {
+    document.querySelectorAll('.animate__animated').forEach((element) => {
+        element.classList.add('animate__fadeIn');
+    });
+});
+</script>
 </body>
 </html>
