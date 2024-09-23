@@ -70,6 +70,9 @@
         }
         .result-container {
             position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
         .color-overlay {
             position: absolute;
@@ -79,9 +82,31 @@
             height: 100%;
             opacity: 0.5;
             transition: opacity 0.3s ease;
+            mix-blend-mode: multiply;
         }
         .blur-effect {
             filter: blur(10px);
+        }
+        .color-palette {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .color-swatch {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            border: 2px solid white;
+        }
+        .color-swatch:hover {
+            transform: scale(1.1);
+        }
+        .color-swatch.active {
+            box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #3b82f6;
         }
     </style>
 </head>
@@ -119,7 +144,7 @@
     </div>
 
     <div id="resultContainer" class="w-full max-w-md mx-auto my-8 hidden animate__animated animate__fadeIn">
-        <div class="result-container rounded-xl shadow-lg overflow-hidden">
+        <div class="result-container">
             <div id="colorOverlay" class="color-overlay"></div>
             <img id="resultImage" src="" alt="Result" class="w-full">
         </div>
@@ -137,13 +162,7 @@
                 Toggle Blur
             </button>
         </div>
-        <div class="mt-4 flex justify-center space-x-2">
-            <div class="color-option bg-red-500" data-color="#ef4444"></div>
-            <div class="color-option bg-blue-500" data-color="#3b82f6"></div>
-            <div class="color-option bg-green-500" data-color="#22c55e"></div>
-            <div class="color-option bg-yellow-500" data-color="#eab308"></div>
-            <div class="color-option bg-purple-500" data-color="#a855f7"></div>
-        </div>
+        <div id="colorPalette" class="color-palette mt-4"></div>
     </div>
 
     <div id="loader" class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-50 overflow-hidden bg-gray-900 opacity-75 flex flex-col items-center justify-center hidden">
@@ -168,7 +187,7 @@
         const newImageBtn = document.getElementById('newImageBtn');
         const removeImage = document.getElementById('removeImage');
         const toggleBlurBtn = document.getElementById('toggleBlurBtn');
-        const colorOptions = document.querySelectorAll('.color-option');
+        const colorPalette = document.getElementById('colorPalette');
 
         let uploadedImage = null;
         let isBlurred = false;
@@ -253,6 +272,12 @@
                         background: '#1f2937',
                         color: '#e2e8f0'
                     });
+                    
+                    // Extract colors from the image and create color palette
+                    extractColors(url);
+                    
+                    // Scroll to the result container
+                    resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 } else {
                     const error = await response.json();
                     throw new Error(error.errors[0].title);
@@ -286,6 +311,7 @@
             colorOverlay.style.backgroundColor = 'transparent';
             isBlurred = false;
             resultImage.classList.remove('blur-effect');
+            colorPalette.innerHTML = '';
         });
 
         toggleBlurBtn.addEventListener('click', () => {
@@ -293,19 +319,71 @@
             resultImage.classList.toggle('blur-effect', isBlurred);
         });
 
-        colorOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                const color = option.getAttribute('data-color');
-                colorOverlay.style.backgroundColor = color;
-            });
-        });
-
-        function showLoader() {
+         function showLoader() {
             loader.classList.remove('hidden');
         }
 
         function hideLoader() {
             loader.classList.add('hidden');
+        }
+
+        async function extractColors(imageUrl) {
+            const img = new Image();
+            img.crossOrigin = 'Anonymous';
+            img.src = imageUrl;
+            
+            await new Promise(resolve => img.onload = resolve);
+            
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0, img.width, img.height);
+            
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const pixels = imageData.data;
+            
+            const colorCounts = {};
+            const sampleSize = 10; // Sample every 10th pixel for performance
+            
+            for (let i = 0; i < pixels.length; i += 4 * sampleSize) {
+                const r = pixels[i];
+                const g = pixels[i + 1];
+                const b = pixels[i + 2];
+                const a = pixels[i + 3];
+                
+                // Skip fully transparent pixels
+                if (a === 0) continue;
+                
+                const rgb = `${r},${g},${b}`;
+                colorCounts[rgb] = (colorCounts[rgb] || 0) + 1;
+            }
+            
+            const sortedColors = Object.entries(colorCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 8) // Get top 8 colors
+                .map(([rgb]) => `rgb(${rgb})`);
+            
+            createColorPalette(sortedColors);
+        }
+
+        function createColorPalette(colors) {
+            colorPalette.innerHTML = '';
+            colors.forEach((color, index) => {
+                const swatch = document.createElement('div');
+                swatch.className = 'color-swatch';
+                swatch.style.backgroundColor = color;
+                swatch.addEventListener('click', () => {
+                    colorOverlay.style.backgroundColor = color;
+                    document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+                    swatch.classList.add('active');
+                });
+                if (index === 0) {
+                    swatch.classList.add('active');
+                    colorOverlay.style.backgroundColor = color;
+                }
+                colorPalette.appendChild(swatch);
+            });
         }
 
         // Initialize AOS
