@@ -112,35 +112,48 @@
             </div>
         </div>
     </footer>
+    <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyCCHwRT-Nj3GfPZD-If2P7iMajPjAB9RJA",
+    authDomain: "quran-pro-c1df1.firebaseapp.com",
+    projectId: "quran-pro-c1df1",
+    storageBucket: "quran-pro-c1df1.appspot.com",
+    messagingSenderId: "782064856596",
+    appId: "1:782064856596:web:3c11c7a0186a2923bac101",
+    measurementId: "G-RFVGMM8VYQ"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
 
     <script type="module">
         // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-analytics.js";
-        import { 
-            getAuth, 
-            GoogleAuthProvider, 
-            OAuthProvider, 
-            signInWithPopup, 
-            isSignInWithEmailLink, 
-            signInWithEmailLink, 
-            sendSignInLinkToEmail 
-        } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, OAuthProvider, signInWithPopup, isSignInWithEmailLink, signInWithEmailLink, sendSignInLinkToEmail } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
         // Your web app's Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyB3B371U-rRCQRPKNLoCjCcsxN2_PW0K0s",
-            authDomain: "denmara-de138.firebaseapp.com",
-            projectId: "denmara-de138",
-            storageBucket: "denmara-de138.appspot.com",
-            messagingSenderId: "38873058291",
-            appId: "1:38873058291:web:f3891630c469d0e6696086",
-            measurementId: "G-Y4XP9RSQKK"
+            apiKey: "AIzaSyCCHwRT-Nj3GfPZD-If2P7iMajPjAB9RJA",
+            authDomain: "quran-pro-c1df1.firebaseapp.com",
+            projectId: "quran-pro-c1df1",
+            storageBucket: "quran-pro-c1df1.appspot.com",
+            messagingSenderId: "782064856596",
+            appId: "1:782064856596:web:3c11c7a0186a2923bac101",
+            measurementId: "G-RFVGMM8VYQ"
         };
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
         const auth = getAuth(app);
 
         // Redirect if user is already signed in
