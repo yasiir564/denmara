@@ -453,6 +453,11 @@
 
         let uploadedImage = null;
 
+          const userAvatar = localStorage.getItem('userAvatar');
+        if (userAvatar) {
+            loginText.innerHTML = `<img src="${userAvatar}" alt="User Avatar" class="w-8 h-8 rounded-full">`;
+        }
+
         // File input change event
         fileInput.addEventListener('change', handleFileSelect);
 
