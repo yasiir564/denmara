@@ -9,7 +9,7 @@
     <script src="https://cdn.lordicon.com/bhenfmcm.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
-    <meta name="google-signin-client_id" content="782064856596-p1tgc3mb60lh2l9afh7r8sqe6kvqpnnu.apps.googleusercontent.com">
+    <meta name="google-signin-client_id" content="38873058291-ksjhcf7rbt13q4gvccf74rjpk2f91vvr.apps.googleusercontent.com">
     <script src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
@@ -114,21 +114,33 @@
     </footer>
 
     <script type="module">
-        // Firebase configuration and authentication logic
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, OAuthProvider, signInWithPopup, isSignInWithEmailLink, signInWithEmailLink, sendSignInLinkToEmail } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-analytics.js";
+        import { 
+            getAuth, 
+            GoogleAuthProvider, 
+            OAuthProvider, 
+            signInWithPopup, 
+            isSignInWithEmailLink, 
+            signInWithEmailLink, 
+            sendSignInLinkToEmail 
+        } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
+        // Your web app's Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyCCHwRT-Nj3GfPZD-If2P7iMajPjAB9RJA",
-            authDomain: "quran-pro-c1df1.firebaseapp.com",
-            projectId: "quran-pro-c1df1",
-            storageBucket: "quran-pro-c1df1.appspot.com",
-            messagingSenderId: "782064856596",
-            appId: "1:782064856596:web:3c11c7a0186a2923bac101",
-            measurementId: "G-RFVGMM8VYQ"
+            apiKey: "AIzaSyB3B371U-rRCQRPKNLoCjCcsxN2_PW0K0s",
+            authDomain: "denmara-de138.firebaseapp.com",
+            projectId: "denmara-de138",
+            storageBucket: "denmara-de138.appspot.com",
+            messagingSenderId: "38873058291",
+            appId: "1:38873058291:web:f3891630c469d0e6696086",
+            measurementId: "G-Y4XP9RSQKK"
         };
 
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
         const auth = getAuth(app);
 
         // Redirect if user is already signed in
@@ -138,44 +150,37 @@
             }
         });
 
+        // Check if the user is signing in with email link
         if (isSignInWithEmailLink(auth, window.location.href)) {
-            const email = localStorage.getItem('emailForSignIn');
-            if (email) {
-                signInWithEmailLink(auth, email, window.location.href)
-                    .then((result) => {
-                        localStorage.removeItem('emailForSignIn');
-                        storeUserDataAndRedirect(result.user);
-                    })
-                    .catch((error) => {
-                        swal("Error", "Error verifying email: " + error.message, "error");
-                    });
-            } else {
-                swal("Error", "No email found in local storage for sign-in.", "error");
+            let email = localStorage.getItem('emailForSignIn');
+            if (!email) {
+                email = window.prompt('Please provide your email for confirmation');
             }
+            signInWithEmailLink(auth, email, window.location.href)
+                .then((result) => {
+                    localStorage.removeItem('emailForSignIn');
+                    storeUserDataAndRedirect(result.user);
+                })
+                .catch(handleAuthError);
         }
 
+        // Google Sign-In
         document.getElementById('google-login-button').addEventListener('click', () => {
             const provider = new GoogleAuthProvider();
             signInWithPopup(auth, provider)
-                .then((result) => {
-                    storeUserDataAndRedirect(result.user);
-                })
-                .catch((error) => {
-                    swal("Error", "Error signing in with Google: " + error.message, "error");
-                });
+                .then((result) => storeUserDataAndRedirect(result.user))
+                .catch(handleAuthError);
         });
 
+        // Apple Sign-In
         document.getElementById('apple-login-button').addEventListener('click', () => {
             const provider = new OAuthProvider('apple.com');
             signInWithPopup(auth, provider)
-                .then((result) => {
-                    storeUserDataAndRedirect(result.user);
-                })
-                .catch((error) => {
-                    swal("Error", "Error signing in with Apple: " + error.message, "error");
-                });
+                .then((result) => storeUserDataAndRedirect(result.user))
+                .catch(handleAuthError);
         });
 
+        // Email Link Sign-In
         document.getElementById('email-login-button').addEventListener('click', () => {
             swal({
                 title: "Sign in with Email",
@@ -199,7 +204,7 @@
             })
             .catch(error => {
                 if (error) {
-                    swal("Error", "Error sending activation link: " + error.message, "error");
+                    handleAuthError(error);
                 } else {
                     swal.stopLoading();
                     swal.close();
@@ -222,6 +227,17 @@
             .then(() => {
                 window.location.href = "profile.html";
             });
+        }
+
+        function handleAuthError(error) {
+            console.error("Authentication error:", error);
+            let errorMessage = "An error occurred during authentication. Please try again.";
+            if (error.code === 'auth/account-exists-with-different-credential') {
+                errorMessage = "An account already exists with the same email address but different sign-in credentials. Try signing in with a different method.";
+            } else if (error.code === 'auth/popup-closed-by-user') {
+                errorMessage = "The sign-in popup was closed before completing the sign-in process. Please try again.";
+            }
+            swal("Error", errorMessage, "error");
         }
     </script>
 </body>
