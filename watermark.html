@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,84 +13,27 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #0f172a;
             color: #e2e8f0;
         }
-
-        .gradient-bg {
-            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-        }
-
-        .hover-scale {
-            transition: transform 0.3s ease-in-out;
-        }
-
-        .hover-scale:hover {
-            transform: scale(1.05);
-        }
-
-        .drag-drop-area {
-            border: 2px dashed #a855f7;
-            transition: all 0.3s ease;
-        }
-
-        .drag-drop-area.dragover {
-            background-color: rgba(168, 85, 247, 0.1);
-            border-color: #6366f1;
-        }
-
-        .image-preview-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .watermark-options {
-            margin-top: 20px;
-        }
-
-        .image-preview-container img {
-            object-fit: contain;
-        }
-
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-
-        .overlay {
-            background-color: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-        }
-
-        #watermarkPosition {
-            background-color: #6366f1;
-            color: #fff;
-            padding: 0.5rem;
-            border-radius: 5px;
-        }
-
-        .footer a:hover {
-            color: #a855f7;
-        }
+        /* Additional styling */
+        .hover-scale:hover { transform: scale(1.05); }
+        .image-preview-container { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
+        .overlay { background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); }
+        .drag-drop-area { border: 2px dashed #a855f7; transition: all 0.3s ease; }
+        .drag-drop-area.dragover { background-color: rgba(168, 85, 247, 0.1); border-color: #6366f1; }
     </style>
 </head>
-
-<body class="min-h-screen p-4 relative overflow-x-hidden scrollbar-hide flex flex-col">
+<body class="min-h-screen p-4 relative overflow-x-hidden flex flex-col">
     <header class="header fixed top-0 left-0 right-0 z-50 py-4 px-6">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
             <a href="/" class="flex items-center">
                 <img src="Denmara__1_-removebg-preview.png" alt="Denmara Logo" style="width:70px; height:70px;">
                 <span class="ml-2 text-2xl font-bold text-white">Denmara</span>
             </a>
-            <a href="/login.html" class="text-white hover:text-purple-400 transition duration-300">Login</a>
+            <a href="/login.html" id="loginText" class="text-white hover:text-purple-400 transition duration-300">Login</a>
         </div>
     </header>
 
@@ -103,66 +45,41 @@
             </div>
 
             <div class="p-8">
-                <!-- Drag and Drop Area -->
                 <div id="dragDropArea" class="mb-8 flex flex-col items-center justify-center h-40 drag-drop-area rounded-lg cursor-pointer">
                     <input type="file" id="fileInput" accept="image/*" class="hidden">
-                    <lord-icon
-                        src="https://cdn.lordicon.com/nxooksci.json"
-                        trigger="hover"
-                        colors="primary:#a855f7,secondary:#6366f1"
-                        style="width:64px;height:64px;">
-                    </lord-icon>
+                    <lord-icon src="https://cdn.lordicon.com/nxooksci.json" trigger="hover" colors="primary:#a855f7,secondary:#6366f1" style="width:64px;height:64px;"></lord-icon>
                     <p class="mt-2 text-sm text-gray-400 text-center">Choose files or<br>Drag and Drop here!</p>
                 </div>
 
-                <!-- Image Preview -->
                 <div id="imagePreview" class="mb-8 hidden animate__animated animate__fadeIn">
-                    <div class="image-preview-container p-2 rounded-2xl cursor-pointer relative">
+                    <div class="image-preview-container p-2 rounded-2xl cursor-pointer relative" id="previewContainer">
                         <img id="preview" src="" alt="Preview" class="w-full h-40 object-cover rounded-xl">
+                        <button id="deleteImage" class="absolute top-4 right-4 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 focus:outline-none">Delete</button>
                     </div>
                     <p class="text-center text-sm text-gray-400 mt-2">Preview (Click to enlarge)</p>
                 </div>
 
-                <!-- Watermark Text -->
                 <div class="mb-6 animate__animated animate__fadeIn">
                     <label for="watermarkText" class="block mb-2 text-gray-300">Watermark Text:</label>
-                    <input type="text" id="watermarkText" class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="Enter watermark text">
+                    <input type="text" id="watermarkText" class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg" placeholder="Enter watermark text">
                 </div>
 
-                <!-- Watermark Color -->
                 <div class="mb-6 animate__animated animate__fadeIn">
                     <label for="watermarkColor" class="block mb-2 text-gray-300">Watermark Color:</label>
-                    <input type="color" id="watermarkColor" class="w-full h-10 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600" value="#ffffff">
+                    <input type="color" id="watermarkColor" class="w-full h-10 bg-gray-700 border border-gray-600 rounded-lg" value="#ffffff">
                 </div>
 
-                <!-- Watermark Opacity -->
                 <div class="mb-6 animate__animated animate__fadeIn">
                     <label for="watermarkOpacity" class="block mb-2 text-gray-300">Watermark Opacity:</label>
                     <input type="range" id="watermarkOpacity" class="w-full" min="0" max="1" step="0.1" value="0.5">
                 </div>
 
-                <!-- Watermark Logo -->
-                <div class="mb-6 animate__animated animate__fadeIn">
-                    <label for="watermarkLogo" class="block mb-2 text-gray-300">Upload Watermark Logo:</label>
-                    <input type="file" id="watermarkLogo" class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg">
+                <div class="flex space-x-2">
+                    <button id="applyWatermarkBtn" class="flex-grow bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 rounded-lg">Apply Watermark</button>
+                    <button id="resetBtn" class="flex-grow bg-gray-600 text-white py-3 rounded-lg">Reset</button>
                 </div>
 
-                <!-- Watermark Position -->
-                <div class="mb-6 animate__animated animate__fadeIn">
-                    <label for="watermarkPosition" class="block mb-2 text-gray-300">Watermark Position:</label>
-                    <select id="watermarkPosition" class="w-full h-10 bg-gray-700 text-white border border-gray-600 rounded-lg">
-                        <option value="top-left">Top-Left</option>
-                        <option value="top-right">Top-Right</option>
-                        <option value="bottom-left">Bottom-Left</option>
-                        <option value="bottom-right">Bottom-Right</option>
-                        <option value="center">Center</option>
-                    </select>
-                </div>
-
-                <!-- Apply Watermark Button -->
-                <button id="applyWatermarkBtn" class="w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 rounded-lg hover:from-purple-600 hover:to-indigo-600 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50">
-                    Apply Watermark
-                </button>
+                <button id="downloadBtn" class="w-full mt-4 bg-gradient-to-r from-green-500 to-teal-500 text-white py-3 rounded-lg hidden">Download Image</button>
             </div>
         </div>
     </main>
@@ -170,75 +87,112 @@
     <footer class="footer mt-16 py-6 px-6">
         <div class="max-w-6xl mx-auto flex flex-col items-center">
             <div class="mb-4">
-                <a href="/terms.html" class="text-gray-400 hover:text-purple-500 transition duration-300">Terms of Service</a>
-                <span class="mx-2 text-gray-400">|</span>
-                <a href="/privacy.html" class="text-gray-400 hover:text-purple-500 transition duration-300">Privacy Policy</a>
+                <a href="/terms" class="text-gray-300 hover:text-white mx-2">Terms and Conditions</a>
+                <a href="/privacy" class="text-gray-300 hover:text-white mx-2">Privacy Policy</a>
             </div>
-            <p class="text-sm text-gray-500">&copy; 2024 Denmara. All Rights Reserved.</p>
+            <div class="text-gray-400 text-sm">&copy;2024 denmara.com</div>
         </div>
     </footer>
 
     <script>
-        // Drag and Drop functionality
-        const dragDropArea = document.getElementById('dragDropArea');
         const fileInput = document.getElementById('fileInput');
+        const dragDropArea = document.getElementById('dragDropArea');
         const imagePreview = document.getElementById('imagePreview');
-        const previewImage = document.getElementById('preview');
+        const preview = document.getElementById('preview');
+        const watermarkText = document.getElementById('watermarkText');
+        const watermarkColor = document.getElementById('watermarkColor');
+        const watermarkOpacity = document.getElementById('watermarkOpacity');
+        const applyWatermarkBtn = document.getElementById('applyWatermarkBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const loginText = document.getElementById('loginText');
 
+        let uploadedImage = null;
+
+        // Load avatar from local storage
+        const userAvatar = localStorage.getItem('userAvatar');
+        if (userAvatar) {
+            loginText.innerHTML = `<img src="${userAvatar}" alt="User Avatar" class="w-8 h-8 rounded-full">`;
+        }
+
+        // Handle file selection
+        fileInput.addEventListener('change', handleFileSelect);
+        dragDropArea.addEventListener('click', () => fileInput.click());
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    uploadedImage = e.target.result;
+                    preview.src = uploadedImage;
+                    imagePreview.classList.remove('hidden');
+                    downloadBtn.classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Apply watermark
+        applyWatermarkBtn.addEventListener('click', () => {
+            if (!uploadedImage) {
+                swal('No image selected!', 'Please select an image to apply watermark.', 'error');
+                return;
+            }
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            img.src = uploadedImage;
+            img.onload = () => {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+
+                // Apply watermark
+                ctx.font = 'bold 48px sans-serif';
+                ctx.fillStyle = watermarkColor.value;
+                ctx.globalAlpha = watermarkOpacity.value;
+                ctx.fillText(watermarkText.value, 20, img.height - 50);
+
+                const watermarkedImage = canvas.toDataURL('image/png');
+                preview.src = watermarkedImage;
+
+                // Enable download button
+                downloadBtn.href = watermarkedImage;
+                downloadBtn.download = 'watermarked_image.png';
+                downloadBtn.classList.remove('hidden');
+            };
+        });
+
+        // Reset form
+        resetBtn.addEventListener('click', () => {
+            fileInput.value = '';
+            uploadedImage = null;
+            preview.src = '';
+            imagePreview.classList.add('hidden');
+            watermarkText.value = '';
+            watermarkColor.value = '#ffffff';
+            watermarkOpacity.value = 0.5;
+            downloadBtn.classList.add('hidden');
+        });
+
+        // Drag and drop functionality
         dragDropArea.addEventListener('dragover', (e) => {
             e.preventDefault();
             dragDropArea.classList.add('dragover');
         });
 
-        dragDropArea.addEventListener('dragleave', () => {
-            dragDropArea.classList.remove('dragover');
-        });
+        dragDropArea.addEventListener('dragleave', () => dragDropArea.classList.remove('dragover'));
 
         dragDropArea.addEventListener('drop', (e) => {
             e.preventDefault();
             dragDropArea.classList.remove('dragover');
             const file = e.dataTransfer.files[0];
-            handleFile(file);
-        });
-
-        dragDropArea.addEventListener('click', () => {
-            fileInput.click();
-        });
-
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            handleFile(file);
-        });
-
-        function handleFile(file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                previewImage.src = e.target.result;
-                imagePreview.classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // Apply Watermark
-        const applyWatermarkBtn = document.getElementById('applyWatermarkBtn');
-        const watermarkText = document.getElementById('watermarkText');
-        const watermarkColor = document.getElementById('watermarkColor');
-        const watermarkOpacity = document.getElementById('watermarkOpacity');
-        const watermarkLogo = document.getElementById('watermarkLogo');
-        const watermarkPosition = document.getElementById('watermarkPosition');
-
-        applyWatermarkBtn.addEventListener('click', () => {
-            const text = watermarkText.value;
-            const color = watermarkColor.value;
-            const opacity = watermarkOpacity.value;
-            const position = watermarkPosition.value;
-
-            // Logo watermark logic here...
-
-            // Display confirmation
-            swal("Watermark Applied!", "Your watermark has been successfully added to the image.", "success");
+            if (file) {
+                fileInput.files = e.dataTransfer.files;
+                handleFileSelect({ target: { files: e.dataTransfer.files } });
+            }
         });
     </script>
 </body>
-
 </html>
