@@ -114,121 +114,123 @@
     </footer>
 
     <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, OAuthProvider, signInWithPopup, isSignInWithEmailLink, signInWithEmailLink, sendSignInLinkToEmail } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, OAuthProvider, signInWithPopup, isSignInWithEmailLink, signInWithEmailLink, sendSignInLinkToEmail } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyB3B371U-rRCQRPKNLoCjCcsxN2_PW0K0s",
-            authDomain: "denmara-de138.firebaseapp.com",
-            projectId: "denmara-de138",
-            storageBucket: "denmara-de138.appspot.com",
-            messagingSenderId: "38873058291",
-            appId: "1:38873058291:web:f3891630c469d0e6696086",
-            measurementId: "G-Y4XP9RSQKK"
-        };
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyB3B371U-rRCQRPKNLoCjCcsxN2_PW0K0s",
+        authDomain: "denmara-de138.firebaseapp.com",
+        projectId: "denmara-de138",
+        storageBucket: "denmara-de138.appspot.com",
+        messagingSenderId: "38873058291",
+        appId: "1:38873058291:web:f3891630c469d0e6696086",
+        measurementId: "G-Y4XP9RSQKK"
+    };
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-        // Redirect if user is already signed in
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                storeUserDataAndRedirect(user);
-            }
-        });
-
-        // Check if the user is signing in with email link
-        if (isSignInWithEmailLink(auth, window.location.href)) {
-            let email = localStorage.getItem('emailForSignIn');
-            if (!email) {
-                email = window.prompt('Please provide your email for confirmation');
-            }
-            signInWithEmailLink(auth, email, window.location.href)
-                .then((result) => {
-                    localStorage.removeItem('emailForSignIn');
-                    storeUserDataAndRedirect(result.user);
-                })
-                .catch(handleAuthError);
+    // Redirect if user is already signed in
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            storeUserDataAndRedirect(user);
         }
+    });
 
-        // Google Sign-In
-        document.getElementById('google-login-button').addEventListener('click', () => {
-            const provider = new GoogleAuthProvider();
-            signInWithPopup(auth, provider)
-                .then((result) => storeUserDataAndRedirect(result.user))
-                .catch(handleAuthError);
-        });
-
-        // Apple Sign-In
-        document.getElementById('apple-login-button').addEventListener('click', () => {
-            const provider = new OAuthProvider('apple.com');
-            signInWithPopup(auth, provider)
-                .then((result) => storeUserDataAndRedirect(result.user))
-                .catch(handleAuthError);
-        });
-
-        // Email Link Sign-In
-        document.getElementById('email-login-button').addEventListener('click', () => {
-            swal({
-                title: "Sign in with Email",
-                text: "Enter your email address",
-                content: "input",
-                button: {
-                    text: "Send Activation Link",
-                    closeModal: false,
-                },
+    // Check if the user is signing in with email link
+    if (isSignInWithEmailLink(auth, window.location.href)) {
+        let email = localStorage.getItem('emailForSignIn');
+        if (!email) {
+            email = window.prompt('Please provide your email for confirmation');
+        }
+        signInWithEmailLink(auth, email, window.location.href)
+            .then((result) => {
+                localStorage.removeItem('emailForSignIn');
+                storeUserDataAndRedirect(result.user);
             })
-            .then(email => {
-                if (!email) throw null;
-                return sendSignInLinkToEmail(auth, email, {
-                    url: window.location.href,
-                    handleCodeInApp: true
-                });
+            .catch(handleAuthError);
+    }
+
+    // Google Sign-In
+    document.getElementById('google-login-button').addEventListener('click', () => {
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider)
+            .then((result) => storeUserDataAndRedirect(result.user))
+            .catch(handleAuthError);
+    });
+
+    // Apple Sign-In
+    document.getElementById('apple-login-button').addEventListener('click', () => {
+        const provider = new OAuthProvider('apple.com');
+        provider.addScope('email'); // Adding necessary scopes
+        provider.addScope('name');
+        signInWithPopup(auth, provider)
+            .then((result) => storeUserDataAndRedirect(result.user))
+            .catch(handleAuthError);
+    });
+
+    // Email Link Sign-In
+    document.getElementById('email-login-button').addEventListener('click', () => {
+        swal({
+            title: "Sign in with Email",
+            text: "Enter your email address",
+            content: "input",
+            button: {
+                text: "Send Activation Link",
+                closeModal: false,
+            },
+        })
+        .then(email => {
+            if (!email) throw null;
+            return sendSignInLinkToEmail(auth, email, {
+                url: window.location.href,
+                handleCodeInApp: true
             })
             .then(() => {
                 localStorage.setItem('emailForSignIn', email);
                 swal("Success", "Email sent successfully. Please check your inbox.", "success");
-            })
-            .catch(error => {
-                if (error) {
-                    handleAuthError(error);
-                } else {
-                    swal.stopLoading();
-                    swal.close();
-                }
             });
-        });
-
-        function storeUserDataAndRedirect(user) {
-            localStorage.setItem("userName", user.displayName || user.email.split('@')[0]);
-            localStorage.setItem("userEmail", user.email);
-            localStorage.setItem("userAvatar", user.photoURL || '');
-
-            swal({
-                title: "Login Successful",
-                text: "You will be redirected shortly.",
-                icon: "success",
-                timer: 2000,
-                buttons: false,
-            })
-            .then(() => {
-                window.location.href = "profile.html";
-            });
-        }
-
-        function handleAuthError(error) {
-            console.error("Authentication error:", error);
-            let errorMessage = "An error occurred during authentication. Please try again.";
-            if (error.code === 'auth/account-exists-with-different-credential') {
-                errorMessage = "An account already exists with the same email address but different sign-in credentials. Try signing in with a different method.";
-            } else if (error.code === 'auth/popup-closed-by-user') {
-                errorMessage = "The sign-in popup was closed before completing the sign-in process. Please try again.";
+        })
+        .catch(error => {
+            if (error) {
+                handleAuthError(error);
+            } else {
+                swal.stopLoading();
+                swal.close();
             }
-            swal("Error", errorMessage, "error");
+        });
+    });
+
+    function storeUserDataAndRedirect(user) {
+        localStorage.setItem("userName", user.displayName || user.email.split('@')[0]);
+        localStorage.setItem("userEmail", user.email);
+        localStorage.setItem("userAvatar", user.photoURL || '');
+
+        swal({
+            title: "Login Successful",
+            text: "You will be redirected shortly.",
+            icon: "success",
+            timer: 2000,
+            buttons: false,
+        })
+        .then(() => {
+            window.location.href = "profile.html";
+        });
+    }
+
+    function handleAuthError(error) {
+        console.error("Authentication error:", error);
+        let errorMessage = "An error occurred during authentication. Please try again.";
+        if (error.code === 'auth/account-exists-with-different-credential') {
+            errorMessage = "An account already exists with the same email address but different sign-in credentials. Try signing in with a different method.";
+        } else if (error.code === 'auth/popup-closed-by-user') {
+            errorMessage = "The sign-in popup was closed before completing the sign-in process. Please try again.";
         }
-    </script>
+        swal("Error", errorMessage, "error");
+    }
+</script>
 </body>
 </html>
