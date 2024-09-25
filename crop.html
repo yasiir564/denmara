@@ -94,22 +94,22 @@
             margin: 0 auto;
         }
         .crop-control-btn {
-            @apply bg-purple-600 text-white p-2 rounded-lg hover:bg-purple-700 transition duration-300 flex items-center justify-center;
+            @apply bg-purple-600 text-white p-3 rounded-lg hover:bg-purple-700 transition duration-300 flex items-center justify-center;
+            font-size: 1.1rem;
         }
         .crop-control-btn i {
             font-size: 1.2rem;
         }
-         #imageActions {
+        #imageActions {
             position: absolute;
             top: 10px;
             right: 10px;
             z-index: 1000;
         }
-        
         .image-action-btn {
             @apply bg-gray-800 text-white p-2 rounded-full hover:bg-gray-700 transition duration-300 mr-2;
         }
-         .benefit-card {
+        .benefit-card {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -122,7 +122,7 @@
         .typed-cursor {
             color: #a855f7;
         }
-         .faq-item {
+        .faq-item {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -145,6 +145,9 @@
         }
         .faq-item.active .faq-icon {
             transform: rotate(180deg);
+        }
+        .action-button {
+            @apply bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 px-6 rounded-lg hover:from-purple-600 hover:to-indigo-600 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 flex items-center justify-center;
         }
     </style>
 </head>
@@ -188,32 +191,34 @@
                     </div>
                 </div>
 
-                <div id="cropContainer" class="mb-8 hidden">
-                    <img id="image" src="" alt="Image to crop" class="max-w-full h-auto">
-                </div>
-
                 <div id="cropControls" class="mb-8 hidden">
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
-                        <button id="rotateLeft" class="crop-control-btn"><i class="fas fa-undo"></i></button>
-                        <button id="rotateRight" class="crop-control-btn"><i class="fas fa-redo"></i></button>
-                        <button id="flipHorizontal" class="crop-control-btn"><i class="fas fa-arrows-alt-h"></i></button>
-                        <button id="flipVertical" class="crop-control-btn"><i class="fas fa-arrows-alt-v"></i></button>
+                        <button id="rotateLeft" class="crop-control-btn"><i class="fas fa-undo mr-2"></i> Rotate Left</button>
+                        <button id="rotateRight" class="crop-control-btn"><i class="fas fa-redo mr-2"></i> Rotate Right</button>
+                        <button id="flipHorizontal" class="crop-control-btn"><i class="fas fa-arrows-alt-h mr-2"></i> Flip H</button>
+                        <button id="flipVertical" class="crop-control-btn"><i class="fas fa-arrows-alt-v mr-2"></i> Flip V</button>
                     </div>
                     <div class="grid grid-cols-3 gap-4">
-                        <button id="zoomIn" class="crop-control-btn"><i class="fas fa-search-plus"></i></button>
-                        <button id="zoomOut" class="crop-control-btn"><i class="fas fa-search-minus"></i></button>
-                        <button id="reset" class="crop-control-btn"><i class="fas fa-sync-alt"></i></button>
+                        <button id="zoomIn" class="crop-control-btn"><i class="fas fa-search-plus mr-2"></i> Zoom In</button>
+                        <button id="zoomOut" class="crop-control-btn"><i class="fas fa-search-minus mr-2"></i> Zoom Out</button>
+                        <button id="reset" class="crop-control-btn"><i class="fas fa-sync-alt mr-2"></i> Reset</button>
                     </div>
                 </div>
 
-                <button id="cropBtn" class="w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 rounded-lg hover:from-purple-600 hover:to-indigo-600 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 flex items-center justify-center hidden">
-                    <i class="fas fa-crop mr-2"></i>
-                    <span>Crop Image</span>
-                </button>
+                <div class="flex justify-center space-x-4">
+                    <button id="cropBtn" class="action-button hidden">
+                        <i class="fas fa-crop mr-2"></i>
+                        <span>Crop Image</span>
+                    </button>
+                    <button id="downloadBtn" class="action-button hidden">
+                        <i class="fas fa-download mr-2"></i>
+                        <span>Download</span>
+                    </button>
+                </div>
             </div>
         </div>
 
-        <div class="max-w-4xl mx-auto mt-16 sm:mt-20 mb-16">
+       <div class="max-w-4xl mx-auto mt-16 sm:mt-20 mb-16">
             <h2 class="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12 gradient-bg text-transparent bg-clip-text" data-aos="fade-up">Benefits of Denmara Image Crop Tool</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="100">
@@ -359,11 +364,13 @@ Remember, you can always use the zoom buttons to get a closer look at your image
     const cropContainer = document.getElementById('cropContainer');
     const cropControls = document.getElementById('cropControls');
     const cropBtn = document.getElementById('cropBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
     const loader = document.getElementById('loader');
     const imageActions = document.getElementById('imageActions');
     const replaceImageBtn = document.getElementById('replaceImage');
     const deleteImageBtn = document.getElementById('deleteImage');
     let cropper;
+    let croppedImageBlob;
 
     // File input change event
     fileInput.addEventListener('change', handleFileSelect);
@@ -399,6 +406,7 @@ Remember, you can always use the zoom buttons to get a closer look at your image
         cropContainer.classList.remove('hidden');
         cropControls.classList.remove('hidden');
         cropBtn.classList.remove('hidden');
+        downloadBtn.classList.add('hidden');
         imageActions.classList.remove('hidden');
 
         const image = document.getElementById('image');
@@ -424,44 +432,28 @@ Remember, you can always use the zoom buttons to get a closer look at your image
         cropContainer.classList.add('hidden');
         cropControls.classList.add('hidden');
         cropBtn.classList.add('hidden');
+        downloadBtn.classList.add('hidden');
         imageActions.classList.add('hidden');
-        document.getElementById('image').src = '';
+        fileInput.value = '';
     }
 
-    // Replace Image
-    replaceImageBtn.addEventListener('click', () => {
-        swal({
-            title: "Replace Image",
-            text: "Are you sure you want to replace the current image?",
-            icon: "warning",
-            buttons: ["Cancel", "Replace"],
-            dangerMode: true,
-        })
-        .then((willReplace) => {
-            if (willReplace) {
-                fileInput.click();
-            }
-        });
+    cropBtn.addEventListener('click', () => {
+        loader.classList.remove('hidden');
+        setTimeout(() => {
+            croppedImageBlob = cropper.getCroppedCanvas().toDataURL('image/png');
+            downloadBtn.classList.remove('hidden');
+            loader.classList.add('hidden');
+        }, 1000);
     });
 
-    // Delete Image
-    deleteImageBtn.addEventListener('click', () => {
-        swal({
-            title: "Delete Image",
-            text: "Are you sure you want to delete the current image?",
-            icon: "warning",
-            buttons: ["Cancel", "Delete"],
-            dangerMode: true,
-        })
-        .then((willDelete) => {
-            if (willDelete) {
-                resetImageEditor();
-                swal("Deleted!", "Your image has been deleted.", "success");
-            }
-        });
+    downloadBtn.addEventListener('click', () => {
+        const link = document.createElement('a');
+        link.download = 'cropped-image.png';
+        link.href = croppedImageBlob;
+        link.click();
     });
 
-    // Crop controls
+    // Crop control buttons
     document.getElementById('rotateLeft').addEventListener('click', () => cropper.rotate(-90));
     document.getElementById('rotateRight').addEventListener('click', () => cropper.rotate(90));
     document.getElementById('flipHorizontal').addEventListener('click', () => cropper.scaleX(-cropper.getData().scaleX || -1));
@@ -470,76 +462,36 @@ Remember, you can always use the zoom buttons to get a closer look at your image
     document.getElementById('zoomOut').addEventListener('click', () => cropper.zoom(-0.1));
     document.getElementById('reset').addEventListener('click', () => cropper.reset());
 
-    // Crop button
-    cropBtn.addEventListener('click', () => {
-        showLoader();
-        setTimeout(() => {
-            const croppedCanvas = cropper.getCroppedCanvas();
-            if (croppedCanvas) {
-                croppedCanvas.toBlob((blob) => {
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'cropped_image.png';
-                    a.click();
-                    URL.revokeObjectURL(url);
-                    hideLoader();
-                    swal("Success!", "Your cropped image has been downloaded.", "success");
-                });
-            } else {
-                hideLoader();
-                swal("Oops!", "Failed to crop the image. Please try again.", "error");
-            }
-        }, 1000);
+    replaceImageBtn.addEventListener('click', () => {
+        fileInput.click();
     });
 
-    function showLoader() {
-        loader.classList.remove('hidden');
-    }
+    deleteImageBtn.addEventListener('click', () => {
+        resetImageEditor();
+    });
 
-    function hideLoader() {
-        loader.classList.add('hidden');
-    }
+    // Initialize AOS
+    AOS.init({
+        duration: 1000,
+        once: true,
+    });
+
+    // Initialize Typed.js
+    document.querySelectorAll('.typed-text').forEach(element => {
+        new Typed(element, {
+            strings: JSON.parse(element.dataset.typed),
+            typeSpeed: 50,
+            backSpeed: 30,
+            loop: true
+        });
+    });
 
     // FAQ functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const faqItems = document.querySelectorAll('.faq-item');
-
-        faqItems.forEach(item => {
-            item.addEventListener('click', () => {
-                item.classList.toggle('active');
-            });
-        });
-
-        // Initialize AOS and Typed.js
-        AOS.init({
-            duration: 1000,
-            once: true,
-            offset: 100
-        });
-
-        document.querySelectorAll('.typed-text').forEach((element) => {
-            new Typed(element, {
-                strings: JSON.parse(element.dataset.typed),
-                typeSpeed: 30,
-                backSpeed: 0,
-                loop: false,
-                showCursor: true,
-                cursorChar: '|',
-                autoInsertCss: true,
-            });
-        });
-
-        // Header behavior
-        window.addEventListener('scroll', () => {
-            const header = document.querySelector('.header');
-            if (window.scrollY > 50) {
-                header.classList.add('shadow-md');
-            } else {
-                header.classList.remove('shadow-md');
-            }
+    document.querySelectorAll('.faq-item').forEach(item => {
+        item.addEventListener('click', () => {
+            item.classList.toggle('active');
         });
     });
-</script>
+  </script>
 </body>
 </html>
