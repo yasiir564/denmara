@@ -13,12 +13,55 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <style>
-        /* ... (previous styles remain unchanged) ... */
+        .blob {
+            background: linear-gradient(to right, #8a2387, #e94057, #f27121);
+            filter: blur(70px);
+        }
+        .gradient-bg {
+            background: linear-gradient(to right, #8a2387, #e94057, #f27121);
+        }
+        .drag-drop-area {
+            border: 2px dashed #a855f7;
+            transition: all 0.3s ease;
+        }
+        .drag-drop-area:hover, .drag-drop-area.dragover {
+            border-color: #6366f1;
+            background-color: rgba(99, 102, 241, 0.1);
+        }
+        .action-button {
+            @apply bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50;
+        }
+        .faq-item {
+            @apply bg-gray-800 transition-all duration-300 ease-in-out;
+        }
+        .faq-item.active .faq-answer {
+            @apply block;
+        }
+        .faq-item.active .faq-icon {
+            @apply rotate-180;
+        }
+        .faq-answer {
+            @apply hidden mt-2;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
     </style>
 </head>
-<body class="min-h-screen p-4 relative overflow-x-hidden scrollbar-hide flex flex-col">
-    <header class="header fixed top-0 left-0 right-0 z-50 py-4 px-6">
-        <!-- ... (header content remains unchanged) ... -->
+<body class="min-h-screen p-4 relative overflow-x-hidden scrollbar-hide flex flex-col bg-gray-900 text-white">
+    <header class="header fixed top-0 left-0 right-0 z-50 py-4 px-6 bg-gray-800 bg-opacity-80 backdrop-filter backdrop-blur-lg">
+        <nav class="flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold gradient-bg text-transparent bg-clip-text">Denmara</a>
+            <ul class="flex space-x-6">
+                <li><a href="#" class="hover:text-purple-400 transition-colors">Home</a></li>
+                <li><a href="#" class="hover:text-purple-400 transition-colors">About</a></li>
+                <li><a href="#" class="hover:text-purple-400 transition-colors">Contact</a></li>
+            </ul>
+        </nav>
     </header>
 
     <main class="flex-grow mt-20">
@@ -28,7 +71,7 @@
         <div class="bg-gray-800 rounded-3xl shadow-2xl w-full max-w-4xl mx-auto my-8 animate__animated animate__fadeIn relative z-10">
             <div class="gradient-bg p-6 sm:p-8 rounded-t-3xl">
                 <h1 class="text-3xl sm:text-4xl font-bold text-white text-center">Image Format Conversion Tool</h1>
-                <p class="text-gray-200 text-center mt-2">Convert your images to over 30 formats with ease</p>
+                <p class="text-gray-200 text-center mt-2">Convert your images to various formats with ease</p>
             </div>
             
             <div class="p-6 sm:p-8">
@@ -53,32 +96,7 @@
                         <option value="jpeg">JPEG</option>
                         <option value="webp">WebP</option>
                         <option value="gif">GIF</option>
-                        <option value="tiff">TIFF</option>
                         <option value="bmp">BMP</option>
-                        <option value="ico">ICO</option>
-                        <option value="avif">AVIF</option>
-                        <option value="heif">HEIF</option>
-                        <option value="jxr">JPEG XR</option>
-                        <option value="jp2">JPEG 2000</option>
-                        <option value="psd">PSD</option>
-                        <option value="svg">SVG</option>
-                        <option value="eps">EPS</option>
-                        <option value="pdf">PDF</option>
-                        <option value="raw">RAW</option>
-                        <option value="cr2">CR2</option>
-                        <option value="nef">NEF</option>
-                        <option value="orf">ORF</option>
-                        <option value="sr2">SR2</option>
-                        <option value="dng">DNG</option>
-                        <option value="arw">ARW</option>
-                        <option value="rw2">RW2</option>
-                        <option value="webp">WebP</option>
-                        <option value="heic">HEIC</option>
-                        <option value="hdr">HDR</option>
-                        <option value="exr">EXR</option>
-                        <option value="pbm">PBM</option>
-                        <option value="pgm">PGM</option>
-                        <option value="ppm">PPM</option>
                     </select>
                 </div>
 
@@ -95,222 +113,270 @@
             </div>
         </div>
 
-        <!-- ... (benefits section remains unchanged) ... -->
+        <div class="max-w-4xl mx-auto mt-20">
+            <h2 class="text-3xl font-bold text-center mb-12 gradient-bg text-transparent bg-clip-text" data-aos="fade-up">Why Choose Our Tool?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-gray-800 p-6 rounded-lg text-center" data-aos="fade-up" data-aos-delay="200">
+                    <i class="fas fa-bolt text-4xl text-purple-500 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">Fast Conversion</h3>
+                    <p class="text-gray-400">Convert your images in seconds with our lightning-fast tool.</p>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-lg text-center" data-aos="fade-up" data-aos-delay="400">
+                    <i class="fas fa-lock text-4xl text-purple-500 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">Secure & Private</h3>
+                    <p class="text-gray-400">Your images are processed locally, ensuring complete privacy.</p>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-lg text-center" data-aos="fade-up" data-aos-delay="600">
+                    <i class="fas fa-desktop text-4xl text-purple-500 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">User-Friendly</h3>
+                    <p class="text-gray-400">Simple interface for easy image conversion without any hassle.</p>
+                </div>
+            </div>
+        </div>
 
         <div class="max-w-4xl mx-auto mt-20 mb-16">
-            <h2 class="text-3xl font-bold text-center mb-12 gradient-bg text-white" data-aos="fade-up">Frequently Asked Questions</h2>
+            <h2 class="text-3xl font-bold text-center mb-12 gradient-bg text-transparent bg-clip-text" data-aos="fade-up">Frequently Asked Questions</h2>
             <div class="space-y-4" data-aos="fade-up" data-aos-delay="200">
                 <div class="faq-item rounded-lg p-4 cursor-pointer">
                     <div class="flex justify-between items-center">
                         <h3 class="text-lg font-semibold">What file formats does the Image Conversion Tool support?</h3>
-                        <svg class="faq-icon w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        <svg class="faq-icon w-6 h-6 text-purple-500 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </div>
                     <div class="faq-answer mt-2 text-gray-300">
-                        <p>Our Image Conversion Tool supports conversion between over 30 formats, including PNG, JPEG, WebP, GIF, TIFF, BMP, ICO, AVIF, HEIF, JPEG XR, JPEG 2000, PSD, SVG, EPS, PDF, and various RAW formats. You can upload images in these formats and convert them to any of the other supported formats.</p>
+                        <p>Our Image Conversion Tool supports conversion between PNG, JPEG, WebP, GIF, and BMP formats. You can upload images in these formats and convert them to any of the other supported formats.</p>
                     </div>
                 </div>
-                <!-- ... (other FAQ items remain unchanged) ... -->
+                <div class="faq-item rounded-lg p-4 cursor-pointer">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-lg font-semibold">Is there a file size limit for image conversion?</h3>
+                        <svg class="faq-icon w-6 h-6 text-purple-500 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="faq-answer mt-2 text-gray-300">
+                        <p>The file size limit depends on your device's capabilities, as all processing is done locally in your browser. For optimal performance, we recommend keeping file sizes under 10MB.</p>
+                    </div>
+                </div>
+                <div class="faq-item rounded-lg p-4 cursor-pointer">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-lg font-semibold">How is my privacy protected when using this tool?</h3>
+                        <svg class="faq-icon w-6 h-6 text-purple-500 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="faq-answer mt-2 text-gray-300">
+                        <p>Your privacy is our top priority. All image processing is done entirely in your browser, meaning your images never leave your device. We don't store or transmit any of your data.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
 
-    <footer class="footer py-6 px-4 mt-16">
-        <!-- ... (footer content remains unchanged) ... -->
+    <footer class="footer py-6 px-4 mt-16 bg-gray-800">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
+            <p class="text-gray-400">&copy; 2024 Denmara. All rights reserved.</p>
+            <div class="flex space-x-4 mt-4 md:mt-0">
+                <a href="#" class="text-gray-400 hover:text-purple-500 transition-colors"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="text-gray-400 hover:text-purple-500 transition-colors"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="text-gray-400 hover:text-purple-500 transition-colors"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
     </footer>
 
+    <button id="scrollTopBtn" class="fixed bottom-4 right-4 bg-purple-500 text-white p-2 rounded-full shadow-lg transition-opacity duration-300 opacity-0 invisible">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
     <script>
-       // Wait for the DOM to be fully loaded
-document.addEventListener('DOMContentLoaded', function() {
-    const dragDropArea = document.getElementById('dragDropArea');
-    const fileInput = document.getElementById('fileInput');
-    const imagePreview = document.getElementById('imagePreview');
-    const previewImage = document.getElementById('previewImage');
-    const conversionOptions = document.getElementById('conversionOptions');
-    const formatSelect = document.getElementById('formatSelect');
-    const convertBtn = document.getElementById('convertBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
+    document.addEventListener('DOMContentLoaded', function() {
+        const dragDropArea = document.getElementById('dragDropArea');
+        const fileInput = document.getElementById('fileInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImage = document.getElementById('previewImage');
+        const conversionOptions = document.getElementById('conversionOptions');
+        const formatSelect = document.getElementById('formatSelect');
+        const convertBtn = document.getElementById('convertBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
 
-    let selectedFile = null;
+        let selectedFile = null;
 
-    // Drag and drop functionality
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dragDropArea.addEventListener(eventName, preventDefaults, false);
-    });
+        // Drag and drop functionality
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dragDropArea.addEventListener(eventName, preventDefaults, false);
+        });
 
-    function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
 
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dragDropArea.addEventListener(eventName, highlight, false);
-    });
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dragDropArea.addEventListener(eventName, highlight, false);
+        });
 
-    ['dragleave', 'drop'].forEach(eventName => {
-        dragDropArea.addEventListener(eventName, unhighlight, false);
-    });
+        ['dragleave', 'drop'].forEach(eventName => {
+            dragDropArea.addEventListener(eventName, unhighlight, false);
+        });
 
-    function highlight() {
-        dragDropArea.classList.add('dragover');
-    }
+       function highlight() {
+            dragDropArea.classList.add('dragover');
+        }
 
-    function unhighlight() {
-        dragDropArea.classList.remove('dragover');
-    }
+        function unhighlight() {
+            dragDropArea.classList.remove('dragover');
+        }
 
-    dragDropArea.addEventListener('drop', handleDrop, false);
+        dragDropArea.addEventListener('drop', handleDrop, false);
 
-    function handleDrop(e) {
-        const dt = e.dataTransfer;
-        const files = dt.files;
-        handleFiles(files);
-    }
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
 
-    // File input change event
-    fileInput.addEventListener('change', function(e) {
-        handleFiles(this.files);
-    });
+        // File input change event
+        fileInput.addEventListener('change', function(e) {
+            handleFiles(this.files);
+        });
 
-    // Handle selected files
-    function handleFiles(files) {
-        if (files.length > 0) {
-            selectedFile = files[0];
-            if (selectedFile.type.startsWith('image/')) {
-                displayPreview(selectedFile);
-            } else {
-                swal("Error", "Please select an image file.", "error");
+        // Handle selected files
+        function handleFiles(files) {
+            if (files.length > 0) {
+                selectedFile = files[0];
+                if (selectedFile.type.startsWith('image/')) {
+                    displayPreview(selectedFile);
+                } else {
+                    swal("Error", "Please select an image file.", "error");
+                }
             }
         }
-    }
 
-    // Display image preview
-    function displayPreview(file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            previewImage.src = e.target.result;
-            imagePreview.classList.remove('hidden');
-            conversionOptions.classList.remove('hidden');
-            convertBtn.classList.remove('hidden');
-        }
-        reader.readAsDataURL(file);
-    }
-
-    // Convert button click event
-    convertBtn.addEventListener('click', function() {
-        if (selectedFile) {
-            const selectedFormat = formatSelect.value;
-            convertImage(selectedFile, selectedFormat)
-                .then(blob => {
-                    // Create object URL for download
-                    const url = URL.createObjectURL(blob);
-                    downloadBtn.setAttribute('data-url', url);
-                    downloadBtn.setAttribute('data-filename', `converted_image.${selectedFormat}`);
-                    downloadBtn.classList.remove('hidden');
-                    swal("Success", "Image converted successfully!", "success");
-                })
-                .catch(error => {
-                    console.error('Conversion error:', error);
-                    swal("Error", "Failed to convert image. Please try again.", "error");
-                });
-        } else {
-            swal("Error", "Please select an image first.", "error");
-        }
-    });
-
-    // Download button click event
-    downloadBtn.addEventListener('click', function() {
-        const url = this.getAttribute('data-url');
-        const filename = this.getAttribute('data-filename');
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename;
-        link.click();
-    });
-
-    // Image conversion function
-    function convertImage(file, format) {
-        return new Promise((resolve, reject) => {
+        // Display image preview
+        function displayPreview(file) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0);
-
-                    let mimeType;
-                    switch(format.toLowerCase()) {
-                        case 'png':
-                            mimeType = 'image/png';
-                            break;
-                        case 'jpeg':
-                        case 'jpg':
-                            mimeType = 'image/jpeg';
-                            break;
-                        case 'webp':
-                            mimeType = 'image/webp';
-                            break;
-                        case 'gif':
-                            mimeType = 'image/gif';
-                            break;
-                        default:
-                            // For formats not supported by canvas, we would typically make an API call here
-                            // For demonstration, we'll just convert to PNG
-                            console.warn(`Format ${format} not supported client-side. Converting to PNG.`);
-                            mimeType = 'image/png';
-                    }
-
-                    canvas.toBlob((blob) => {
-                        resolve(blob);
-                    }, mimeType);
-                };
-                img.onerror = reject;
-                img.src = e.target.result;
-            };
-            reader.onerror = reject;
+                previewImage.src = e.target.result;
+                imagePreview.classList.remove('hidden');
+                conversionOptions.classList.remove('hidden');
+                convertBtn.classList.remove('hidden');
+            }
             reader.readAsDataURL(file);
-        });
-    }
-
-    // Initialize AOS
-    AOS.init();
-
-    // Initialize Typed.js instances
-    document.querySelectorAll('.typed-text').forEach(element => {
-        new Typed(element, {
-            strings: JSON.parse(element.getAttribute('data-typed')),
-            typeSpeed: 50,
-            backSpeed: 25,
-            backDelay: 3000,
-            startDelay: 1000,
-            loop: true
-        });
-    });
-
-    // FAQ functionality
-    const faqItems = document.querySelectorAll('.faq-item');
-    faqItems.forEach(item => {
-        item.addEventListener('click', () => {
-            item.classList.toggle('active');
-        });
-    });
-
-    // Scroll to top functionality
-    const scrollTopBtn = document.getElementById('scrollTopBtn');
-    window.addEventListener('scroll', () => {
-        if (window.pageYOffset > 100) {
-            scrollTopBtn.classList.remove('hidden');
-        } else {
-            scrollTopBtn.classList.add('hidden');
         }
-    });
 
-    scrollTopBtn.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Convert button click event
+        convertBtn.addEventListener('click', function() {
+            if (selectedFile) {
+                const selectedFormat = formatSelect.value;
+                convertImage(selectedFile, selectedFormat)
+                    .then(blob => {
+                        const url = URL.createObjectURL(blob);
+                        downloadBtn.setAttribute('data-url', url);
+                        downloadBtn.setAttribute('data-filename', `converted_image.${selectedFormat}`);
+                        downloadBtn.classList.remove('hidden');
+                        swal("Success", "Image converted successfully!", "success");
+                    })
+                    .catch(error => {
+                        console.error('Conversion error:', error);
+                        swal("Error", "Failed to convert image. Please try again.", "error");
+                    });
+            } else {
+                swal("Error", "Please select an image first.", "error");
+            }
+        });
+
+        // Download button click event
+        downloadBtn.addEventListener('click', function() {
+            const url = this.getAttribute('data-url');
+            const filename = this.getAttribute('data-filename');
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.click();
+        });
+
+        // Image conversion function
+        function convertImage(file, format) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+
+                        let mimeType;
+                        switch(format.toLowerCase()) {
+                            case 'png':
+                                mimeType = 'image/png';
+                                break;
+                            case 'jpeg':
+                            case 'jpg':
+                                mimeType = 'image/jpeg';
+                                break;
+                            case 'webp':
+                                mimeType = 'image/webp';
+                                break;
+                            case 'gif':
+                                mimeType = 'image/gif';
+                                break;
+                            case 'bmp':
+                                mimeType = 'image/bmp';
+                                break;
+                            default:
+                                reject(new Error('Unsupported format'));
+                                return;
+                        }
+
+                        canvas.toBlob((blob) => {
+                            resolve(blob);
+                        }, mimeType);
+                    };
+                    img.onerror = reject;
+                    img.src = e.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Initialize AOS
+        AOS.init();
+
+        // Initialize Typed.js instances
+        document.querySelectorAll('.typed-text').forEach(element => {
+            new Typed(element, {
+                strings: JSON.parse(element.getAttribute('data-typed')),
+                typeSpeed: 50,
+                backSpeed: 25,
+                backDelay: 3000,
+                startDelay: 1000,
+                loop: true
+            });
+        });
+
+        // FAQ functionality
+        const faqItems = document.querySelectorAll('.faq-item');
+        faqItems.forEach(item => {
+            item.addEventListener('click', () => {
+                item.classList.toggle('active');
+            });
+        });
+
+        // Scroll to top functionality
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 100) {
+                scrollTopBtn.classList.remove('opacity-0', 'invisible');
+                scrollTopBtn.classList.add('opacity-100', 'visible');
+            } else {
+                scrollTopBtn.classList.add('opacity-0', 'invisible');
+                scrollTopBtn.classList.remove('opacity-100', 'visible');
+            }
+        });
+
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
     });
-});
     </script>
 </body>
 </html>
