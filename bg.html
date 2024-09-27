@@ -5,12 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enhanced Background Remover Tool</title>
     <script src="https://cdn.lordicon.com/bhenfmcm.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#a855f7',
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
         
@@ -87,7 +103,6 @@
             background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
         }
         
-        /* New styles for modern loading and removal animations */
         .upload-loader {
             position: absolute;
             top: 50%;
@@ -159,41 +174,6 @@
         .typed-cursor {
             color: #a855f7;
         }
-        .faq-item {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-        .faq-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .faq-answer {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-out;
-        }
-        .faq-item.active .faq-answer {
-            max-height: 300px;
-            transition: max-height 0.5s ease-in;
-        }
-        .faq-icon {
-            transition: transform 0.3s ease;
-        }
-        .faq-item.active .faq-icon {
-            transform: rotate(180deg);
-        }
-        .tool-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-        }
-        .tool-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-            background: rgba(255, 255, 255, 0.15);
-        }
         .header {
             background: rgba(15, 23, 42, 0.8);
             backdrop-filter: blur(10px);
@@ -209,86 +189,80 @@
         .footer a:hover {
             color: #a855f7;
         }
-         .avatar-placeholder {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #ccc;
-        }
     </style>
-    </head>
-<body class="min-h-screen p-4 relative overflow-x-hidden scrollbar-hide flex flex-col">
+</head>
+<body class="min-h-screen p-4 relative overflow-x-hidden flex flex-col">
     <header class="header fixed top-0 left-0 right-0 z-50 py-4 px-6">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
             <a href="/" class="flex items-center">
-                <img src="Denmara__1_-removebg-preview.png" alt="Denmara Logo" style="width:70px; height:70px;">
+                <img src="Denmara__1_-removebg-preview.png" alt="Denmara Logo" class="w-16 h-16">
                 <span class="ml-2 text-2xl font-bold text-white">Denmara</span>
             </a>
             <a href="/login.html" id="loginText" class="text-white hover:text-purple-400 transition duration-300">Login</a>
         </div>
-         
     </header>
-</head>
-<body class="min-h-screen p-4 relative overflow-x-hidden flex flex-col items-center justify-center">
-    <div class="blob fixed top-0 left-0 w-64 h-64 opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
-    <div class="blob fixed bottom-0 right-0 w-96 h-96 opacity-50 translate-x-1/2 translate-y-1/2"></div>
-    
-    <div class="bg-gray-800 rounded-3xl shadow-2xl w-full max-w-md mx-auto my-8 animate__animated animate__fadeIn relative z-10">
-        <div class="gradient-bg p-8 rounded-t-3xl">
-            <h1 class="text-4xl font-bold text-white text-center">Background Remover</h1>
-            <p class="text-gray-200 text-center mt-2">Remove background with ease</p>
-        </div>
-        
-        <div class="p-8">
-            <div id="dropArea" class="mb-8 flex flex-col items-center justify-center h-40 border-2 border-dashed border-purple-500 rounded-lg cursor-pointer hover:border-indigo-500 transition-colors duration-300 relative">
-                <input type="file" id="fileInput" accept="image/*" class="hidden">
-                <i class="fas fa-cloud-upload-alt text-4xl text-purple-500 mb-2"></i>
-                <p class="mt-2 text-sm text-gray-400 text-center">Drag and drop an image here<br>or click to select</p>
-                <div class="upload-loader hidden"></div>
-            </div>
 
-            <div id="imagePreview" class="mb-8 hidden animate__animated animate__fadeIn">
-                <div class="image-preview-container p-2 rounded-2xl relative">
-                    <img id="preview" src="" alt="Preview" class="w-full h-40 object-cover rounded-xl">
-                    <button id="removeImage" class="absolute top-4 right-4 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 focus:outline-none">
-                        <i class="fas fa-times"></i>
-                    </button>
-                    <div class="removal-overlay hidden">
-                        <div class="removal-animation"></div>
-                        <div class="removal-progress">Removing: 0%</div>
+    <main class="flex-grow container mx-auto mt-24">
+        <div class="blob fixed top-0 left-0 w-64 h-64 opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
+        <div class="blob fixed bottom-0 right-0 w-96 h-96 opacity-50 translate-x-1/2 translate-y-1/2"></div>
+        
+        <div class="bg-gray-800 rounded-3xl shadow-2xl w-full max-w-md mx-auto my-8 animate__animated animate__fadeIn relative z-10">
+            <div class="gradient-bg p-8 rounded-t-3xl">
+                <h1 class="text-4xl font-bold text-white text-center">Background Remover</h1>
+                <p class="text-gray-200 text-center mt-2">Remove background with ease</p>
+            </div>
+            
+            <div class="p-8">
+                <div id="dropArea" class="mb-8 flex flex-col items-center justify-center h-40 border-2 border-dashed border-purple-500 rounded-lg cursor-pointer hover:border-indigo-500 transition-colors duration-300 relative">
+                    <input type="file" id="fileInput" accept="image/*" class="hidden">
+                    <i class="fas fa-cloud-upload-alt text-4xl text-purple-500 mb-2"></i>
+                    <p class="mt-2 text-sm text-gray-400 text-center">Drag and drop an image here<br>or click to select</p>
+                    <div class="upload-loader hidden"></div>
+                </div>
+
+                <div id="imagePreview" class="mb-8 hidden animate__animated animate__fadeIn">
+                    <div class="image-preview-container p-2 rounded-2xl relative">
+                        <img id="preview" src="" alt="Preview" class="w-full h-40 object-cover rounded-xl">
+                        <button id="removeImage" class="absolute top-4 right-4 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 focus:outline-none">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <div class="removal-overlay hidden">
+                            <div class="removal-animation"></div>
+                            <div class="removal-progress">Removing: 0%</div>
+                        </div>
                     </div>
                 </div>
+
+                <button id="removeBackgroundBtn" class="w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 rounded-lg hover:from-purple-600 hover:to-indigo-600 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 flex items-center justify-center">
+                    <i class="fas fa-magic mr-2"></i>
+                    <span>Remove Background</span>
+                </button>
             </div>
+        </div>
 
-            <button id="removeBackgroundBtn" class="w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 rounded-lg hover:from-purple-600 hover:to-indigo-600 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 flex items-center justify-center">
-                <i class="fas fa-magic mr-2"></i>
-                <span>Remove Background</span>
-            </button>
+        <div id="resultContainer" class="w-full max-w-md mx-auto my-8 hidden animate__animated animate__fadeIn">
+            <div class="result-container checkerboard-bg">
+                <div id="colorOverlay" class="color-overlay"></div>
+                <img id="resultImage" src="" alt="Result" class="w-full">
+            </div>
+            <div class="mt-4 flex justify-center items-center">
+                <button id="downloadBtn" class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300 mr-4">
+                    <i class="fas fa-download mr-2"></i>
+                    Download
+                </button>
+                <button id="newImageBtn" class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 mr-4">
+                    <i class="fas fa-redo-alt mr-2"></i>
+                    New Image
+                </button>
+                <button id="toggleBlurBtn" class="bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition duration-300">
+                    <i class="fas fa-brush mr-2"></i>
+                    Toggle Blur
+                </button>
+            </div>
+            <div id="colorPalette" class="color-palette mt-4"></div>
         </div>
-    </div>
 
-    <div id="resultContainer" class="w-full max-w-md mx-auto my-8 hidden animate__animated animate__fadeIn">
-        <div class="result-container checkerboard-bg">
-            <div id="colorOverlay" class="color-overlay"></div>
-            <img id="resultImage" src="" alt="Result" class="w-full">
-        </div>
-        <div class="mt-4 flex justify-center items-center">
-            <button id="downloadBtn" class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300 mr-4">
-                <i class="fas fa-download mr-2"></i>
-                Download
-            </button>
-            <button id="newImageBtn" class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 mr-4">
-                <i class="fas fa-redo-alt mr-2"></i>
-                New Image
-            </button>
-            <button id="toggleBlurBtn" class="bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition duration-300">
-                <i class="fas fa-brush mr-2"></i>
-                Toggle Blur
-            </button>
-        </div>
-        <div id="colorPalette" class="color-palette mt-4"></div>
-    </div>
-    <div class="max-w-4xl mx-auto mt-20 mb-16">
+        <div class="max-w-4xl mx-auto mt-20 mb-16">
             <h2 class="text-3xl font-bold text-center mb-12 gradient-bg text-white" data-aos="fade-up">Benefits of Denmara Image Wizard</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="100">
@@ -309,7 +283,7 @@
                         style="width:64px;height:64px;">
                     </lord-icon>
                     <h3 class="text-xl font-semibold mt-4 mb-2">Flexible Formats</h3>
-                    <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Easily switch between formats like PDF, PNG, JPG, and WebP tosuit different needs."]'></span></p>
+                    <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Easily switch between formats like PDF, PNG, JPG, and WebP to suit different needs."]'></span></p>
                 </div>
                 <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="300">
                     <lord-icon
@@ -323,7 +297,9 @@
                 </div>
             </div>
         </div>
-     <footer class="footer mt-16 py-6 px-6">
+    </main>
+
+    <footer class="footer mt-16 py-6 px-6">
         <div class="max-w-6xl mx-auto flex flex-col items-center">
             <div class="mb-4">
                 <a href="/terms" class="text-gray-300 hover:text-white mx-2">Terms and Conditions</a>
@@ -335,8 +311,7 @@
         </div>
     </footer>
 
-
-   <script>
+    <script>
         const apiKey = 'Hfxgrxi1dsHQU71obUEYUpNE'; // Replace with your actual Remove.bg API key
         const fileInput = document.getElementById('fileInput');
         const dropArea = document.getElementById('dropArea');
@@ -357,10 +332,13 @@
 
         let uploadedImage = null;
         let isBlurred = false;
-           const userAvatar = localStorage.getItem('userAvatar');
-    if (userAvatar && loginText) {
-        loginText.innerHTML = `<img src="${userAvatar}" alt="User Avatar" class="w-8 h-8 rounded-full">`;
-    }
+
+        // Check for user avatar
+        const userAvatar = localStorage.getItem('userAvatar');
+        const loginText = document.getElementById('loginText');
+        if (userAvatar && loginText) {
+            loginText.innerHTML = `<img src="${userAvatar}" alt="User Avatar" class="w-8 h-8 rounded-full">`;
+        }
 
         // File input change event
         fileInput.addEventListener('change', handleFileSelect);
@@ -564,6 +542,16 @@
 
         // Initialize AOS
         AOS.init();
+
+        // Initialize Typed.js for benefit descriptions
+        document.querySelectorAll('.typed-text').forEach(element => {
+            new Typed(element, {
+                strings: JSON.parse(element.getAttribute('data-typed')),
+                typeSpeed: 50,
+                backSpeed: 30,
+                loop: true
+            });
+        });
 
         // Add this at the end to ensure all elements are loaded before applying animations
         document.addEventListener('DOMContentLoaded', (event) => {
