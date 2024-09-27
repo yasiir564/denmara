@@ -27,19 +27,6 @@
         .hover-scale:hover {
             transform: scale(1.05);
         }
-        .loader {
-            border-top-color: #a855f7;
-            -webkit-animation: spinner 1.5s linear infinite;
-            animation: spinner 1.5s linear infinite;
-        }
-        @-webkit-keyframes spinner {
-            0% { -webkit-transform: rotate(0deg); }
-            100% { -webkit-transform: rotate(360deg); }
-        }
-        @keyframes spinner {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
         .blob {
             border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
             background: linear-gradient(45deg, #6366f1 0%, #a855f7 100%);
@@ -49,14 +36,6 @@
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .removing-bg-animation {
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
         }
         .result-container {
             position: relative;
@@ -98,13 +77,6 @@
         .color-swatch.active {
             box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #3b82f6;
         }
-        .upload-loader {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: none;
-        }
         .checkerboard-bg {
             background-image: linear-gradient(45deg, #808080 25%, transparent 25%),
                               linear-gradient(-45deg, #808080 25%, transparent 25%),
@@ -112,6 +84,66 @@
                               linear-gradient(-45deg, transparent 75%, #808080 75%);
             background-size: 20px 20px;
             background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+        
+        /* New styles for modern loading and removal animations */
+        .upload-loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+        }
+        .upload-loader::before {
+            content: '';
+            box-sizing: border-box;
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border-top: 2px solid #a855f7;
+            border-right: 2px solid transparent;
+            animation: uploadSpinner 0.6s linear infinite;
+        }
+        @keyframes uploadSpinner {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .removal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .removal-animation {
+            width: 100px;
+            height: 100px;
+            border: 3px solid #fff;
+            border-top: 3px solid #a855f7;
+            border-radius: 50%;
+            animation: removalSpin 1s linear infinite;
+        }
+        @keyframes removalSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .removal-progress {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -130,9 +162,7 @@
                 <input type="file" id="fileInput" accept="image/*" class="hidden">
                 <i class="fas fa-cloud-upload-alt text-4xl text-purple-500 mb-2"></i>
                 <p class="mt-2 text-sm text-gray-400 text-center">Drag and drop an image here<br>or click to select</p>
-                <div class="upload-loader">
-                    <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
-                </div>
+                <div class="upload-loader hidden"></div>
             </div>
 
             <div id="imagePreview" class="mb-8 hidden animate__animated animate__fadeIn">
@@ -141,6 +171,10 @@
                     <button id="removeImage" class="absolute top-4 right-4 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 focus:outline-none">
                         <i class="fas fa-times"></i>
                     </button>
+                    <div class="removal-overlay hidden">
+                        <div class="removal-animation"></div>
+                        <div class="removal-progress">Removing: 0%</div>
+                    </div>
                 </div>
             </div>
 
@@ -173,21 +207,13 @@
         <div id="colorPalette" class="color-palette mt-4"></div>
     </div>
 
-    <div id="loader" class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-50 overflow-hidden bg-gray-900 opacity-75 flex flex-col items-center justify-center hidden">
-        <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
-        <i class="fas fa-magic text-4xl text-white mb-4 removing-bg-animation"></i>
-        <h2 class="text-center text-white text-xl font-semibold">Removing Background...</h2>
-        <p class="w-1/3 text-center text-white">This may take a few seconds, please don't close this page.</p>
-    </div>
-
-    <script>
+   <script>
         const apiKey = 'Hfxgrxi1dsHQU71obUEYUpNE'; // Replace with your actual Remove.bg API key
         const fileInput = document.getElementById('fileInput');
         const dropArea = document.getElementById('dropArea');
         const imagePreview = document.getElementById('imagePreview');
         const preview = document.getElementById('preview');
         const removeBackgroundBtn = document.getElementById('removeBackgroundBtn');
-        const loader = document.getElementById('loader');
         const resultContainer = document.getElementById('resultContainer');
         const resultImage = document.getElementById('resultImage');
         const colorOverlay = document.getElementById('colorOverlay');
@@ -197,6 +223,8 @@
         const toggleBlurBtn = document.getElementById('toggleBlurBtn');
         const colorPalette = document.getElementById('colorPalette');
         const uploadLoader = document.querySelector('.upload-loader');
+        const removalOverlay = document.querySelector('.removal-overlay');
+        const removalProgress = document.querySelector('.removal-progress');
 
         let uploadedImage = null;
         let isBlurred = false;
@@ -231,14 +259,14 @@
         function handleFileSelect(event) {
             const file = event.target.files[0];
             if (file) {
-                uploadLoader.style.display = 'block';
+                uploadLoader.classList.remove('hidden');
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     preview.src = e.target.result;
                     imagePreview.classList.remove('hidden');
                     dropArea.classList.add('hidden');
                     uploadedImage = file;
-                    uploadLoader.style.display = 'none';
+                    uploadLoader.classList.add('hidden');
                 };
                 reader.readAsDataURL(file);
             }
@@ -256,7 +284,8 @@
                 return;
             }
 
-            showLoader();
+            removalOverlay.classList.remove('hidden');
+            removalOverlay.style.opacity = '1';
 
             try {
                 const formData = new FormData();
@@ -271,11 +300,27 @@
                 });
 
                 if (response.ok) {
-                    const blob = await response.blob();
+                    const reader = response.body.getReader();
+                    const contentLength = +response.headers.get('Content-Length');
+                    let receivedLength = 0;
+                    const chunks = [];
+
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        chunks.push(value);
+                        receivedLength += value.length;
+                        const progress = Math.round((receivedLength / contentLength) * 100);
+                        removalProgress.textContent = `Removing: ${progress}%`;
+                    }
+
+                    const blob = new Blob(chunks);
                     const url = URL.createObjectURL(blob);
                     resultImage.src = url;
                     resultContainer.classList.remove('hidden');
-                    hideLoader();
+                    removalOverlay.style.opacity = '0';
+                    setTimeout(() => removalOverlay.classList.add('hidden'), 300);
+                    
                     Swal.fire({
                         icon: 'success',
                         title: 'Success!',
@@ -297,109 +342,102 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
-                hideLoader();
+                removalOverlay.style.opacity = '0';
+                setTimeout(() => removalOverlay.classList.add('hidden'), 300);
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
                     text: `An error occurred: ${error.message}`,
-                     background: '#1f2937',
-            color: '#e2e8f0'
+                    background: '#1f2937',
+                    color: '#e2e8f0'
+                });
+            }
         });
-    }
-});
 
-downloadBtn.addEventListener('click', () => {
-    const link = document.createElement('a');
-    link.href = resultImage.src;
-    link.download = 'removed_background.png';
-    link.click();
-});
-
-newImageBtn.addEventListener('click', () => {
-    uploadedImage = null;
-    imagePreview.classList.add('hidden');
-    dropArea.classList.remove('hidden');
-    resultContainer.classList.add('hidden');
-    fileInput.value = '';
-});
-
-toggleBlurBtn.addEventListener('click', () => {
-    isBlurred = !isBlurred;
-    resultImage.classList.toggle('blur-effect', isBlurred);
-});
-
-function showLoader() {
-    loader.classList.remove('hidden');
-}
-
-function hideLoader() {
-    loader.classList.add('hidden');
-}
-
-function extractColors(imageUrl) {
-    const img = new Image();
-    img.crossOrigin = "Anonymous";
-    img.src = imageUrl;
-    img.onload = function() {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx.drawImage(img, 0, 0, img.width, img.height);
-        
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const pixels = imageData.data;
-        const colorCounts = {};
-        
-        for (let i = 0; i < pixels.length; i += 4) {
-            const r = pixels[i];
-            const g = pixels[i + 1];
-            const b = pixels[i + 2];
-            const a = pixels[i + 3];
-            
-            if (a === 0) continue; // Skip transparent pixels
-            
-            const color = `rgb(${r},${g},${b})`;
-            colorCounts[color] = (colorCounts[color] || 0) + 1;
-        }
-        
-        const sortedColors = Object.entries(colorCounts)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 5)
-            .map(entry => entry[0]);
-        
-        createColorPalette(sortedColors);
-    };
-}
-
-function createColorPalette(colors) {
-    colorPalette.innerHTML = '';
-    colors.forEach((color, index) => {
-        const swatch = document.createElement('div');
-        swatch.className = 'color-swatch';
-        swatch.style.backgroundColor = color;
-        swatch.addEventListener('click', () => {
-            colorOverlay.style.backgroundColor = color;
-            document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
-            swatch.classList.add('active');
+        downloadBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.href = resultImage.src;
+            link.download = 'removed_background.png';
+            link.click();
         });
-        if (index === 0) {
-            swatch.classList.add('active');
-            colorOverlay.style.backgroundColor = color;
+
+        newImageBtn.addEventListener('click', () => {
+            uploadedImage = null;
+            imagePreview.classList.add('hidden');
+            dropArea.classList.remove('hidden');
+            resultContainer.classList.add('hidden');
+            fileInput.value = '';
+        });
+
+        toggleBlurBtn.addEventListener('click', () => {
+            isBlurred = !isBlurred;
+            resultImage.classList.toggle('blur-effect', isBlurred);
+        });
+
+        function extractColors(imageUrl) {
+            const img = new Image();
+            img.crossOrigin = "Anonymous";
+            img.src = imageUrl;
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0, img.width, img.height);
+                
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const pixels = imageData.data;
+                const colorCounts = {};
+                
+                for (let i = 0; i < pixels.length; i += 4) {
+                    const r = pixels[i];
+                    const g = pixels[i + 1];
+                    const b = pixels[i + 2];
+                    const a = pixels[i + 3];
+                    
+                    if (a === 0) continue; // Skip transparent pixels
+                    
+                    const color = `rgb(${r},${g},${b})`;
+                    colorCounts[color] = (colorCounts[color] || 0) + 1;
+                }
+                
+                const sortedColors = Object.entries(colorCounts)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 5)
+                    .map(entry => entry[0]);
+                
+                createColorPalette(sortedColors);
+            };
         }
-        colorPalette.appendChild(swatch);
-    });
-}
 
-// Initialize AOS
-AOS.init();
+        function createColorPalette(colors) {
+            colorPalette.innerHTML = '';
+            colors.forEach((color, index) => {
+                const swatch = document.createElement('div');
+                swatch.className = 'color-swatch';
+                swatch.style.backgroundColor = color;
+                swatch.addEventListener('click', () => {
+                    colorOverlay.style.backgroundColor = color;
+                    document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+                    swatch.classList.add('active');
+                });
+                if (index === 0) {
+                    swatch.classList.add('active');
+                    colorOverlay.style.backgroundColor = color;
+                }
+                colorPalette.appendChild(swatch);
+            });
+        }
 
-// Add this at the end to ensure all elements are loaded before applying animations
-document.addEventListener('DOMContentLoaded', (event) => {
-    document.querySelectorAll('.animate__animated').forEach((element) => {
-        element.classList.add('animate__fadeIn');
-    });
-});
-</script>
+        // Initialize AOS
+        AOS.init();
+
+        // Add this at the end to ensure all elements are loaded before applying animations
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('.animate__animated').forEach((element) => {
+                element.classList.add('animate__fadeIn');
+            });
+        });
+    </script>
 </body>
 </html>
