@@ -113,7 +113,7 @@
                 <img src="Denmara__1_-removebg-preview.png" alt="Denmara Logo" style="width:70px; height:70px;">
                 <span class="ml-2 text-2xl font-bold text-white">Denmara</span>
             </a>
-            <a href="/login.html" class="text-white hover:text-purple-400 transition duration-300">Login</a>
+            <a href="/login.html" id="loginText" class="text-white hover:text-purple-400 transition duration-300">Login</a>
         </div>
     </header>
 
@@ -248,6 +248,11 @@
 
         let uploadedImage = null;
         let selectedFilter = 'none';
+
+          const userAvatar = localStorage.getItem('userAvatar');
+    if (userAvatar && loginText) {
+        loginText.innerHTML = `<img src="${userAvatar}" alt="User Avatar" class="w-8 h-8 rounded-full">`;
+    }
 
         // File input change event
         fileInput.addEventListener('change', handleFileSelect);
