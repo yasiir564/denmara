@@ -60,40 +60,6 @@
             border-radius: 1rem;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
-        .color-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.5;
-            transition: opacity 0.3s ease;
-            mix-blend-mode: multiply;
-        }
-        .blur-effect {
-            filter: blur(10px);
-        }
-        .color-palette {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-        .color-swatch {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            border: 2px solid white;
-        }
-        .color-swatch:hover {
-            transform: scale(1.1);
-        }
-        .color-swatch.active {
-            box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #3b82f6;
-        }
         .checkerboard-bg {
             background-image: linear-gradient(45deg, #808080 25%, transparent 25%),
                               linear-gradient(-45deg, #808080 25%, transparent 25%),
@@ -189,6 +155,13 @@
         .footer a:hover {
             color: #a855f7;
         }
+        .gallery-item {
+            transition: all 0.3s ease;
+        }
+        .gallery-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
     </style>
 </head>
 <body class="min-h-screen p-4 relative overflow-x-hidden flex flex-col">
@@ -242,24 +215,29 @@
 
         <div id="resultContainer" class="w-full max-w-md mx-auto my-8 hidden animate__animated animate__fadeIn">
             <div class="result-container checkerboard-bg">
-                <div id="colorOverlay" class="color-overlay"></div>
                 <img id="resultImage" src="" alt="Result" class="w-full">
             </div>
-            <div class="mt-4 flex justify-center items-center">
-                <button id="downloadBtn" class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300 mr-4">
+            <div class="mt-4 flex justify-center items-center space-x-4">
+                <button id="downloadBtn" class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300 flex items-center">
                     <i class="fas fa-download mr-2"></i>
                     Download
                 </button>
-                <button id="newImageBtn" class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 mr-4">
+                <button id="newImageBtn" class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 flex items-center">
                     <i class="fas fa-redo-alt mr-2"></i>
                     New Image
                 </button>
-                <button id="toggleBlurBtn" class="bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition duration-300">
-                    <i class="fas fa-brush mr-2"></i>
-                    Toggle Blur
+                <button id="shareBtn" class="bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition duration-300 flex items-center">
+                    <i class="fas fa-share-alt mr-2"></i>
+                    Share
                 </button>
             </div>
-            <div id="colorPalette" class="color-palette mt-4"></div>
+        </div>
+
+        <div id="recentGallery" class="max-w-4xl mx-auto mt-16 hidden">
+            <h2 class="text-2xl font-bold text-center mb-8">Recently Processed Images</h2>
+            <div id="galleryContainer" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- Gallery items will be dynamically added here -->
+            </div>
         </div>
 
         <div class="max-w-4xl mx-auto mt-20 mb-16">
@@ -320,18 +298,18 @@
         const removeBackgroundBtn = document.getElementById('removeBackgroundBtn');
         const resultContainer = document.getElementById('resultContainer');
         const resultImage = document.getElementById('resultImage');
-        const colorOverlay = document.getElementById('colorOverlay');
         const downloadBtn = document.getElementById('downloadBtn');
         const newImageBtn = document.getElementById('newImageBtn');
         const removeImage = document.getElementById('removeImage');
-        const toggleBlurBtn = document.getElementById('toggleBlurBtn');
-        const colorPalette = document.getElementById('colorPalette');
+        const shareBtn = document.getElementById('shareBtn');
         const uploadLoader = document.querySelector('.upload-loader');
         const removalOverlay = document.querySelector('.removal-overlay');
         const removalProgress = document.querySelector('.removal-progress');
+        const recentGallery = document.getElementById('recentGallery');
+        const galleryContainer = document.getElementById('galleryContainer');
 
         let uploadedImage = null;
-        let isBlurred = false;
+        let recentImages = JSON.parse(localStorage.getItem('recentImages') || '[]');
 
         // Check for user avatar
         const userAvatar = localStorage.getItem('userAvatar');
@@ -440,8 +418,8 @@
                         color: '#e2e8f0'
                     });
                     
-                    // Extract colors from the image and create color palette
-                    extractColors(url);
+                    // Add to recent images
+                    addToRecentImages(url);
                     
                     // Scroll to the result container
                     setTimeout(() => {
@@ -480,64 +458,55 @@
             fileInput.value = '';
         });
 
-        toggleBlurBtn.addEventListener('click', () => {
-            isBlurred = !isBlurred;
-            resultImage.classList.toggle('blur-effect', isBlurred);
+        shareBtn.addEventListener('click', () => {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'My Image with Removed Background',
+                    text: 'Check out this image I created with Denmara Background Remover!',
+                    url: resultImage.src
+                }).then(() => {
+                    console.log('Thanks for sharing!');
+                }).catch(console.error);
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent('Check out this image I created with Denmara Background Remover!')}&url=${encodeURIComponent(window.location.href)}`;
+                window.open(shareUrl, '_blank');
+            }
         });
 
-        function extractColors(imageUrl) {
-            const img = new Image();
-            img.crossOrigin = "Anonymous";
-            img.src = imageUrl;
-            img.onload = function() {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                canvas.width = img.width;
-                canvas.height = img.height;
-                ctx.drawImage(img, 0, 0, img.width, img.height);
-                
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const pixels = imageData.data;
-                const colorCounts = {};
-                
-                for (let i = 0; i < pixels.length; i += 4) {
-                    const r = pixels[i];
-                    const g = pixels[i + 1];
-                    const b = pixels[i + 2];
-                    const a = pixels[i + 3];
-                    
-                    if (a === 0) continue; // Skip transparent pixels
-                    
-                    const color = `rgb(${r},${g},${b})`;
-                    colorCounts[color] = (colorCounts[color] || 0) + 1;
-                }
-                
-                const sortedColors = Object.entries(colorCounts)
-                    .sort((a, b) => b[1] - a[1])
-                    .slice(0, 5)
-                    .map(entry => entry[0]);
-                
-                createColorPalette(sortedColors);
-            };
+        function addToRecentImages(imageUrl) {
+            recentImages.unshift(imageUrl);
+            if (recentImages.length > 8) {
+                recentImages.pop();
+            }
+            localStorage.setItem('recentImages', JSON.stringify(recentImages));
+            updateRecentGallery();
         }
 
-        function createColorPalette(colors) {
-            colorPalette.innerHTML = '';
-            colors.forEach((color, index) => {
-                const swatch = document.createElement('div');
-                swatch.className = 'color-swatch';
-                swatch.style.backgroundColor = color;
-                swatch.addEventListener('click', () => {
-                    colorOverlay.style.backgroundColor = color;
-                    document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
-                    swatch.classList.add('active');
+        function updateRecentGallery() {
+            if (recentImages.length > 0) {
+                recentGallery.classList.remove('hidden');
+                galleryContainer.innerHTML = '';
+                recentImages.forEach((url, index) => {
+                    const galleryItem = document.createElement('div');
+                    galleryItem.className = 'gallery-item relative rounded-lg overflow-hidden';
+                    galleryItem.innerHTML = `
+                        <img src="${url}" alt="Recent image ${index + 1}" class="w-full h-32 object-cover">
+                        <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <button class="bg-white text-gray-800 px-3 py-1 rounded-full text-sm font-semibold" onclick="useRecentImage('${url}')">Use</button>
+                        </div>
+                    `;
+                    galleryContainer.appendChild(galleryItem);
                 });
-                if (index === 0) {
-                    swatch.classList.add('active');
-                    colorOverlay.style.backgroundColor = color;
-                }
-                colorPalette.appendChild(swatch);
-            });
+            } else {
+                recentGallery.classList.add('hidden');
+            }
+        }
+
+        function useRecentImage(url) {
+            resultImage.src = url;
+            resultContainer.classList.remove('hidden');
+            resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         // Initialize AOS
@@ -558,6 +527,7 @@
             document.querySelectorAll('.animate__animated').forEach((element) => {
                 element.classList.add('animate__fadeIn');
             });
+            updateRecentGallery();
         });
     </script>
 </body>
