@@ -145,7 +145,88 @@
             font-size: 16px;
             font-weight: bold;
         }
+        .benefit-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        .benefit-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        .typed-cursor {
+            color: #a855f7;
+        }
+        .faq-item {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .faq-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        .faq-item.active .faq-answer {
+            max-height: 300px;
+            transition: max-height 0.5s ease-in;
+        }
+        .faq-icon {
+            transition: transform 0.3s ease;
+        }
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+        }
+        .tool-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .header {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        .footer {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+        }
+        .footer a {
+            transition: color 0.3s ease;
+        }
+        .footer a:hover {
+            color: #a855f7;
+        }
+         .avatar-placeholder {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #ccc;
+        }
     </style>
+    </head>
+<body class="min-h-screen p-4 relative overflow-x-hidden scrollbar-hide flex flex-col">
+    <header class="header fixed top-0 left-0 right-0 z-50 py-4 px-6">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <a href="/" class="flex items-center">
+                <img src="Denmara__1_-removebg-preview.png" alt="Denmara Logo" style="width:70px; height:70px;">
+                <span class="ml-2 text-2xl font-bold text-white">Denmara</span>
+            </a>
+            <a href="/login.html" id="loginText" class="text-white hover:text-purple-400 transition duration-300">Login</a>
+        </div>
+         
+    </header>
 </head>
 <body class="min-h-screen p-4 relative overflow-x-hidden flex flex-col items-center justify-center">
     <div class="blob fixed top-0 left-0 w-64 h-64 opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
@@ -206,6 +287,53 @@
         </div>
         <div id="colorPalette" class="color-palette mt-4"></div>
     </div>
+    <div class="max-w-4xl mx-auto mt-20 mb-16">
+            <h2 class="text-3xl font-bold text-center mb-12 gradient-bg text-white" data-aos="fade-up">Benefits of Denmara Image Wizard</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="100">
+                    <lord-icon
+                        src="https://cdn.lordicon.com/kbtmbyzy.json"
+                        trigger="hover"
+                        colors="primary:#a855f7,secondary:#6366f1"
+                        style="width:64px;height:64px;">
+                    </lord-icon>
+                    <h3 class="text-xl font-semibold mt-4 mb-2">Saves Time</h3>
+                    <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Rename and download images instantly without delays, streamlining your workflow."]'></span></p>
+                </div>
+                <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="200">
+                    <lord-icon
+                        src="https://cdn.lordicon.com/gqdnbnwt.json"
+                        trigger="hover"
+                        colors="primary:#a855f7,secondary:#6366f1"
+                        style="width:64px;height:64px;">
+                    </lord-icon>
+                    <h3 class="text-xl font-semibold mt-4 mb-2">Flexible Formats</h3>
+                    <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Easily switch between formats like PDF, PNG, JPG, and WebP tosuit different needs."]'></span></p>
+                </div>
+                <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="300">
+                    <lord-icon
+                        src="https://cdn.lordicon.com/dqxvvqzi.json"
+                        trigger="hover"
+                        colors="primary:#a855f7,secondary:#6366f1"
+                        style="width:64px;height:64px;">
+                    </lord-icon>
+                    <h3 class="text-xl font-semibold mt-4 mb-2">Convenient Access</h3>
+                    <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Accessible from any device without needing software, allowing quick renaming and downloads on the go."]'></span></p>
+                </div>
+            </div>
+        </div>
+     <footer class="footer mt-16 py-6 px-6">
+        <div class="max-w-6xl mx-auto flex flex-col items-center">
+            <div class="mb-4">
+                <a href="/terms" class="text-gray-300 hover:text-white mx-2">Terms and Conditions</a>
+                <a href="/privacy" class="text-gray-300 hover:text-white mx-2">Privacy Policy</a>
+            </div>
+            <div class="text-gray-400 text-sm">
+                &copy;2024 denmara.com
+            </div>
+        </div>
+    </footer>
+
 
    <script>
         const apiKey = 'Hfxgrxi1dsHQU71obUEYUpNE'; // Replace with your actual Remove.bg API key
@@ -228,6 +356,10 @@
 
         let uploadedImage = null;
         let isBlurred = false;
+           const userAvatar = localStorage.getItem('userAvatar');
+    if (userAvatar && loginText) {
+        loginText.innerHTML = `<img src="${userAvatar}" alt="User Avatar" class="w-8 h-8 rounded-full">`;
+    }
 
         // File input change event
         fileInput.addEventListener('change', handleFileSelect);
