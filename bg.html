@@ -50,6 +50,14 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
+        .removing-bg-animation {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
         .result-container {
             position: relative;
             overflow: hidden;
@@ -104,61 +112,6 @@
                               linear-gradient(-45deg, transparent 75%, #808080 75%);
             background-size: 20px 20px;
             background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-        }
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-        .loading-content {
-            text-align: center;
-            color: white;
-        }
-        .brush-container {
-            position: relative;
-            width: 300px;
-            height: 300px;
-            overflow: hidden;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .brush-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .brush-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: white;
-            mix-blend-mode: difference;
-        }
-        .brush {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            background: white;
-            border-radius: 50%;
-            filter: blur(10px);
-            opacity: 0.8;
-            animation: brush-move 3s infinite;
-        }
-        @keyframes brush-move {
-            0% { transform: translate(0, 0); }
-            25% { transform: translate(250px, 50px); }
-            50% { transform: translate(200px, 200px); }
-            75% { transform: translate(50px, 250px); }
-            100% { transform: translate(0, 0); }
         }
     </style>
 </head>
@@ -220,17 +173,11 @@
         <div id="colorPalette" class="color-palette mt-4"></div>
     </div>
 
-    <div id="loadingOverlay" class="loading-overlay hidden">
-        <div class="loading-content">
-            <div class="brush-container mb-8">
-                <img id="brushPreviewImage" src="" alt="Preview" class="brush-image">
-                <div class="brush-overlay"></div>
-                <div class="brush"></div>
-            </div>
-            <h2 class="text-2xl font-semibold mb-4">Removing Background</h2>
-            <p class="text-lg mb-2">Please wait while we work our magic!</p>
-            <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4 mx-auto"></div>
-        </div>
+    <div id="loader" class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-50 overflow-hidden bg-gray-900 opacity-75 flex flex-col items-center justify-center hidden">
+        <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
+        <i class="fas fa-magic text-4xl text-white mb-4 removing-bg-animation"></i>
+        <h2 class="text-center text-white text-xl font-semibold">Removing Background...</h2>
+        <p class="w-1/3 text-center text-white">This may take a few seconds, please don't close this page.</p>
     </div>
 
     <script>
@@ -240,6 +187,7 @@
         const imagePreview = document.getElementById('imagePreview');
         const preview = document.getElementById('preview');
         const removeBackgroundBtn = document.getElementById('removeBackgroundBtn');
+        const loader = document.getElementById('loader');
         const resultContainer = document.getElementById('resultContainer');
         const resultImage = document.getElementById('resultImage');
         const colorOverlay = document.getElementById('colorOverlay');
@@ -297,163 +245,161 @@
         }
 
         removeBackgroundBtn.addEventListener('click', async () => {
-        if (!uploadedImage) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Oops...',
-                text: 'Please upload an image first!',
-                background: '#1f2937',
-                color: '#e2e8f0'
-            });
-            return;
-        }
-
-        showLoader();
-
-        try {
-            const formData = new FormData();
-            formData.append('image_file', uploadedImage);
-
-            const response = await fetch('https://api.remove.bg/v1.0/removebg', {
-                method: 'POST',
-                headers: {
-                    'X-Api-Key': apiKey
-                },
-                body: formData
-            });
-
-            if (response.ok) {
-                const blob = await response.blob();
-                const url = URL.createObjectURL(blob);
-                resultImage.src = url;
-                resultContainer.classList.remove('hidden');
-                hideLoader();
+            if (!uploadedImage) {
                 Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: 'Background removed successfully.',
+                    icon: 'warning',
+                    title: 'Oops...',
+                    text: 'Please upload an image first!',
                     background: '#1f2937',
                     color: '#e2e8f0'
                 });
-                
-                extractColors(url);
-                
-                setTimeout(() => {
-                    resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 100);
-            } else {
-                const error = await response.json();
-                throw new Error(error.errors[0].title);
+                return;
             }
-        } catch (error) {
-            console.error('Error:', error);
-            hideLoader();
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: `An error occurred: ${error.message}`,
-                background: '#1f2937',
-                color: '#e2e8f0'
-            });
+
+            showLoader();
+
+            try {
+                const formData = new FormData();
+                formData.append('image_file', uploadedImage);
+
+                const response = await fetch('https://api.remove.bg/v1.0/removebg', {
+                    method: 'POST',
+                    headers: {
+                        'X-Api-Key': apiKey
+                    },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = URL.createObjectURL(blob);
+                    resultImage.src = url;
+                    resultContainer.classList.remove('hidden');
+                    hideLoader();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Background removed successfully.',
+                        background: '#1f2937',
+                        color: '#e2e8f0'
+                    });
+                    
+                    // Extract colors from the image and create color palette
+                    extractColors(url);
+                    
+                    // Scroll to the result container
+                    setTimeout(() => {
+                        resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 100);
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.errors[0].title);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                hideLoader();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: `An error occurred: ${error.message}`,
+                     background: '#1f2937',
+            color: '#e2e8f0'
+        });
+    }
+});
+
+downloadBtn.addEventListener('click', () => {
+    const link = document.createElement('a');
+    link.href = resultImage.src;
+    link.download = 'removed_background.png';
+    link.click();
+});
+
+newImageBtn.addEventListener('click', () => {
+    uploadedImage = null;
+    imagePreview.classList.add('hidden');
+    dropArea.classList.remove('hidden');
+    resultContainer.classList.add('hidden');
+    fileInput.value = '';
+});
+
+toggleBlurBtn.addEventListener('click', () => {
+    isBlurred = !isBlurred;
+    resultImage.classList.toggle('blur-effect', isBlurred);
+});
+
+function showLoader() {
+    loader.classList.remove('hidden');
+}
+
+function hideLoader() {
+    loader.classList.add('hidden');
+}
+
+function extractColors(imageUrl) {
+    const img = new Image();
+    img.crossOrigin = "Anonymous";
+    img.src = imageUrl;
+    img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0, img.width, img.height);
+        
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const pixels = imageData.data;
+        const colorCounts = {};
+        
+        for (let i = 0; i < pixels.length; i += 4) {
+            const r = pixels[i];
+            const g = pixels[i + 1];
+            const b = pixels[i + 2];
+            const a = pixels[i + 3];
+            
+            if (a === 0) continue; // Skip transparent pixels
+            
+            const color = `rgb(${r},${g},${b})`;
+            colorCounts[color] = (colorCounts[color] || 0) + 1;
         }
-    });
+        
+        const sortedColors = Object.entries(colorCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5)
+            .map(entry => entry[0]);
+        
+        createColorPalette(sortedColors);
+    };
+}
 
-    downloadBtn.addEventListener('click', () => {
-        const link = document.createElement('a');
-        link.href = resultImage.src;
-        link.download = 'removed_background.png';
-        link.click();
-    });
-
-    newImageBtn.addEventListener('click', () => {
-        uploadedImage = null;
-        imagePreview.classList.add('hidden');
-        dropArea.classList.remove('hidden');
-        resultContainer.classList.add('hidden');
-        fileInput.value = '';
-    });
-
-    toggleBlurBtn.addEventListener('click', () => {
-        isBlurred = !isBlurred;
-        resultImage.classList.toggle('blur-effect', isBlurred);
-    });
-
-    function showLoader() {
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        const brushPreviewImage = document.getElementById('brushPreviewImage');
-        brushPreviewImage.src = preview.src;
-        loadingOverlay.classList.remove('hidden');
-    }
-
-    function hideLoader() {
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        loadingOverlay.classList.add('hidden');
-    }
-
-    function extractColors(imageUrl) {
-        const img = new Image();
-        img.crossOrigin = "Anonymous";
-        img.src = imageUrl;
-        img.onload = function() {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            ctx.drawImage(img, 0, 0, img.width, img.height);
-            
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const pixels = imageData.data;
-            const colorCounts = {};
-            
-            for (let i = 0; i < pixels.length; i += 4) {
-                const r = pixels[i];
-                const g = pixels[i + 1];
-                const b = pixels[i + 2];
-                const a = pixels[i + 3];
-                
-                if (a === 0) continue; // Skip transparent pixels
-                
-                const color = `rgb(${r},${g},${b})`;
-                colorCounts[color] = (colorCounts[color] || 0) + 1;
-            }
-            
-            const sortedColors = Object.entries(colorCounts)
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 5)
-                .map(entry => entry[0]);
-            
-            createColorPalette(sortedColors);
-        };
-    }
-
-    function createColorPalette(colors) {
-        colorPalette.innerHTML = '';
-        colors.forEach((color, index) => {
-            const swatch = document.createElement('div');
-            swatch.className = 'color-swatch';
-            swatch.style.backgroundColor = color;
-            swatch.addEventListener('click', () => {
-                colorOverlay.style.backgroundColor = color;
-                document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
-                swatch.classList.add('active');
-            });
-            if (index === 0) {
-                swatch.classList.add('active');
-                colorOverlay.style.backgroundColor = color;
-            }
-            colorPalette.appendChild(swatch);
+function createColorPalette(colors) {
+    colorPalette.innerHTML = '';
+    colors.forEach((color, index) => {
+        const swatch = document.createElement('div');
+        swatch.className = 'color-swatch';
+        swatch.style.backgroundColor = color;
+        swatch.addEventListener('click', () => {
+            colorOverlay.style.backgroundColor = color;
+            document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+            swatch.classList.add('active');
         });
-    }
-
-    // Initialize AOS
-    AOS.init();
-
-    // Add this at the end to ensure all elements are loaded before applying animations
-    document.addEventListener('DOMContentLoaded', (event) => {
-        document.querySelectorAll('.animate__animated').forEach((element) => {
-            element.classList.add('animate__fadeIn');
-        });
+        if (index === 0) {
+            swatch.classList.add('active');
+            colorOverlay.style.backgroundColor = color;
+        }
+        colorPalette.appendChild(swatch);
     });
+}
+
+// Initialize AOS
+AOS.init();
+
+// Add this at the end to ensure all elements are loaded before applying animations
+document.addEventListener('DOMContentLoaded', (event) => {
+    document.querySelectorAll('.animate__animated').forEach((element) => {
+        element.classList.add('animate__fadeIn');
+    });
+});
 </script>
 </body>
 </html>
