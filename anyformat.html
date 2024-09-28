@@ -266,7 +266,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
-   <script>
+  <script>
     document.addEventListener('DOMContentLoaded', function() {
         const dragDropArea = document.getElementById('dragDropArea');
         const fileInput = document.getElementById('fileInput');
@@ -277,6 +277,9 @@
         const downloadBtn = document.getElementById('downloadBtn');
         const selectedFormatDisplay = document.getElementById('selectedFormat');
         const loadingOverlay = document.getElementById('loadingOverlay');
+
+        // Initially hide the loading overlay
+        loadingOverlay.style.display = 'none';
 
         let selectedFiles = [];
         let selectedFormat = 'png';
@@ -309,7 +312,8 @@
             dragDropArea.classList.add('dragover');
         }
 
-        function unhighlight() {dragDropArea.classList.remove('dragover');
+        function unhighlight() {
+            dragDropArea.classList.remove('dragover');
         }
 
         dragDropArea.addEventListener('drop', handleDrop, false);
@@ -486,11 +490,11 @@
 
         // Utility functions for loading and error handling
         function showLoading() {
-            loadingOverlay.classList.remove('hidden');
+            loadingOverlay.style.display = 'flex';  // Show loading overlay
         }
 
         function hideLoading() {
-            loadingOverlay.classList.add('hidden');
+            loadingOverlay.style.display = 'none';  // Hide loading overlay
         }
 
         function showError(message) {
@@ -520,6 +524,7 @@
         // Initialize AOS
         AOS.init();
     });
-    </script>
+</script>
+
     </body>
 </html>
