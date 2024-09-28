@@ -13,35 +13,48 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <style>
-        .blob {
-            background: linear-gradient(to right, #8a2387, #e94057, #f27121);
-            filter: blur(70px);
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0f172a;
+            color: #e2e8f0;
         }
         .gradient-bg {
-            background: linear-gradient(to right, #8a2387, #e94057, #f27121);
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
         }
-        .drag-drop-area {
-            border: 2px dashed #a855f7;
-            transition: all 0.3s ease;
+        .hover-scale {
+            transition: transform 0.3s ease-in-out;
         }
-        .drag-drop-area:hover, .drag-drop-area.dragover {
-            border-color: #6366f1;
-            background-color: rgba(99, 102, 241, 0.1);
+        .hover-scale:hover {
+            transform: scale(1.05);
         }
-        .action-button {
-            @apply bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50;
+        .loader {
+            border-top-color: #a855f7;
+            -webkit-animation: spinner 1.5s linear infinite;
+            animation: spinner 1.5s linear infinite;
         }
-        .faq-item {
-            @apply bg-gray-800 transition-all duration-300 ease-in-out;
+        @-webkit-keyframes spinner {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
         }
-        .faq-item.active .faq-answer {
-            @apply block;
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-        .faq-item.active .faq-icon {
-            @apply rotate-180;
+        .blob {
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            background: linear-gradient(45deg, #6366f1 0%, #a855f7 100%);
+            filter: blur(40px);
         }
-        .faq-answer {
-            @apply hidden mt-2;
+        .image-preview-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .overlay {
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
         }
         .scrollbar-hide::-webkit-scrollbar {
             display: none;
@@ -50,18 +63,80 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+        .drag-drop-area {
+            border: 2px dashed #a855f7;
+            transition: all 0.3s ease;
+        }
+        .drag-drop-area.dragover {
+            background-color: rgba(168, 85, 247, 0.1);
+            border-color: #6366f1;
+        }
+        .header {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        .footer {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+        }
+        .footer a {
+            transition: color 0.3s ease;
+        }
+        .footer a:hover {
+            color: #a855f7;
+        }
+        .benefit-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        .benefit-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        .typed-cursor {
+            color: #a855f7;
+        }
+        .faq-item {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .faq-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        .faq-item.active .faq-answer {
+            max-height: 300px;
+            transition: max-height 0.5s ease-in;
+        }
+        .faq-icon {
+            transition: transform 0.3s ease;
+        }
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+        }
+        .action-button {
+            @apply bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 px-6 rounded-lg hover:from-purple-600 hover:to-indigo-600 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 flex items-center justify-center;
+        }
     </style>
 </head>
-<body class="min-h-screen p-4 relative overflow-x-hidden scrollbar-hide flex flex-col bg-gray-900 text-white">
-    <header class="header fixed top-0 left-0 right-0 z-50 py-4 px-6 bg-gray-800 bg-opacity-80 backdrop-filter backdrop-blur-lg">
-        <nav class="flex justify-between items-center">
-            <a href="#" class="text-2xl font-bold gradient-bg text-transparent bg-clip-text">Denmara</a>
-            <ul class="flex space-x-6">
-                <li><a href="#" class="hover:text-purple-400 transition-colors">Home</a></li>
-                <li><a href="#" class="hover:text-purple-400 transition-colors">About</a></li>
-                <li><a href="#" class="hover:text-purple-400 transition-colors">Contact</a></li>
-            </ul>
-        </nav>
+<body class="min-h-screen p-4 relative overflow-x-hidden scrollbar-hide flex flex-col">
+    <header class="header fixed top-0 left-0 right-0 z-50 py-4 px-6">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <a href="/" class="flex items-center">
+                <img src="Denmara__1_-removebg-preview.png" alt="Denmara Logo" class="w-12 h-12 sm:w-16 sm:h-16">
+                <span class="ml-2 text-xl sm:text-2xl font-bold text-white">Denmara</span>
+            </a>
+            <a href="/login.html" id="loginText" class="text-white hover:text-purple-400 transition duration-300">Login</a>
+        </div>
     </header>
 
     <main class="flex-grow mt-20">
@@ -113,62 +188,44 @@
             </div>
         </div>
 
-        <div class="max-w-4xl mx-auto mt-20">
-            <h2 class="text-3xl font-bold text-center mb-12 gradient-bg text-transparent bg-clip-text" data-aos="fade-up">Why Choose Our Tool?</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-gray-800 p-6 rounded-lg text-center" data-aos="fade-up" data-aos-delay="200">
-                    <i class="fas fa-bolt text-4xl text-purple-500 mb-4"></i>
-                    <h3 class="text-xl font-semibold mb-2">Fast Conversion</h3>
-                    <p class="text-gray-400">Convert your images in seconds with our lightning-fast tool.</p>
+        <div class="max-w-4xl mx-auto mt-16 sm:mt-20 mb-16">
+            <h2 class="text-3xl font-bold text-center mb-12 gradient-bg text-white" data-aos="fade-up">Benefits of Denmara Image Wizard</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="100">
+                    <lord-icon
+                        src="https://cdn.lordicon.com/kbtmbyzy.json"
+                        trigger="hover"
+                        colors="primary:#a855f7,secondary:#6366f1"
+                        style="width:64px;height:64px;">
+                    </lord-icon>
+                    <h3 class="text-xl font-semibold mt-4 mb-2">Multiple Formats</h3>
+                    <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Convert your images to various formats including PNG, JPEG, WebP, GIF, and BMP."]'></span></p>
                 </div>
-                <div class="bg-gray-800 p-6 rounded-lg text-center" data-aos="fade-up" data-aos-delay="400">
-                    <i class="fas fa-lock text-4xl text-purple-500 mb-4"></i>
-                    <h3 class="text-xl font-semibold mb-2">Secure & Private</h3>
-                    <p class="text-gray-400">Your images are processed locally, ensuring complete privacy.</p>
+                <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="200">
+                    <lord-icon
+                        src="https://cdn.lordicon.com/gqdnbnwt.json"
+                        trigger="hover"
+                        colors="primary:#a855f7,secondary:#6366f1"
+                        style="width:64px;height:64px;">
+                    </lord-icon>
+                    <h3 class="text-xl font-semibold mt-4 mb-2">Easy to Use</h3>
+                    <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Intuitive interface makes image conversion a breeze for users of all skill levels."]'></span></p>
                 </div>
-                <div class="bg-gray-800 p-6 rounded-lg text-center" data-aos="fade-up" data-aos-delay="600">
-                    <i class="fas fa-desktop text-4xl text-purple-500 mb-4"></i>
-                    <h3 class="text-xl font-semibold mb-2">User-Friendly</h3>
-                    <p class="text-gray-400">Simple interface for easy image conversion without any hassle.</p>
+                <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="300">
+                    <lord-icon
+                        src="https://cdn.lordicon.com/dqxvvqzi.json"
+                        trigger="hover"
+                        colors="primary:#a855f7,secondary:#6366f1"
+                        style="width:64px;height:64px;">
+                    </lord-icon>
+                    <h3 class="text-xl font-semibold mt-4 mb-2">Fast Conversion</h3>
+                    <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Convert your images quickly and efficiently with our powerful tool."]'></span></p>
                 </div>
             </div>
         </div>
 
-        <div class="max-w-4xl mx-auto mt-20 mb-16">
-            <h2 class="text-3xl font-bold text-center mb-12 gradient-bg text-transparent bg-clip-text" data-aos="fade-up">Frequently Asked Questions</h2>
-            <div class="space-y-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="faq-item rounded-lg p-4 cursor-pointer">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-lg font-semibold">What file formats does the Image Conversion Tool support?</h3>
-                        <svg class="faq-icon w-6 h-6 text-purple-500 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div>
-                    <div class="faq-answer mt-2 text-gray-300">
-                        <p>Our Image Conversion Tool supports conversion between PNG, JPEG, WebP, GIF, and BMP formats. You can upload images in these formats and convert them to any of the other supported formats.</p>
-                    </div>
-                </div>
-                <div class="faq-item rounded-lg p-4 cursor-pointer">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-lg font-semibold">Is there a file size limit for image conversion?</h3>
-                        <svg class="faq-icon w-6 h-6 text-purple-500 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div>
-                    <div class="faq-answer mt-2 text-gray-300">
-                        <p>The file size limit depends on your device's capabilities, as all processing is done locally in your browser. For optimal performance, we recommend keeping file sizes under 10MB.</p>
-                    </div>
-                </div>
-                <div class="faq-item rounded-lg p-4 cursor-pointer">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-lg font-semibold">How is my privacy protected when using this tool?</h3>
-                        <svg class="faq-icon w-6 h-6 text-purple-500 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div>
-                    <div class="faq-answer mt-2 text-gray-300">
-                        <p>Your privacy is our top priority. All image processing is done entirely in your browser, meaning your images never leave your device. We don't store or transmit any of your data.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <footer class="footer py-6 px-4 mt-16 bg-gray-800">
+         </main>
+             <footer class="footer py-6 px-4 mt-16 bg-gray-800">
         <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
             <p class="text-gray-400">&copy; 2024 Denmara. All rights reserved.</p>
             <div class="flex space-x-4 mt-4 md:mt-0">
