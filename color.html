@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Denmara Color Adjustment Tool</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://cdn.lordicon.com/bhenfmcm.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        }
+        .hover-scale {
+            transition: transform 0.3s ease-in-out;
+        }
+        .hover-scale:hover {
+            transform: scale(1.05);
+        }
+        .loader {
+            border-top-color: #a855f7;
+            -webkit-animation: spinner 1.5s linear infinite;
+            animation: spinner 1.5s linear infinite;
+        }
+        @-webkit-keyframes spinner {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
+        }
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .blob {
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            background: linear-gradient(45deg, #6366f1 0%, #a855f7 100%);
+            filter: blur(40px);
+        }
+        .image-preview-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .overlay {
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+        .header {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        .footer {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+        }
+        .footer a {
+            transition: color 0.3s ease;
+        }
+        .footer a:hover {
+            color: #a855f7;
+        }
+        .action-button {
+            @apply bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 px-6 rounded-lg hover:from-purple-600 hover:to-indigo-600 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 flex items-center justify-center;
+        }
+        .slider-container {
+            @apply mb-4;
+        }
+        .slider-label {
+            @apply block mb-2 text-sm font-medium text-gray-300;
+        }
+        .slider {
+            @apply w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer;
+        }
+        .slider::-webkit-slider-thumb {
+            @apply appearance-none w-6 h-6 rounded-full bg-purple-500 cursor-pointer;
+        }
+        .slider::-moz-range-thumb {
+            @apply w-6 h-6 rounded-full bg-purple-500 cursor-pointer;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 relative overflow-x-hidden flex flex-col">
+    <header class="header fixed top-0 left-0 right-0 z-50 py-4 px-6">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <a href="/" class="flex items-center">
+                <img src="Denmara__1_-removebg-preview.png" alt="Denmara Logo" class="w-12 h-12 sm:w-16 sm:h-16">
+                <span class="ml-2 text-xl sm:text-2xl font-bold text-white">Denmara</span>
+            </a>
+            <a href="/login.html" id="loginText" class="text-white hover:text-purple-400 transition duration-300">Login</a>
+        </div>
+    </header>
+
+    <main class="flex-grow mt-20">
+        <div class="blob fixed top-0 left-0 w-64 h-64 opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
+        <div class="blob fixed bottom-0 right-0 w-96 h-96 opacity-50 translate-x-1/2 translate-y-1/2"></div>
+        
+        <div class="bg-gray-800 rounded-3xl shadow-2xl w-full max-w-4xl mx-auto my-8 animate__animated animate__fadeIn relative z-10">
+            <div class="gradient-bg p-6 sm:p-8 rounded-t-3xl">
+                <h1 class="text-3xl sm:text-4xl font-bold text-white text-center">Color Adjustment Tool</h1>
+                <p class="text-gray-200 text-center mt-2">Fine-tune colors, brightness, and contrast</p>
+            </div>
+            
+            <div class="p-6 sm:p-8">
+                <div id="dropZone" class="mb-8 flex flex-col items-center justify-center h-40 border-2 border-dashed border-purple-500 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors duration-300">
+                    <input type="file" id="fileInput" accept="image/*" class="hidden">
+                    <lord-icon
+                        src="https://cdn.lordicon.com/pqxdilfs.json"
+                        trigger="hover"
+                        colors="primary:#a855f7,secondary:#6366f1"
+                        style="width:64px;height:64px;">
+                    </lord-icon>
+                    <p class="mt-2 text-sm text-gray-400 text-center">Choose an image or<br>Drag and Drop here!</p>
+                </div>
+
+                <div id="imageContainer" class="mb-8 hidden">
+                    <img id="previewImage" src="" alt="Preview" class="max-w-full h-auto rounded-lg shadow-lg">
+                </div>
+
+                <div id="adjustmentControls" class="mb-8 hidden">
+                    <div class="slider-container">
+                        <label for="brightness" class="slider-label">Brightness</label>
+                        <input type="range" id="brightness" min="0" max="200" value="100" class="slider">
+                    </div>
+                    <div class="slider-container">
+                        <label for="contrast" class="slider-label">Contrast</label>
+                        <input type="range" id="contrast" min="0" max="200" value="100" class="slider">
+                    </div>
+                    <div class="slider-container">
+                        <label for="saturation" class="slider-label">Saturation</label>
+                        <input type="range" id="saturation" min="0" max="200" value="100" class="slider">
+                    </div>
+                    <div class="slider-container">
+                        <label for="hue" class="slider-label">Hue</label>
+                        <input type="range" id="hue" min="0" max="360" value="0" class="slider">
+                    </div>
+                </div>
+
+                <div class="flex justify-center space-x-4">
+                    <button id="resetBtn" class="action-button hidden">
+                        <i class="fas fa-undo mr-2"></i>
+                        <span>Reset</span>
+                    </button>
+                    <button id="downloadBtn" class="action-button hidden">
+                        <i class="fas fa-download mr-2"></i>
+                        <span>Download</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer mt-16 py-6 px-6">
+        <div class="max-w-6xl mx-auto flex flex-col items-center">
+            <div class="mb-4">
+                <a href="/terms" class="text-gray-300 hover:text-white mx-2">Terms</a>
+                <a href="/privacy" class="text-gray-300 hover:text-white mx-2">Privacy</a>
+            </div>
+            <div class="text-gray-400 text-sm">
+                &copy;2024 denmara.com
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const dropZone = document.getElementById('dropZone');
+        const imageContainer = document.getElementById('imageContainer');
+        const previewImage = document.getElementById('previewImage');
+        const adjustmentControls = document.getElementById('adjustmentControls');
+        const resetBtn = document.getElementById('resetBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        const brightness = document.getElementById('brightness');
+        const contrast = document.getElementById('contrast');
+        const saturation = document.getElementById('saturation');
+        const hue = document.getElementById('hue');
+
+        let originalImage = null;
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-purple-400');
+        });
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('border-purple-400');
+        });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-purple-400');
+            handleFile(e.dataTransfer.files[0]);
+        });
+
+        fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+
+        function handleFile(file) {
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    originalImage = new Image();
+                    originalImage.onload = () => {
+                        previewImage.src = e.target.result;
+                        showImageEditor();
+                    };
+                    originalImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                swal("Error", "Please select a valid image file.", "error");
+            }
+        }
+
+        function showImageEditor() {
+            dropZone.classList.add('hidden');
+            imageContainer.classList.remove('hidden');
+            adjustmentControls.classList.remove('hidden');
+            resetBtn.classList.remove('hidden');
+            downloadBtn.classList.remove('hidden');
+        }
+
+        [brightness, contrast, saturation, hue].forEach(slider => {
+            slider.addEventListener('input', updateImage);
+        });
+
+        function updateImage() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = originalImage.width;
+            canvas.height = originalImage.height;
+            ctx.filter = `brightness(${brightness.value}%) contrast(${contrast.value}%) saturate(${saturation.value}%) hue-rotate(${hue.value}deg)`;
+            ctx.drawImage(originalImage, 0, 0, canvas.width, canvas.height);
+            previewImage.src = canvas.toDataURL();
+        }
+
+        resetBtn.addEventListener('click', () => {
+            brightness.value = 100;
+            contrast.value = 100;
+            saturation.value = 100;
+            hue.value = 0;
+            updateImage();
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'adjusted-image.png';
+            link.href = previewImage.src;
+            link.click();
+        });
+
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            once: true,
+        });
+    </script>
+</body>
+</html>
