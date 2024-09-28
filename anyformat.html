@@ -126,11 +126,32 @@
         .action-button {
             @apply bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 px-6 rounded-lg hover:from-purple-600 hover:to-indigo-600 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 flex items-center justify-center;
         }
+        .format-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 1rem;
+        }
         .format-option {
-            @apply bg-gray-700 text-white rounded-lg px-4 py-2 m-1 cursor-pointer transition-all duration-300 hover:bg-purple-600;
+            @apply bg-gray-700 text-white rounded-lg px-4 py-2 cursor-pointer transition-all duration-300 hover:bg-purple-600 flex flex-col items-center justify-center;
         }
         .format-option.selected {
             @apply bg-purple-600;
+        }
+        .format-icon {
+            font-size: 24px;
+            margin-bottom: 0.5rem;
+        }
+        .progress-bar {
+            width: 100%;
+            background-color: #4a5568;
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+        .progress {
+            width: 0;
+            height: 6px;
+            background-color: #a855f7;
+            transition: width 0.3s ease;
         }
     </style>
 </head>
@@ -166,23 +187,51 @@
                     </lord-icon>
                     <p class="mt-2 text-sm text-gray-400 text-center">Choose files or<br>Drag and Drop here!</p>
                 </div>
+                <div id="uploadProgress" class="mb-4 hidden">
+                    <div class="progress-bar">
+                        <div class="progress" id="progressBar"></div>
+                    </div>
+                    <p id="progressText" class="text-center text-sm text-gray-400 mt-2"></p>
+                </div>
                 <div id="imagePreview" class="mb-8 hidden">
                     <div id="previewContainer" class="flex flex-wrap justify-center gap-4"></div>
                 </div>
 
                 <div id="conversionOptions" class="mb-8 hidden">
                     <label class="block text-sm font-medium text-gray-300 mb-2">Select output format:</label>
-                    <div id="formatOptions" class="flex flex-wrap justify-center">
-                        <div class="format-option selected" data-format="png">PNG</div>
-                        <div class="format-option" data-format="jpeg">JPEG</div>
-                        <div class="format-option" data-format="webp">WebP</div>
-                        <div class="format-option" data-format="gif">GIF</div>
-                        <div class="format-option" data-format="bmp">BMP</div>
-                        <div class="format-option" data-format="tiff">TIFF</div>
-                        <div class="format-option" data-format="ico">ICO</div>
-                        <div class="format-option" data-format="svg">SVG</div>
-                        <div class="format-option" data-format="heif">HEIF</div>
-                        <div class="format-option" data-format="avif">AVIF</div>
+                    <div id="formatOptions" class="format-grid">
+                        <div class="format-option selected" data-format="png">
+                            <i class="fas fa-file-image format-icon"></i>
+                            <span>PNG</span>
+                        </div>
+                        <div class="format-option" data-format="jpeg">
+                            <i class="fas fa-camera format-icon"></i>
+                            <span>JPEG</span>
+                        </div>
+                        <div class="format-option" data-format="webp">
+                            <i class="fas fa-compress format-icon"></i>
+                            <span>WebP</span>
+                        </div>
+                        <div class="format-option" data-format="gif">
+                            <i class="fas fa-film format-icon"></i>
+                            <span>GIF</span>
+                        </div>
+                        <div class="format-option" data-format="bmp">
+                            <i class="fas fa-paint-brush format-icon"></i>
+                            <span>BMP</span>
+                        </div>
+                        <div class="format-option" data-format="tiff">
+                            <i class="fas fa-image format-icon"></i>
+                            <span>TIFF</span>
+                        </div>
+                        <div class="format-option" data-format="ico">
+                            <i class="fas fa-icons format-icon"></i>
+                            <span>ICO</span>
+                        </div>
+                        <div class="format-option" data-format="svg">
+                            <i class="fas fa-bezier-curve format-icon"></i>
+                            <span>SVG</span>
+                        </div>
                     </div>
                 </div>
 
@@ -229,6 +278,9 @@
         const formatOptions = document.getElementById('formatOptions');
         const convertBtn = document.getElementById('convertBtn');
         const downloadBtn = document.getElementById('downloadBtn');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
 
         let selectedFiles = [];
         let selectedFormat = 'png';
@@ -238,7 +290,7 @@
             loginText.innerHTML = `<img src="${userAvatar}" alt="User Avatar" class="w-8 h-8 rounded-full">`;
         }
 
-        // Drag and drop functionality
+       // Drag and drop functionality
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dragDropArea.addEventListener(eventName, preventDefaults, false);
         });
@@ -286,6 +338,7 @@
         function handleFiles(files) {
             selectedFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
             if (selectedFiles.length > 0) {
+                uploadProgress.classList.remove('hidden');
                 displayPreviews(selectedFiles);
             } else {
                 swal("Error", "Please select at least one image file.", "error");
@@ -294,9 +347,16 @@
 
         function displayPreviews(files) {
             previewContainer.innerHTML = '';
+            let totalSize = 0;
+            let loadedSize = 0;
+
             files.forEach((file, index) => {
+                totalSize += file.size;
                 const reader = new FileReader();
                 reader.onload = function(e) {
+                    loadedSize += file.size;
+                    updateProgress(loadedSize, totalSize);
+
                     const previewWrapper = document.createElement('div');
                     previewWrapper.className = 'relative';
                     const previewImg = document.createElement('img');
@@ -311,12 +371,24 @@
                     previewWrapper.appendChild(removeBtn);
                     
                     previewContainer.appendChild(previewWrapper);
+
+                    if (loadedSize === totalSize) {
+                        setTimeout(() => {
+                            uploadProgress.classList.add('hidden');
+                            imagePreview.classList.remove('hidden');
+                            conversionOptions.classList.remove('hidden');
+                            convertBtn.classList.remove('hidden');
+                        }, 500);
+                    }
                 };
                 reader.readAsDataURL(file);
             });
-            imagePreview.classList.remove('hidden');
-            conversionOptions.classList.remove('hidden');
-            convertBtn.classList.remove('hidden');
+        }
+
+        function updateProgress(loaded, total) {
+            const percent = Math.round((loaded / total) * 100);
+            progressBar.style.width = `${percent}%`;
+            progressText.textContent = `Uploading: ${percent}%`;
         }
 
         function removeFile(index) {
@@ -332,10 +404,11 @@
 
         // Format selection
         formatOptions.addEventListener('click', (e) => {
-            if (e.target.classList.contains('format-option')) {
+            const option = e.target.closest('.format-option');
+            if (option) {
                 document.querySelectorAll('.format-option').forEach(opt => opt.classList.remove('selected'));
-                e.target.classList.add('selected');
-                selectedFormat = e.target.getAttribute('data-format');
+                option.classList.add('selected');
+                selectedFormat = option.getAttribute('data-format');
             }
         });
 
@@ -401,11 +474,6 @@
                             case 'svg':
                                 // SVG conversion is not supported in this basic implementation
                                 reject(new Error('SVG conversion not supported'));
-                                return;
-                            case 'heif':
-                            case 'avif':
-                                // HEIF and AVIF are not supported in most browsers
-                                reject(new Error(`${format.toUpperCase()} conversion not supported`));
                                 return;
                             default:
                                 reject(new Error('Unsupported format'));
