@@ -9,7 +9,6 @@
     <script src="https://cdn.lordicon.com/bhenfmcm.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <style>
@@ -96,9 +95,6 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
-        .typed-cursor {
-            color: #a855f7;
-        }
         .faq-item {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
@@ -107,21 +103,6 @@
         }
         .faq-item:hover {
             background: rgba(255, 255, 255, 0.1);
-        }
-        .faq-answer {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-out;
-        }
-        .faq-item.active .faq-answer {
-            max-height: 300px;
-            transition: max-height 0.5s ease-in;
-        }
-        .faq-icon {
-            transition: transform 0.3s ease;
-        }
-        .faq-item.active .faq-icon {
-            transform: rotate(180deg);
         }
         .action-button {
             @apply bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 px-6 rounded-lg hover:from-purple-600 hover:to-indigo-600 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 flex items-center justify-center;
@@ -227,12 +208,6 @@
                     </lord-icon>
                     <p class="mt-2 text-sm text-gray-400 text-center">Choose files or<br>Drag and Drop here!</p>
                 </div>
-                <div id="uploadProgress" class="mb-4 hidden">
-                    <div class="progress-bar">
-                        <div class="progress" id="progressBar"></div>
-                    </div>
-                    <p id="progressText" class="text-center text-sm text-gray-400 mt-2"></p>
-                </div>
                 <div id="imagePreview" class="mb-8 hidden">
                     <div id="previewContainer" class="flex flex-wrap justify-center gap-4"></div>
                 </div>
@@ -250,11 +225,6 @@
                             <div class="format-option" data-format="webp">WebP</div>
                             <div class="format-option" data-format="gif">GIF</div>
                             <div class="format-option" data-format="bmp">BMP</div>
-                            <div class="format-option" data-format="tiff">TIFF</div>
-                            <div class="format-option" data-format="ico">ICO</div>
-                            <div class="format-option" data-format="svg">SVG</div>
-                            <div class="format-option" data-format="heif">HEIF</div>
-                            <div class="format-option" data-format="avif">AVIF</div>
                         </div>
                     </div>
                 </div>
@@ -305,9 +275,6 @@
         const conversionOptions = document.getElementById('conversionOptions');
         const convertBtn = document.getElementById('convertBtn');
         const downloadBtn = document.getElementById('downloadBtn');
-        const uploadProgress = document.getElementById('uploadProgress');
-        const progressBar = document.getElementById('progressBar');
-        const progressText = document.getElementById('progressText');
         const selectedFormatDisplay = document.getElementById('selectedFormat');
         const loadingOverlay = document.getElementById('loadingOverlay');
 
@@ -315,6 +282,7 @@
         let selectedFormat = 'png';
 
         const userAvatar = localStorage.getItem('userAvatar');
+        const loginText = document.getElementById('loginText');
         if (userAvatar && loginText) {
             loginText.innerHTML = `<img src="${userAvatar}" alt="User Avatar" class="w-8 h-8 rounded-full">`;
         }
@@ -341,8 +309,7 @@
             dragDropArea.classList.add('dragover');
         }
 
-        function unhighlight() {
-            dragDropArea.classList.remove('dragover');
+        function unhighlight() {dragDropArea.classList.remove('dragover');
         }
 
         dragDropArea.addEventListener('drop', handleDrop, false);
@@ -367,7 +334,6 @@
         function handleFiles(files) {
             selectedFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
             if (selectedFiles.length > 0) {
-                uploadProgress.classList.remove('hidden');
                 displayPreviews(selectedFiles);
             } else {
                 showError("Please select at least one image file.");
@@ -376,16 +342,9 @@
 
         function displayPreviews(files) {
             previewContainer.innerHTML = '';
-            let totalSize = 0;
-            let loadedSize = 0;
-
             files.forEach((file, index) => {
-                totalSize += file.size;
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    loadedSize += file.size;
-                    updateProgress(loadedSize, totalSize);
-
                     const previewWrapper = document.createElement('div');
                     previewWrapper.className = 'relative';
                     const previewImg = document.createElement('img');
@@ -401,23 +360,14 @@
                     
                     previewContainer.appendChild(previewWrapper);
 
-                    if (loadedSize === totalSize) {
-                        setTimeout(() => {
-                            uploadProgress.classList.add('hidden');
-                            imagePreview.classList.remove('hidden');
-                            conversionOptions.classList.remove('hidden');
-                            convertBtn.classList.remove('hidden');
-                        }, 500);
+                    if (index === files.length - 1) {
+                        imagePreview.classList.remove('hidden');
+                        conversionOptions.classList.remove('hidden');
+                        convertBtn.classList.remove('hidden');
                     }
                 };
                 reader.readAsDataURL(file);
             });
-        }
-
-        function updateProgress(loaded, total) {
-            const percent = Math.round((loaded / total) * 100);
-            progressBar.style.width = `${percent}%`;
-            progressText.textContent = `Uploading: ${percent}%`;
         }
 
         function removeFile(index) {
@@ -495,18 +445,6 @@
                             case 'bmp':
                                 mimeType = 'image/bmp';
                                 break;
-                            case 'tiff':
-                                mimeType = 'image/tiff';
-                                break;
-                            case 'ico':
-                                mimeType = 'image/x-icon';
-                                break;
-                            case 'svg':
-                            case 'heif':
-                            case 'avif':
-                                // These formats require more complex conversion
-                                reject(new Error(`${format.toUpperCase()} conversion not supported in this demo`));
-                                return;
                             default:
                                 reject(new Error('Unsupported format'));
                                 return;
