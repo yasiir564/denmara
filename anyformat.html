@@ -126,6 +126,12 @@
         .action-button {
             @apply bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 px-6 rounded-lg hover:from-purple-600 hover:to-indigo-600 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 flex items-center justify-center;
         }
+        .format-option {
+            @apply bg-gray-700 text-white rounded-lg px-4 py-2 m-1 cursor-pointer transition-all duration-300 hover:bg-purple-600;
+        }
+        .format-option.selected {
+            @apply bg-purple-600;
+        }
     </style>
 </head>
 <body class="min-h-screen p-4 relative overflow-x-hidden scrollbar-hide flex flex-col">
@@ -165,16 +171,19 @@
                 </div>
 
                 <div id="conversionOptions" class="mb-8 hidden">
-                    <label for="formatSelect" class="block text-sm font-medium text-gray-300 mb-2">Select output format:</label>
-                    <select id="formatSelect" class="w-full bg-gray-700 text-white rounded-md px-3 py-2 mb-4">
-                        <option value="png">PNG</option>
-                        <option value="jpeg">JPEG</option>
-                        <option value="webp">WebP</option>
-                        <option value="gif">GIF</option>
-                        <option value="bmp">BMP</option>
-                        <option value="tiff">TIFF</option>
-                        <option value="ico">ICO</option>
-                    </select>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Select output format:</label>
+                    <div id="formatOptions" class="flex flex-wrap justify-center">
+                        <div class="format-option selected" data-format="png">PNG</div>
+                        <div class="format-option" data-format="jpeg">JPEG</div>
+                        <div class="format-option" data-format="webp">WebP</div>
+                        <div class="format-option" data-format="gif">GIF</div>
+                        <div class="format-option" data-format="bmp">BMP</div>
+                        <div class="format-option" data-format="tiff">TIFF</div>
+                        <div class="format-option" data-format="ico">ICO</div>
+                        <div class="format-option" data-format="svg">SVG</div>
+                        <div class="format-option" data-format="heif">HEIF</div>
+                        <div class="format-option" data-format="avif">AVIF</div>
+                    </div>
                 </div>
 
                 <div class="flex justify-center space-x-4">
@@ -186,42 +195,6 @@
                         <i class="fas fa-download mr-2"></i>
                         <span>Download All</span>
                     </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="max-w-4xl mx-auto mt-16 sm:mt-20 mb-16">
-            <h2 class="text-3xl font-bold text-center mb-12 gradient-bg text-white" data-aos="fade-up">Benefits of Denmara Image Wizard</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="100">
-                    <lord-icon
-                        src="https://cdn.lordicon.com/kbtmbyzy.json"
-                        trigger="hover"
-                        colors="primary:#a855f7,secondary:#6366f1"
-                        style="width:64px;height:64px;">
-                    </lord-icon>
-                    <h3 class="text-xl font-semibold mt-4 mb-2">Multiple Formats</h3>
-                    <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Convert your images to various formats including PNG, JPEG, WebP, GIF, BMP, TIFF, and ICO."]'></span></p>
-                </div>
-                <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="200">
-                    <lord-icon
-                        src="https://cdn.lordicon.com/gqdnbnwt.json"
-                        trigger="hover"
-                        colors="primary:#a855f7,secondary:#6366f1"
-                        style="width:64px;height:64px;">
-                    </lord-icon>
-                    <h3 class="text-xl font-semibold mt-4 mb-2">Easy to Use</h3>
-                    <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Intuitive interface makes image conversion a breeze for users of all skill levels."]'></span></p>
-                </div>
-                <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="300">
-                    <lord-icon
-                        src="https://cdn.lordicon.com/dqxvvqzi.json"
-                        trigger="hover"
-                        colors="primary:#a855f7,secondary:#6366f1"
-                        style="width:64px;height:64px;">
-                    </lord-icon>
-                    <h3 class="text-xl font-semibold mt-4 mb-2">Fast Conversion</h3>
-                    <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Convert your images quickly and efficiently with our powerful tool."]'></span></p>
                 </div>
             </div>
         </div>
@@ -253,11 +226,13 @@
         const imagePreview = document.getElementById('imagePreview');
         const previewContainer = document.getElementById('previewContainer');
         const conversionOptions = document.getElementById('conversionOptions');
-        const formatSelect = document.getElementById('formatSelect');
+        const formatOptions = document.getElementById('formatOptions');
         const convertBtn = document.getElementById('convertBtn');
         const downloadBtn = document.getElementById('downloadBtn');
 
         let selectedFiles = [];
+        let selectedFormat = 'png';
+
         const userAvatar = localStorage.getItem('userAvatar');
         if (userAvatar && loginText) {
             loginText.innerHTML = `<img src="${userAvatar}" alt="User Avatar" class="w-8 h-8 rounded-full">`;
@@ -291,16 +266,21 @@
 
         dragDropArea.addEventListener('drop', handleDrop, false);
 
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
-            handleFiles(files);
-        }
+        // Trigger file input when clicking on the drag-drop area
+        dragDropArea.addEventListener('click', () => {
+            fileInput.click();
+        });
 
         // File input change event
         fileInput.addEventListener('change', function(e) {
             handleFiles(this.files);
         });
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
 
         // Handle selected files
         function handleFiles(files) {
@@ -312,7 +292,6 @@
             }
         }
 
-        // Display image previews
         function displayPreviews(files) {
             previewContainer.innerHTML = '';
             files.forEach((file, index) => {
@@ -333,9 +312,6 @@
                     
                     previewContainer.appendChild(previewWrapper);
                 };
-                reader.onerror = function() {
-                    swal("Error", `Failed to read the file ${file.name}. Please try again.`, "error");
-                };
                 reader.readAsDataURL(file);
             });
             imagePreview.classList.remove('hidden');
@@ -354,10 +330,18 @@
             }
         }
 
+        // Format selection
+        formatOptions.addEventListener('click', (e) => {
+            if (e.target.classList.contains('format-option')) {
+                document.querySelectorAll('.format-option').forEach(opt => opt.classList.remove('selected'));
+                e.target.classList.add('selected');
+                selectedFormat = e.target.getAttribute('data-format');
+            }
+        });
+
         // Convert button click event
         convertBtn.addEventListener('click', function() {
             if (selectedFiles.length > 0) {
-                const selectedFormat = formatSelect.value;
                 convertImages(selectedFiles, selectedFormat)
                     .then(convertedBlobs => {
                         swal("Success", "Images converted successfully!", "success");
@@ -414,6 +398,15 @@
                             case 'ico':
                                 mimeType = 'image/x-icon';
                                 break;
+                            case 'svg':
+                                // SVG conversion is not supported in this basic implementation
+                                reject(new Error('SVG conversion not supported'));
+                                return;
+                            case 'heif':
+                            case 'avif':
+                                // HEIF and AVIF are not supported in most browsers
+                                reject(new Error(`${format.toUpperCase()} conversion not supported`));
+                                return;
                             default:
                                 reject(new Error('Unsupported format'));
                                 return;
@@ -453,21 +446,6 @@
             }
         }
 
-        // Initialize AOS
-        AOS.init();
-
-        // Initialize Typed.js instances
-        document.querySelectorAll('.typed-text').forEach(element => {
-            new Typed(element, {
-                strings: JSON.parse(element.getAttribute('data-typed')),
-                typeSpeed: 50,
-                backSpeed: 25,
-                backDelay: 3000,
-                startDelay: 1000,
-                loop: true
-            });
-        });
-
         // Scroll to top functionality
         const scrollTopBtn = document.getElementById('scrollTopBtn');
         window.addEventListener('scroll', () => {
@@ -483,7 +461,10 @@
         scrollTopBtn.addEventListener('click', () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
+
+        // Initialize AOS
+        AOS.init();
     });
     </script>
-</body>
+    </body>
 </html>
