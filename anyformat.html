@@ -190,13 +190,13 @@
     <main class="flex-grow mt-20">
         <div class="blob fixed top-0 left-0 w-64 h-64 opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
         <div class="blob fixed bottom-0 right-0 w-96 h-96 opacity-50 translate-x-1/2 translate-y-1/2"></div>
-        
+
         <div class="bg-gray-800 rounded-3xl shadow-2xl w-full max-w-4xl mx-auto my-8 animate__animated animate__fadeIn relative z-10">
             <div class="gradient-bg p-6 sm:p-8 rounded-t-3xl">
                 <h1 class="text-3xl sm:text-4xl font-bold text-white text-center">Image Format Conversion Tool</h1>
                 <p class="text-gray-200 text-center mt-2">Convert your images to various formats with ease</p>
             </div>
-            
+
             <div class="p-6 sm:p-8">
                 <div id="dragDropArea" class="mb-8 flex flex-col items-center justify-center h-40 drag-drop-area rounded-lg cursor-pointer">
                     <input type="file" id="fileInput" accept="image/*" class="hidden" multiple>
@@ -208,47 +208,49 @@
                     </lord-icon>
                     <p class="mt-2 text-sm text-gray-400 text-center">Choose files or<br>Drag and Drop here!</p>
                 </div>
+
                 <div id="imagePreview" class="mb-8 hidden">
                     <div id="previewContainer" class="flex flex-wrap justify-center gap-4"></div>
                 </div>
 
-                <div id="conversionOptions" class="mb-8 hidden">
+                <div id="conversionOptions" class="mb-8">
                     <label class="block text-sm font-medium text-gray-300 mb-2">Select output format:</label>
-                    <div class="format-dropdown">
-                        <button class="action-button">
+                    <div class="format-dropdown relative">
+                        <button class="action-button flex justify-between items-center w-full bg-gray-700 text-white p-2 rounded-lg">
                             <span id="selectedFormat">PNG</span>
                             <i class="fas fa-chevron-down ml-2"></i>
                         </button>
-                        <div class="format-dropdown-content">
-    <div class="format-option" data-format="png">PNG</div>
-    <div class="format-option" data-format="jpeg">JPEG</div>
-    <div class="format-option" data-format="webp">WebP</div>
-    <div class="format-option" data-format="gif">GIF</div>
-    <div class="format-option" data-format="bmp">BMP</div>
-    <div class="format-option" data-format="tiff">TIFF</div>
-    <div class="format-option" data-format="ico">ICO</div>
-    <div class="format-option" data-format="svg">SVG</div>
-    <div class="format-option" data-format="pdf">PDF</div>
-    <div class="format-option" data-format="eps">EPS</div>
-    <div class="format-option" data-format="heic">HEIC</div>
-    <div class="format-option" data-format="jp2">JPEG 2000 (JP2)</div>
-    <div class="format-option" data-format="psd">Photoshop (PSD)</div>
-    <div class="format-option" data-format="raw">RAW</div>
-    <div class="format-option" data-format="tga">Targa (TGA)</div>
-    <div class="format-option" data-format="hdr">HDR</div>
-    <div class="format-option" data-format="exr">OpenEXR (EXR)</div>
-    <div class="format-option" data-format="dds">DirectDraw Surface (DDS)</div>
-    <div class="format-option" data-format="xcf">GIMP Image (XCF)</div>
-    <div class="format-option" data-format="jxr">JPEG XR (JXR)</div>
-</div>
-
+                        <div class="format-dropdown-content absolute w-full mt-2 bg-gray-800 rounded-lg shadow-lg p-4 hidden">
+                            <div class="format-option" data-format="png">PNG</div>
+                            <div class="format-option" data-format="jpeg">JPEG</div>
+                            <div class="format-option" data-format="webp">WebP</div>
+                            <div class="format-option" data-format="gif">GIF</div>
+                            <div class="format-option" data-format="bmp">BMP</div>
+                            <div class="format-option" data-format="tiff">TIFF</div>
+                            <div class="format-option" data-format="ico">ICO</div>
+                            <div class="format-option" data-format="svg">SVG</div>
+                            <div class="format-option" data-format="pdf">PDF</div>
+                            <div class="format-option" data-format="eps">EPS</div>
+                            <div class="format-option" data-format="heic">HEIC</div>
+                            <div class="format-option" data-format="jp2">JPEG 2000 (JP2)</div>
+                            <div class="format-option" data-format="psd">Photoshop (PSD)</div>
+                            <div class="format-option" data-format="raw">RAW</div>
+                            <div class="format-option" data-format="tga">Targa (TGA)</div>
+                            <div class="format-option" data-format="hdr">HDR</div>
+                            <div class="format-option" data-format="exr">OpenEXR (EXR)</div>
+                            <div class="format-option" data-format="dds">DirectDraw Surface (DDS)</div>
+                            <div class="format-option" data-format="xcf">GIMP Image (XCF)</div>
+                            <div class="format-option" data-format="jxr">JPEG XR (JXR)</div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="flex justify-center space-x-4">
-                    <button id="convertBtn" class="action-button hidden">
+                    <button id="convertBtn" class="action-button flex items-center bg-purple-500 text-white p-2 rounded-lg">
                         <i class="fas fa-exchange-alt mr-2"></i>
                         <span>Convert Images</span>
                     </button>
-                    <button id="downloadBtn" class="action-button hidden">
+                    <button id="downloadBtn" class="action-button flex items-center bg-green-500 text-white p-2 rounded-lg">
                         <i class="fas fa-download mr-2"></i>
                         <span>Download All</span>
                     </button>
@@ -276,6 +278,7 @@
     <div id="loadingOverlay" class="loading-overlay hidden">
         <div class="loading-spinner"></div>
     </div>
+
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
