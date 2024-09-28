@@ -205,29 +205,26 @@
         }
     </style>
 </head>
-<body class="min-h-screen p-4 relative overflow-x-hidden scrollbar-hide flex flex-col">
-    <header class="header fixed top-0 left-0 right-0 z-50 py-4 px-6">
+<body class="bg-gray-900 text-white min-h-screen p-4">
+    <header class="py-4 px-6">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
             <a href="/" class="flex items-center">
                 <img src="Denmara__1_-removebg-preview.png" alt="Denmara Logo" class="w-12 h-12 sm:w-16 sm:h-16">
-                <span class="ml-2 text-xl sm:text-2xl font-bold text-white">Denmara</span>
+                <span class="ml-2 text-xl sm:text-2xl font-bold">Denmara</span>
             </a>
-            <a href="/login.html" id="loginText" class="text-white hover:text-purple-400 transition duration-300">Login</a>
+            <a href="/login.html" id="loginText" class="hover:text-purple-400 transition duration-300">Login</a>
         </div>
     </header>
 
     <main class="flex-grow mt-20">
-        <div class="blob fixed top-0 left-0 w-64 h-64 opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
-        <div class="blob fixed bottom-0 right-0 w-96 h-96 opacity-50 translate-x-1/2 translate-y-1/2"></div>
-
-        <div class="bg-gray-800 rounded-3xl shadow-2xl w-full max-w-4xl mx-auto my-8 animate__animated animate__fadeIn relative z-10">
-            <div class="gradient-bg p-6 sm:p-8 rounded-t-3xl">
-                <h1 class="text-3xl sm:text-4xl font-bold text-white text-center">Image Format Conversion Tool</h1>
+        <div class="bg-gray-800 rounded-3xl shadow-2xl w-full max-w-4xl mx-auto my-8">
+            <div class="bg-gradient-to-r from-purple-500 to-indigo-500 p-6 sm:p-8 rounded-t-3xl">
+                <h1 class="text-3xl sm:text-4xl font-bold text-center">Image Format Conversion Tool</h1>
                 <p class="text-gray-200 text-center mt-2">Convert your images to various formats with ease</p>
             </div>
 
             <div class="p-6 sm:p-8">
-                <div id="dragDropArea" class="mb-8 flex flex-col items-center justify-center h-40 drag-drop-area rounded-lg cursor-pointer">
+                <div id="dragDropArea" class="mb-8 flex flex-col items-center justify-center h-40 border-2 border-dashed border-purple-500 rounded-lg cursor-pointer">
                     <input type="file" id="fileInput" accept="image/*" class="hidden" multiple>
                     <lord-icon
                         src="https://cdn.lordicon.com/nxooksci.json"
@@ -242,34 +239,36 @@
                     <div id="previewContainer" class="flex flex-wrap justify-center gap-4"></div>
                 </div>
 
-                <div id="conversionOptions" class="mb-8">
+                <div id="conversionOptions" class="mb-8 hidden">
                     <label class="block text-sm font-medium text-gray-300 mb-2">Select output format:</label>
-                    <div class="format-dropdown relative">
-                        <button class="action-button flex justify-between items-center w-full bg-gray-700 text-white p-2 rounded-lg">
+                    <div class="relative">
+                        <button id="formatDropdownBtn" class="bg-gray-700 text-white p-2 rounded-lg w-full text-left flex justify-between items-center">
                             <span id="selectedFormat">PNG</span>
                             <i class="fas fa-chevron-down ml-2"></i>
                         </button>
-                       <div class="grid grid-cols-4 gap-4">
-                        <div class="format-option" data-format="png">PNG</div>
-                        <div class="format-option" data-format="jpeg">JPEG</div>
-                        <div class="format-option" data-format="webp">WebP</div>
-                        <div class="format-option" data-format="gif">GIF</div>
-                        <div class="format-option" data-format="bmp">BMP</div>
-                        <div class="format-option" data-format="tiff">TIFF</div>
-                        <div class="format-option" data-format="ico">ICO</div>
-                        <div class="format-option" data-format="svg">SVG</div>
-                        <div class="format-option" data-format="pdf">PDF</div>
-                        <div class="format-option" data-format="eps">EPS</div>
-                        <div class="format-option" data-format="heic">HEIC</div>
-                        <div class="format-option" data-format="jp2">JPEG 2000 (JP2)</div>
-                        <div class="format-option" data-format="psd">Photoshop (PSD)</div>
-                        <div class="format-option" data-format="raw">RAW</div>
-                        <div class="format-option" data-format="tga">Targa (TGA)</div>
-                        <div class="format-option" data-format="hdr">HDR</div>
-                        <div class="format-option" data-format="exr">OpenEXR (EXR)</div>
-                        <div class="format-option" data-format="dds">DirectDraw Surface (DDS)</div>
-                        <div class="format-option" data-format="xcf">GIMP Image (XCF)</div>
-                        <div class="format-option" data-format="jxr">JPEG XR (JXR)</div>
+                        <div id="formatDropdownContent" class="hidden absolute z-10 mt-1 w-full bg-gray-700 rounded-md shadow-lg">
+                            <div class="p-2 grid grid-cols-2 gap-2">
+                             <div class="format-option bg-gray-600 hover:bg-gray-500 p-2 rounded cursor-pointer" data-format="png">PNG</div
+                            <div class="format-option bg-gray-600 hover:bg-gray-500 p-2 rounded cursor-pointer" data-format="jpeg">JPEG</div>
+<div class="format-option bg-gray-600 hover:bg-gray-500 p-2 rounded cursor-pointer" data-format="webp">WebP</div>
+<div class="format-option bg-gray-600 hover:bg-gray-500 p-2 rounded cursor-pointer" data-format="gif">GIF</div>
+<div class="format-option bg-gray-600 hover:bg-gray-500 p-2 rounded cursor-pointer" data-format="bmp">BMP</div>
+<div class="format-option bg-gray-600 hover:bg-gray-500 p-2 rounded cursor-pointer" data-format="tiff">TIFF</div>
+<div class="format-option bg-gray-600 hover:bg-gray-500 p-2 rounded cursor-pointer" data-format="ico">ICO</div>
+<div class="format-option bg-gray-600 hover:bg-gray-500 p-2 rounded cursor-pointer" data-format="svg">SVG</div>
+<div class="format-option bg-gray-600 hover:bg-gray-500 p-2 rounded cursor-pointer" data-format="pdf">PDF</div>
+<div class="format-option bg-gray-600 hover:bg-gray-500 p-2 rounded cursor-pointer" data-format="eps">EPS</div>
+<div class="format-option bg-gray-600 hover:bg-gray-500 p-2 rounded cursor-pointer" data-format="heic">HEIC</div>
+<div class="format-option bg-gray-600 hover:bg-gray-500 p-2 rounded cursor-pointer" data-format="jp2">JPEG 2000 (JP2)</div>
+<div class="format-option bg-gray-600 hover:bg-gray-500 p-2 rounded cursor-pointer" data-format="psd">Photoshop (PSD)</div>
+<div class="format-option bg-gray-600 hover:bg-gray-500 p-2 rounded cursor-pointer" data-format="raw">RAW</div>
+<div class="format-option bg-gray-600 hover:bg-gray-500 p-2 rounded cursor-pointer" data-format="tga">Targa (TGA)</div>
+<div class="format-option bg-gray-600 hover:bg-gray-500 p-2 rounded cursor-pointer" data-format="hdr">HDR</div>
+<div class="format-option bg-gray-600 hover:bg-gray-500 p-2 rounded cursor-pointer" data-format="exr">OpenEXR (EXR)</div>
+<div class="format-option bg-gray-600 hover:bg-gray-500 p-2 rounded cursor-pointer" data-format="dds">DirectDraw Surface (DDS)</div>
+<div class="format-option bg-gray-600 hover:bg-gray-500 p-2 rounded cursor-pointer" data-format="xcf">GIMP Image (XCF)</div>
+<div class="format-option bg-gray-600 hover:bg-gray-500 p-2 rounded cursor-pointer" data-format="jxr">JPEG XR (JXR)</div>
+
                     </div>
 
 
