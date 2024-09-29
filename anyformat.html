@@ -489,23 +489,28 @@
         e.stopPropagation();
     }
 
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dragDropArea.addEventListener(eventName, highlight, false);
-    });
+    dragDropArea.addEventListener('dragenter', highlight, false);
+    dragDropArea.addEventListener('dragover', highlight, false);
+    dragDropArea.addEventListener('dragleave', unhighlight, false);
+    dragDropArea.addEventListener('drop', handleDrop, false);
 
-    ['dragleave', 'drop'].forEach(eventName => {
-        dragDropArea.addEventListener(eventName, unhighlight, false);
-    });
-
-    function highlight() {
+    function highlight(e) {
+        preventDefaults(e);
         dragDropArea.classList.add('dragover');
     }
 
-    function unhighlight() {
+    function unhighlight(e) {
+        preventDefaults(e);
         dragDropArea.classList.remove('dragover');
     }
 
-    dragDropArea.addEventListener('drop', handleDrop, false);
+    function handleDrop(e) {
+        preventDefaults(e);
+        unhighlight(e);
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        handleFiles(files);
+    }
 
     dragDropArea.addEventListener('click', () => {
         fileInput.click();
@@ -514,12 +519,6 @@
     fileInput.addEventListener('change', function (e) {
         handleFiles(this.files);
     });
-
-    function handleDrop(e) {
-        const dt = e.dataTransfer;
-        const files = dt.files;
-        handleFiles(files);
-    }
 
     function handleFiles(files) {
         selectedFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
@@ -738,10 +737,10 @@
         once: true
     });
 
-    // Initialize Typed.js
+    // Initialize Typed.js for benefit cards
     document.querySelectorAll('.typed-text').forEach(element => {
         new Typed(element, {
-            strings: JSON.parse(element.dataset.typed),
+            strings: JSON.parse(element.getAttribute('data-typed')),
             typeSpeed: 50,
             backSpeed: 30,
             loop: true
@@ -752,6 +751,15 @@
     document.querySelectorAll('.faq-item').forEach(item => {
         item.addEventListener('click', () => {
             item.classList.toggle('active');
+            const answer = item.querySelector('.faq-answer');
+            const icon = item.querySelector('.faq-icon');
+            if (item.classList.contains('active')) {
+                answer.style.maxHeight = answer.scrollHeight + "px";
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                answer.style.maxHeight = null;
+                icon.style.transform = 'rotate(0deg)';
+            }
         });
     });
 });
