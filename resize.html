@@ -14,139 +14,212 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-        
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #0f172a;
-            color: #e2e8f0;
-        }
-        .gradient-bg {
-            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-        }
-        .hover-scale {
-            transition: transform 0.3s ease-in-out;
-        }
-        .hover-scale:hover {
-            transform: scale(1.05);
-        }
-        .loader {
-            border-top-color: #a855f7;
-            -webkit-animation: spinner 1.5s linear infinite;
-            animation: spinner 1.5s linear infinite;
-        }
-        @-webkit-keyframes spinner {
-            0% { -webkit-transform: rotate(0deg); }
-            100% { -webkit-transform: rotate(360deg); }
-        }
-        @keyframes spinner {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .blob {
-            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-            background: linear-gradient(45deg, #6366f1 0%, #a855f7 100%);
-            filter: blur(40px);
-        }
-        .image-preview-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .overlay {
-            background-color: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        .drag-drop-area {
-            border: 2px dashed #a855f7;
-            transition: all 0.3s ease;
-        }
-        .drag-drop-area.dragover {
-            background-color: rgba(168, 85, 247, 0.1);
-            border-color: #6366f1;
-        }
-        .header {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-        .footer {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
-        }
-        .footer a {
-            transition: color 0.3s ease;
-        }
-        .footer a:hover {
-            color: #a855f7;
-        }
-        #resizeContainer {
-            max-width: 100%;
-            max-height: 70vh;
-            margin: 0 auto;
-        }
-        .resize-control-btn {
-            @apply bg-purple-600 text-white p-3 rounded-lg hover:bg-purple-700 transition duration-300 flex items-center justify-center;
-            font-size: 1.1rem;
-        }
-        .resize-control-btn i {
-            font-size: 1.2rem;
-        }
-        #imageActions {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 1000;
-        }
-        .image-action-btn {
-            @apply bg-gray-800 text-white p-2 rounded-full hover:bg-gray-700 transition duration-300 mr-2;
-        }
-        .benefit-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-        }
-        .benefit-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-        .typed-cursor {
-            color: #a855f7;
-        }
-        .faq-item {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-        .faq-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .faq-answer {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-out;
-        }
-        .faq-item.active .faq-answer {
-            max-height: 300px;
-            transition: max-height 0.5s ease-in;
-        }
-        .faq-icon {
-            transition: transform 0.3s ease;
-        }
-        .faq-item.active .faq-icon {
-            transform: rotate(180deg);
-        }
-        .action-button {
-            @apply bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 px-6 rounded-lg hover:from-purple-600 hover:to-indigo-600 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 flex items-center justify-center;
-        }
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #0f172a;
+    color: #e2e8f0;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Ensure images and containers resize properly */
+img, video, canvas, iframe {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Responsive typography */
+h1, h2, h3, h4, h5, h6 {
+    font-size: 2rem;
+    line-height: 1.2;
+}
+p {
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.gradient-bg {
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+}
+
+/* Hover Effects */
+.hover-scale {
+    transition: transform 0.3s ease-in-out;
+}
+.hover-scale:hover {
+    transform: scale(1.05);
+}
+
+/* Loader Animation */
+.loader {
+    border-top-color: #a855f7;
+    -webkit-animation: spinner 1.5s linear infinite;
+    animation: spinner 1.5s linear infinite;
+}
+
+/* Keyframes for spinner */
+@-webkit-keyframes spinner {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spinner {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.blob {
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+    background: linear-gradient(45deg, #6366f1 0%, #a855f7 100%);
+    filter: blur(40px);
+}
+
+.image-preview-container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.overlay {
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+}
+
+/* Hide scrollbar */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.drag-drop-area {
+    border: 2px dashed #a855f7;
+    transition: all 0.3s ease;
+}
+.drag-drop-area.dragover {
+    background-color: rgba(168, 85, 247, 0.1);
+    border-color: #6366f1;
+}
+
+/* Responsive header */
+.header, .footer {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    padding: 1rem;
+    text-align: center;
+}
+
+.footer a {
+    transition: color 0.3s ease;
+}
+.footer a:hover {
+    color: #a855f7;
+}
+
+/* Ensure containers are responsive */
+#resizeContainer {
+    max-width: 100%;
+    max-height: 70vh;
+    margin: 0 auto;
+}
+
+.benefit-card, .faq-item {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.benefit-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* FAQ */
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-out;
+}
+.faq-item.active .faq-answer {
+    max-height: 300px;
+    transition: max-height 0.5s ease-in;
+}
+.faq-icon {
+    transition: transform 0.3s ease;
+}
+.faq-item.active .faq-icon {
+    transform: rotate(180deg);
+}
+
+/* Responsive Buttons */
+.action-button, .resize-control-btn, .image-action-btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+    background: linear-gradient(45deg, #6366f1, #a855f7);
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.action-button:hover, .resize-control-btn:hover, .image-action-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Responsive Media Queries */
+@media screen and (max-width: 768px) {
+    h1, h2, h3, h4, h5, h6 {
+        font-size: 1.5rem;
+    }
+
+    p {
+        font-size: 0.9rem;
+    }
+
+    .header, .footer {
+        padding: 0.5rem;
+        text-align: center;
+    }
+
+    .benefit-card, .faq-item {
+        padding: 0.75rem;
+    }
+
+    .action-button, .resize-control-btn, .image-action-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    h1, h2, h3, h4, h5, h6 {
+        font-size: 1.2rem;
+    }
+
+    p {
+        font-size: 0.8rem;
+    }
+
+    .benefit-card, .faq-item {
+        padding: 0.5rem;
+    }
+
+    .action-button, .resize-control-btn, .image-action-btn {
+        padding: 0.5rem;
+        font-size: 0.75rem;
+    }
+}
+
     </style>
 </head>
 <body class="min-h-screen p-4 relative overflow-x-hidden scrollbar-hide flex flex-col">
