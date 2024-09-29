@@ -12,217 +12,222 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-        
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #0f172a;
-            color: #e2e8f0;
-        }
-        .gradient-bg {
-            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-        }
-        .hover-scale {
-            transition: transform 0.3s ease-in-out;
-        }
-        .hover-scale:hover {
-            transform: scale(1.05);
-        }
-        .loader {
-            border-top-color: #a855f7;
-            -webkit-animation: spinner 1.5s linear infinite;
-            animation: spinner 1.5s linear infinite;
-        }
-        @-webkit-keyframes spinner {
-            0% { -webkit-transform: rotate(0deg); }
-            100% { -webkit-transform: rotate(360deg); }
-        }
-        @keyframes spinner {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .blob {
-            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-            background: linear-gradient(45deg, #6366f1 0%, #a855f7 100%);
-            filter: blur(40px);
-        }
-        .image-preview-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .overlay {
-            background-color: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        .drag-drop-area {
-            border: 2px dashed #a855f7;
-            transition: all 0.3s ease;
-        }
-        .drag-drop-area.dragover {
-            background-color: rgba(168, 85, 247, 0.1);
-            border-color: #6366f1;
-        }
-        .header {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-        .footer {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
-        }
-        .footer a {
-            transition: color 0.3s ease;
-        }
-        .footer a:hover {
-            color: #a855f7;
-        }
-         .benefit-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-        }
-        .benefit-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-        .typed-cursor {
-            color: #a855f7;
-        }
-        .faq-item {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-        .faq-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .faq-answer {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-out;
-        }
-        .faq-item.active .faq-answer {
-            max-height: 300px;
-            transition: max-height 0.5s ease-in;
-        }
-        .faq-icon {
-            transition: transform 0.3s ease;
-        }
-        .faq-item.active .faq-icon {
-            transform: rotate(180deg);
-        }
-        .action-button {
-            @apply bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 px-6 rounded-lg hover:from-purple-600 hover:to-indigo-600 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 flex items-center justify-center;
-        }
-        .progress-bar {
-            width: 100%;
-            background-color: #4a5568;
-            border-radius: 9999px;
-            overflow: hidden;
-        }
-        .progress {
-            width: 0;
-            height: 6px;
-            background-color: #a855f7;
-            transition: width 0.3s ease;
-        }
-        .format-dropdown {
-            position: relative;
-            display: inline-block;
-        }
-        .format-dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: #1f2937;
-            min-width: 250px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            z-index: 1;
-            border-radius: 8px;
-            padding: 10px;
-        }
-        .format-dropdown:hover .format-dropdown-content {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-        .format-option {
-            padding: 12px;
-            text-decoration: none;
-            display: block;
-            color: #e2e8f0;
-            transition: all 0.3s ease;
-            border-radius: 6px;
-        }
-        .format-option:hover {
-            background-color: #374151;
-            color: #a855f7;
-        }
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-        .loading-spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #a855f7;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .format-option {
-            background-color: #2d3748;
-            color: white;
-            padding: 10px;
-            text-align: center;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .format-option:hover {
-            background-color: #4a5568;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-        }
-        .action-button {
-            background-color: #6b46c1;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .action-button:hover {
-            background-color: #7c3aed;
-        }
-        
-    </style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+    
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #0f172a;
+        color: #e2e8f0;
+        margin: 0;
+        padding: 0;
+    }
+    .gradient-bg {
+        background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    }
+    .hover-scale {
+        transition: transform 0.3s ease-in-out;
+    }
+    .hover-scale:hover {
+        transform: scale(1.05);
+    }
+    .loader {
+        border-top-color: #a855f7;
+        -webkit-animation: spinner 1.5s linear infinite;
+        animation: spinner 1.5s linear infinite;
+    }
+    @-webkit-keyframes spinner {
+        0% { -webkit-transform: rotate(0deg); }
+        100% { -webkit-transform: rotate(360deg); }
+    }
+    @keyframes spinner {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    .blob {
+        border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+        background: linear-gradient(45deg, #6366f1 0%, #a855f7 100%);
+        filter: blur(40px);
+    }
+    .image-preview-container {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .overlay {
+        background-color: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(5px);
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .drag-drop-area {
+        border: 2px dashed #a855f7;
+        transition: all 0.3s ease;
+    }
+    .drag-drop-area.dragover {
+        background-color: rgba(168, 85, 247, 0.1);
+        border-color: #6366f1;
+    }
+    .header {
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+    }
+    .footer {
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(10px);
+    }
+    .footer a {
+        transition: color 0.3s ease;
+    }
+    .footer a:hover {
+        color: #a855f7;
+    }
+    /* Improved benefit card styling */
+    .benefit-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .benefit-card h3 {
+        color: #e2e8f0;
+        margin-bottom: 10px;
+    }
+    .benefit-card p {
+        color: #cbd5e1;
+        font-size: 14px;
+    }
+    .benefit-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        background-color: rgba(255, 255, 255, 0.15);
+    }
+    .typed-cursor {
+        color: #a855f7;
+    }
+    .faq-item {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+    .faq-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    .faq-answer {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.5s ease-out;
+    }
+    .faq-item.active .faq-answer {
+        max-height: 300px;
+        transition: max-height 0.5s ease-in;
+    }
+    .faq-icon {
+        transition: transform 0.3s ease;
+    }
+    .faq-item.active .faq-icon {
+        transform: rotate(180deg);
+    }
+    .action-button {
+        background-color: #6b46c1;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .action-button:hover {
+        background-color: #7c3aed;
+    }
+    .progress-bar {
+        width: 100%;
+        background-color: #4a5568;
+        border-radius: 9999px;
+        overflow: hidden;
+    }
+    .progress {
+        width: 0;
+        height: 6px;
+        background-color: #a855f7;
+        transition: width 0.3s ease;
+    }
+    .format-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+    .format-dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #1f2937;
+        min-width: 250px;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+        border-radius: 8px;
+        padding: 10px;
+    }
+    .format-dropdown:hover .format-dropdown-content {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    .format-option {
+        padding: 12px;
+        text-decoration: none;
+        display: block;
+        color: #e2e8f0;
+        transition: all 0.3s ease;
+        border-radius: 6px;
+    }
+    .format-option:hover {
+        background-color: #374151;
+        color: #a855f7;
+    }
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+    .loading-spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #a855f7;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+    }
+</style>
+
 </head>
 <body class="bg-gray-900 text-white min-h-screen p-4">
     <header class="py-4 px-6">
