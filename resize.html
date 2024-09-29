@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
 body {
     font-family: 'Poppins', sans-serif;
@@ -24,32 +24,54 @@ body {
     box-sizing: border-box;
 }
 
-/* Ensure images and containers resize properly */
-img, video, canvas, iframe {
-    max-width: 100%;
+/* Container for images and buttons */
+.image-preview-container {
+    position: relative;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 1rem;
+    margin: 1rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    width: 100%;
     height: auto;
 }
 
-/* Responsive typography */
-h1, h2, h3, h4, h5, h6 {
-    font-size: 2rem;
-    line-height: 1.2;
-}
-p {
-    font-size: 1rem;
-    line-height: 1.5;
+/* Ensure images fit within the container */
+.image-preview-container img {
+    object-fit: cover;
+    width: 100%;
+    height: auto;
+    max-height: 300px; /* Restrict height for consistency */
 }
 
-.gradient-bg {
-    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+/* Buttons positioned at top-right corner */
+#imageActions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    display: flex;
+    gap: 10px;
 }
 
-/* Hover Effects */
-.hover-scale {
-    transition: transform 0.3s ease-in-out;
+.image-action-btn {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 0.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s ease;
 }
-.hover-scale:hover {
-    transform: scale(1.05);
+
+.image-action-btn:hover {
+    background-color: rgba(0, 0, 0, 0.9);
 }
 
 /* Loader Animation */
@@ -59,7 +81,6 @@ p {
     animation: spinner 1.5s linear infinite;
 }
 
-/* Keyframes for spinner */
 @-webkit-keyframes spinner {
     0% { -webkit-transform: rotate(0deg); }
     100% { -webkit-transform: rotate(360deg); }
@@ -70,98 +91,33 @@ p {
     100% { transform: rotate(360deg); }
 }
 
-.blob {
-    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-    background: linear-gradient(45deg, #6366f1 0%, #a855f7 100%);
-    filter: blur(40px);
-}
-
-.image-preview-container {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.overlay {
-    background-color: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(5px);
-}
-
-/* Hide scrollbar */
-.scrollbar-hide::-webkit-scrollbar {
-    display: none;
-}
-
-.scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-
-.drag-drop-area {
-    border: 2px dashed #a855f7;
-    transition: all 0.3s ease;
-}
-.drag-drop-area.dragover {
-    background-color: rgba(168, 85, 247, 0.1);
-    border-color: #6366f1;
-}
-
-/* Responsive header */
-.header, .footer {
-    background: rgba(15, 23, 42, 0.8);
-    backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
-    padding: 1rem;
-    text-align: center;
-}
-
-.footer a {
-    transition: color 0.3s ease;
-}
-.footer a:hover {
-    color: #a855f7;
-}
-
-/* Ensure containers are responsive */
-#resizeContainer {
-    max-width: 100%;
-    max-height: 70vh;
-    margin: 0 auto;
-}
-
-.benefit-card, .faq-item {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    transition: all 0.3s ease;
-    padding: 1rem;
+/* Control Section */
+.control-section {
+    display: flex;
+    justify-content: space-between;
     margin: 1rem 0;
+    gap: 1rem;
 }
 
-.benefit-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+.control-section input, 
+.control-section button {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+    transition: background 0.3s ease;
 }
 
-/* FAQ */
-.faq-answer {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.5s ease-out;
-}
-.faq-item.active .faq-answer {
-    max-height: 300px;
-    transition: max-height 0.5s ease-in;
-}
-.faq-icon {
-    transition: transform 0.3s ease;
-}
-.faq-item.active .faq-icon {
-    transform: rotate(180deg);
+.control-section input:hover, 
+.control-section button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
-/* Responsive Buttons */
-.action-button, .resize-control-btn, .image-action-btn {
+/* Control buttons for width, height, and quality */
+.control-btn {
     display: inline-block;
     padding: 0.75rem 1.5rem;
     font-size: 1rem;
@@ -172,53 +128,86 @@ p {
     transition: background 0.3s ease, transform 0.3s ease;
 }
 
-.action-button:hover, .resize-control-btn:hover, .image-action-btn:hover {
+.control-btn:hover {
     transform: scale(1.05);
 }
 
 /* Responsive Media Queries */
 @media screen and (max-width: 768px) {
-    h1, h2, h3, h4, h5, h6 {
-        font-size: 1.5rem;
+    .control-section {
+        flex-direction: column;
+        gap: 0.5rem;
     }
 
-    p {
-        font-size: 0.9rem;
-    }
-
-    .header, .footer {
+    .image-preview-container {
+        max-height: 250px;
         padding: 0.5rem;
-        text-align: center;
     }
 
-    .benefit-card, .faq-item {
-        padding: 0.75rem;
+    .image-action-btn {
+        padding: 0.3rem;
     }
 
-    .action-button, .resize-control-btn, .image-action-btn {
-        padding: 0.5rem 1rem;
-        font-size: 0.875rem;
+    /* Adjust control sizes on mobile */
+    .control-section input, 
+    .control-section button {
+        padding: 0.5rem;
+        font-size: 0.9rem;
     }
 }
 
 @media screen and (max-width: 480px) {
-    h1, h2, h3, h4, h5, h6 {
-        font-size: 1.2rem;
+    .control-section {
+        gap: 0.25rem;
     }
 
-    p {
-        font-size: 0.8rem;
+    .image-preview-container {
+        max-height: 200px;
     }
 
-    .benefit-card, .faq-item {
-        padding: 0.5rem;
+    .control-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
     }
 
-    .action-button, .resize-control-btn, .image-action-btn {
-        padding: 0.5rem;
-        font-size: 0.75rem;
+    .image-action-btn {
+        padding: 0.2rem;
     }
 }
+
+/* Footer styles */
+.footer {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(10px);
+    padding: 1rem;
+    text-align: center;
+}
+
+.footer a {
+    color: #e2e8f0;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer a:hover {
+    color: #a855f7;
+}
+
+/* Benefit card */
+.benefit-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.benefit-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
 
     </style>
 </head>
