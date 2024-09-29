@@ -475,7 +475,7 @@
         const userAvatar = localStorage.getItem('userAvatar');
         const loginText = document.getElementById('loginText');
         if (userAvatar && loginText) {
-            loginText.innerHTML = `<img src="${userAvatar}" alt="User Avatar" class="w-8 h-8 rounded-full">`;
+            loginText.innerHTML = <img src="${userAvatar}" alt="User Avatar" class="w-8 h-8 rounded-full">;
         }
 
         // Drag and Drop Events
@@ -691,11 +691,11 @@
 
         function downloadImages(blobs, format) {
             if (blobs.length === 1) {
-                saveAs(blobs[0], `converted_image.${format}`);
+                saveAs(blobs[0], converted_image.${format});
             } else {
                 const zip = new JSZip();
                 blobs.forEach((blob, index) => {
-                    zip.file(`converted_image_${index + 1}.${format}`, blob);
+                    zip.file(converted_image_${index + 1}.${format}, blob);
                 });
                 zip.generateAsync({type: "blob"})
                     .then(function(content) {
@@ -731,21 +731,32 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        // FAQ functionality
-        document.querySelectorAll('.faq-item').forEach(item => {
-            const content = item.querySelector('.faq-content');
+        // Initialize AOS (Animate On Scroll) library
+        AOS.init();
+    });
+         // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            once: true,
+        });
 
-            item.addEventListener('click', () => {
-                item.classList.toggle('active');
-                if (content.style.display === 'block') {
-                    content.style.display = 'none';
-                } else {
-                    content.style.display = 'block';
-                }
+        // Initialize Typed.js
+        document.querySelectorAll('.typed-text').forEach(element => {
+            new Typed(element, {
+                strings: JSON.parse(element.dataset.typed),
+                typeSpeed: 50,
+                backSpeed: 30,
+                loop: true
             });
         });
-    });
-</script>
+
+        // FAQ functionality
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.addEventListener('click', () => {
+                item.classList.toggle('active');
+            });
+        });
+    </script>
 
 </body>
 </html>
