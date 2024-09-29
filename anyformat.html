@@ -85,7 +85,7 @@
         .footer a:hover {
             color: #a855f7;
         }
-        .benefit-card {
+         .benefit-card {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -95,6 +95,9 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
+        .typed-cursor {
+            color: #a855f7;
+        }
         .faq-item {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
@@ -103,6 +106,21 @@
         }
         .faq-item:hover {
             background: rgba(255, 255, 255, 0.1);
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        .faq-item.active .faq-answer {
+            max-height: 300px;
+            transition: max-height 0.5s ease-in;
+        }
+        .faq-icon {
+            transition: transform 0.3s ease;
+        }
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
         }
         .action-button {
             @apply bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 px-6 rounded-lg hover:from-purple-600 hover:to-indigo-600 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 flex items-center justify-center;
@@ -203,16 +221,7 @@
         .action-button:hover {
             background-color: #7c3aed;
         }
-        .benefit-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-        }
-        .benefit-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
+        
     </style>
 </head>
 <body class="bg-gray-900 text-white min-h-screen p-4">
@@ -295,41 +304,121 @@
                 </div>
             </div>
         </div>
-<div class="max-w-4xl mx-auto mt-20 mb-16">
-            <h2 class="text-3xl font-bold text-center mb-12 gradient-bg text-white" data-aos="fade-up">Benefits of Denmara Image Wizard</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="100">
-                    <lord-icon
-                        src="https://cdn.lordicon.com/kbtmbyzy.json"
-                        trigger="hover"
-                        colors="primary:#a855f7,secondary:#6366f1"
-                        style="width:64px;height:64px;">
-                    </lord-icon>
-                    <h3 class="text-xl font-semibold mt-4 mb-2">Saves Time</h3>
-                    <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Rename and download images instantly without delays, streamlining your workflow."]'></span></p>
+<div class="max-w-4xl mx-auto mt-16 sm:mt-20 mb-16">
+        <h2 class="text-3xl font-bold text-center mb-12 gradient-bg text-white" data-aos="fade-up">Benefits of Denmara Image Format Conversion Tool</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="100">
+                <lord-icon
+                    src="https://cdn.lordicon.com/iifryyua.json"
+                    trigger="hover"
+                    colors="primary:#a855f7,secondary:#6366f1"
+                    style="width:64px;height:64px;">
+                </lord-icon>
+                <h3 class="text-xl font-semibold mt-4 mb-2">Multi-Format Support</h3>
+                <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Convert images to and from various formats including JPEG, PNG, WebP, and more."]'></span></p>
+            </div>
+            <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="200">
+                <lord-icon
+                    src="https://cdn.lordicon.com/eszyyflr.json"
+                    trigger="hover"
+                    colors="primary:#a855f7,secondary:#6366f1"
+                    style="width:64px;height:64px;">
+                </lord-icon>
+                <h3 class="text-xl font-semibold mt-4 mb-2">Batch Conversion</h3>
+                <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Convert multiple images at once, saving time and effort."]'></span></p>
+            </div>
+            <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="300">
+                <lord-icon
+                    src="https://cdn.lordicon.com/nocovwne.json"
+                    trigger="hover"
+                    colors="primary:#a855f7,secondary:#6366f1"
+                    style="width:64px;height:64px;">
+                </lord-icon>
+                <h3 class="text-xl font-semibold mt-4 mb-2">Quality Control</h3>
+                <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Adjust compression and quality settings to balance file size and image quality."]'></span></p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="max-w-4xl mx-auto mt-20 mb-16">
+        <h2 class="text-3xl font-bold text-center mb-12 gradient-bg text-white" data-aos="fade-up">Frequently Asked Questions</h2>
+        <div class="space-y-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="faq-item rounded-lg p-4 cursor-pointer">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold">What image formats are supported?</h3>
+                    <svg class="faq-icon w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </div>
-                <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="200">
-                    <lord-icon
-                        src="https://cdn.lordicon.com/gqdnbnwt.json"
-                        trigger="hover"
-                        colors="primary:#a855f7,secondary:#6366f1"
-                        style="width:64px;height:64px;">
-                    </lord-icon>
-                    <h3 class="text-xl font-semibold mt-4 mb-2">Flexible Formats</h3>
-                    <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Easily switch between formats like PDF, PNG, JPG, and WebP tosuit different needs."]'></span></p>
+                <div class="faq-answer mt-2 text-gray-300">
+                    <p>Our Image Format Conversion Tool supports a wide range of formats, including:
+                    - JPEG (.jpg, .jpeg)
+                    - PNG (.png)
+                    - WebP (.webp)
+                    - GIF (.gif)
+                    - TIFF (.tiff, .tif)
+                    - BMP (.bmp)
+                    - HEIC (.heic) (conversion from HEIC only)
+                    You can convert between any of these formats, except for HEIC, which is supported for input only.</p>
                 </div>
-                <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="300">
-                    <lord-icon
-                        src="https://cdn.lordicon.com/dqxvvqzi.json"
-                        trigger="hover"
-                        colors="primary:#a855f7,secondary:#6366f1"
-                        style="width:64px;height:64px;">
-                    </lord-icon>
-                    <h3 class="text-xl font-semibold mt-4 mb-2">Convenient Access</h3>
-                    <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Accessible from any device without needing software, allowing quick renaming and downloads on the go."]'></span></p>
+            </div>
+            <div class="faq-item rounded-lg p-4 cursor-pointer">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold">How does batch conversion work?</h3>
+                    <svg class="faq-icon w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+                <div class="faq-answer mt-2 text-gray-300">
+                    <p>Batch conversion allows you to convert multiple images at once:
+                    1. Click the "Add Files" button or drag and drop multiple images.
+                    2. Select the desired output format for all images.
+                    3. Adjust any settings (e.g., quality, compression) as needed.
+                    4. Click "Convert All" to process all images.
+                    5. Once complete, you can download all converted images as a zip file.</p>
+                </div>
+            </div>
+            <div class="faq-item rounded-lg p-4 cursor-pointer">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold">Is there a limit to file size or number of images?</h3>
+                    <svg class="faq-icon w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+                <div class="faq-answer mt-2 text-gray-300">
+                    <p>To ensure optimal performance:
+                    - Maximum file size: 50 MB per image
+                    - Maximum batch size: 100 images or 500 MB total, whichever is reached first
+                    - For larger batches, you can process images in multiple sessions
+                    If you need to convert larger files or batches, please contact our support team for assistance.</p>
+                </div>
+            </div>
+            <div class="faq-item rounded-lg p-4 cursor-pointer">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold">How is image quality preserved during conversion?</h3>
+                    <svg class="faq-icon w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+                <div class="faq-answer mt-2 text-gray-300">
+                    <p>We use advanced algorithms to maintain image quality:
+                    - Lossless conversion when possible (e.g., PNG to WebP)
+                    - Adjustable quality settings for lossy formats (e.g., JPEG)
+                    - Color profile preservation
+                    - Option to maintain original image dimensions
+                    - Preview feature to compare before and after conversion
+                    Remember, converting from a lossy format (like JPEG) to a lossless format (like PNG) won't restore previously lost quality.</p>
+                </div>
+            </div>
+            <div class="faq-item rounded-lg p-4 cursor-pointer">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold">Is my data safe when using this tool?</h3>
+                    <svg class="faq-icon w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+                <div class="faq-answer mt-2 text-gray-300">
+                    <p>We take your privacy and data security seriously:
+                    - All conversions are processed on our secure servers
+                    - Files are automatically deleted from our servers after conversion
+                    - We use HTTPS encryption for all data transfers
+                    - We never access or view the content of your images
+                    - No registration is required to use the tool
+                    For more information, please review our Privacy Policy.</p>
                 </div>
             </div>
         </div>
+    </div>
 
     </main>
 
@@ -641,6 +730,28 @@
         // Initialize AOS (Animate On Scroll) library
         AOS.init();
     });
+         // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            once: true,
+        });
+
+        // Initialize Typed.js
+        document.querySelectorAll('.typed-text').forEach(element => {
+            new Typed(element, {
+                strings: JSON.parse(element.dataset.typed),
+                typeSpeed: 50,
+                backSpeed: 30,
+                loop: true
+            });
+        });
+
+        // FAQ functionality
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.addEventListener('click', () => {
+                item.classList.toggle('active');
+            });
+        });
     </script>
 </body>
 </html>
