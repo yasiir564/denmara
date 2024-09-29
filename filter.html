@@ -104,6 +104,43 @@
         .footer a:hover {
             color: #a855f7;
         }
+         .benefit-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        .benefit-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        .typed-cursor {
+            color: #a855f7;
+        }
+        .faq-item {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .faq-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        .faq-item.active .faq-answer {
+            max-height: 300px;
+            transition: max-height 0.5s ease-in;
+        }
+        .faq-icon {
+            transition: transform 0.3s ease;
+        }
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+        }
     </style>
 </head>
 <body class="min-h-screen p-4 relative overflow-x-hidden scrollbar-hide flex flex-col">
@@ -197,44 +234,118 @@
             </div>
         </div>
 
-         <div class="max-w-4xl mx-auto mt-20 mb-16">
-            <h2 class="text-3xl font-bold text-center mb-12 gradient-bg text-white" data-aos="fade-up">Benefits of Denmara filter Wizard</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="100">
-                    <lord-icon
-                        src="https://cdn.lordicon.com/kbtmbyzy.json"
-                        trigger="hover"
-                        colors="primary:#a855f7,secondary:#6366f1"
-                        style="width:64px;height:64px;">
-                    </lord-icon>
-                    <h3 class="text-xl font-semibold mt-4 mb-2">Saves Time</h3>
-                    <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Rename and download images instantly without delays, streamlining your workflow."]'></span></p>
+         <div class="max-w-4xl mx-auto mt-16 sm:mt-20 mb-16">
+        <h2 class="text-3xl font-bold text-center mb-12 gradient-bg text-white" data-aos="fade-up">Benefits of Denmara Filter Wizard</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="100">
+                <lord-icon
+                    src="https://cdn.lordicon.com/ofwpzftr.json"
+                    trigger="hover"
+                    colors="primary:#a855f7,secondary:#6366f1"
+                    style="width:64px;height:64px;">
+                </lord-icon>
+                <h3 class="text-xl font-semibold mt-4 mb-2">Enhanced Images</h3>
+                <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Transform your photos with a wide range of professional-grade filters."]'></span></p>
+            </div>
+            <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="200">
+                <lord-icon
+                    src="https://cdn.lordicon.com/iltqorsz.json"
+                    trigger="hover"
+                    colors="primary:#a855f7,secondary:#6366f1"
+                    style="width:64px;height:64px;">
+                </lord-icon>
+                <h3 class="text-xl font-semibold mt-4 mb-2">Real-time Preview</h3>
+                <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["See changes instantly as you apply and adjust filters to your images."]'></span></p>
+            </div>
+            <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="300">
+                <lord-icon
+                    src="https://cdn.lordicon.com/hbssjxsk.json"
+                    trigger="hover"
+                    colors="primary:#a855f7,secondary:#6366f1"
+                    style="width:64px;height:64px;">
+                </lord-icon>
+                <h3 class="text-xl font-semibold mt-4 mb-2">Customizable Filters</h3>
+                <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Fine-tune filters to achieve the perfect look for your photos."]'></span></p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="max-w-4xl mx-auto mt-20 mb-16">
+        <h2 class="text-3xl font-bold text-center mb-12 gradient-bg text-white" data-aos="fade-up">Frequently Asked Questions</h2>
+        <div class="space-y-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="faq-item rounded-lg p-4 cursor-pointer">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold">What types of filters are available?</h3>
+                    <svg class="faq-icon w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </div>
-                <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="200">
-                    <lord-icon
-                        src="https://cdn.lordicon.com/gqdnbnwt.json"
-                        trigger="hover"
-                        colors="primary:#a855f7,secondary:#6366f1"
-                        style="width:64px;height:64px;">
-                    </lord-icon>
-                    <h3 class="text-xl font-semibold mt-4 mb-2">Flexible Formats</h3>
-                    <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Easily switch between formats like PDF, PNG, JPG, and WebP tosuit different needs."]'></span></p>
+                <div class="faq-answer mt-2 text-gray-300">
+                    <p>Our Filter Tool offers a wide range of filters, including:
+                    - Classic filters (e.g., Sepia, Black & White)
+                    - Mood filters (e.g., Warm, Cool, Vintage)
+                    - Color adjustment filters (e.g., Saturation, Contrast, Brightness)
+                    - Artistic filters (e.g., Sketch, Watercolor, Oil Painting)
+                    - Special effects (e.g., Vignette, Blur, Sharpen)
+                    You can combine multiple filters to create unique effects.</p>
                 </div>
-                <div class="benefit-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="300">
-                    <lord-icon
-                        src="https://cdn.lordicon.com/dqxvvqzi.json"
-                        trigger="hover"
-                        colors="primary:#a855f7,secondary:#6366f1"
-                        style="width:64px;height:64px;">
-                    </lord-icon>
-                    <h3 class="text-xl font-semibold mt-4 mb-2">Convenient Access</h3>
-                    <p class="text-gray-300 h-20"><span class="typed-text" data-typed='["Accessible from any device without needing software, allowing quick renaming and downloads on the go."]'></span></p>
+            </div>
+            <div class="faq-item rounded-lg p-4 cursor-pointer">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold">Can I save my custom filter combinations?</h3>
+                    <svg class="faq-icon w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+                <div class="faq-answer mt-2 text-gray-300">
+                    <p>Yes, you can save custom filter combinations:
+                    1. Apply the desired filters and adjustments to your image.
+                    2. Click the "Save Filter" button in the toolbar.
+                    3. Give your custom filter a name.
+                    4. Access your saved filters in the "Custom" section of the filter menu.
+                    This feature allows you to quickly apply your favorite filter combinations to multiple images.</p>
+                </div>
+            </div>
+            <div class="faq-item rounded-lg p-4 cursor-pointer">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold">Is there a limit to how many filters I can apply?</h3>
+                    <svg class="faq-icon w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+                <div class="faq-answer mt-2 text-gray-300">
+                    <p>There's no strict limit on the number of filters you can apply, but keep in mind:
+                    - Applying too many filters may impact the tool's performance and slow down real-time previews.
+                    - Excessive filtering can degrade image quality or create unnatural-looking results.
+                    - We recommend starting with 1-3 filters and adjusting their intensity for the best results.
+                    - Use the "Reset" button to start over if you're not satisfied with the current combination.</p>
+                </div>
+            </div>
+            <div class="faq-item rounded-lg p-4 cursor-pointer">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold">Can I use the Filter Tool on mobile devices?</h3>
+                    <svg class="faq-icon w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+                <div class="faq-answer mt-2 text-gray-300">
+                    <p>Yes, our Filter Tool is fully responsive and works on mobile devices:
+                    - Access the tool through your mobile browser.
+                    - The interface adapts to smaller screens for easy navigation.
+                    - Touch gestures are supported for adjusting filter intensity.
+                    - Performance may vary depending on your device's capabilities.
+                    - For the best experience, we recommend using the latest version of your mobile browser.</p>
+                </div>
+            </div>
+            <div class="faq-item rounded-lg p-4 cursor-pointer">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold">How do I export my filtered images?</h3>
+                    <svg class="faq-icon w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+                <div class="faq-answer mt-2 text-gray-300">
+                    <p>Exporting your filtered images is easy:
+                    1. After applying filters, click the "Export" button.
+                    2. Choose your preferred file format (JPEG, PNG, or WebP).
+                    3. Select the desired quality (higher quality = larger file size).
+                    4. Click "Download" to save the filtered image to your device.
+                    5. For batch processing, use the "Bulk Export" feature to filter and download multiple images at once.</p>
                 </div>
             </div>
         </div>
+    </div>
 
-
-        <!-- Add the FAQ section here -->
 
         <!-- Add the "More Tools" section here -->
 
@@ -466,6 +577,28 @@
             } else {
                 header.classList.remove('shadow-md');
             }
+        });
+          // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            once: true,
+        });
+
+        // Initialize Typed.js
+        document.querySelectorAll('.typed-text').forEach(element => {
+            new Typed(element, {
+                strings: JSON.parse(element.dataset.typed),
+                typeSpeed: 50,
+                backSpeed: 30,
+                loop: true
+            });
+        });
+
+        // FAQ functionality
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.addEventListener('click', () => {
+                item.classList.toggle('active');
+            });
         });
     </script>
 </body>
