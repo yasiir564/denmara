@@ -731,31 +731,21 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        // Initialize AOS (Animate On Scroll) library
-        AOS.init();
-    });
-         // Initialize AOS
-        AOS.init({
-            duration: 1000,
-            once: true,
-        });
-
-        // Initialize Typed.js
-        document.querySelectorAll('.typed-text').forEach(element => {
-            new Typed(element, {
-                strings: JSON.parse(element.dataset.typed),
-                typeSpeed: 50,
-                backSpeed: 30,
-                loop: true
-            });
-        });
-
         // FAQ functionality
         document.querySelectorAll('.faq-item').forEach(item => {
+            const content = item.querySelector('.faq-content');
+
             item.addEventListener('click', () => {
                 item.classList.toggle('active');
+                if (content.style.display === 'block') {
+                    content.style.display = 'none';
+                } else {
+                    content.style.display = 'block';
+                }
             });
         });
-    </script>
+    });
+</script>
+
 </body>
 </html>
