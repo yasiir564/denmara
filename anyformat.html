@@ -570,6 +570,7 @@ body {
 
     <script>
     document.addEventListener('DOMContentLoaded', function () {
+    // DOM Elements
     const dragDropArea = document.getElementById('dragDropArea');
     const fileInput = document.getElementById('fileInput');
     const imagePreview = document.getElementById('imagePreview');
@@ -583,21 +584,84 @@ body {
     const formatDropdownBtn = document.getElementById('formatDropdownBtn');
     const formatDropdownContent = document.getElementById('formatDropdownContent');
 
+    // State management
     let selectedFiles = [];
     let selectedFormat = 'png';
+    let isVerified = false;
+    let turnstileWidget = null;
 
-    // Initialize loading overlay and download button as hidden
+    // Initialize UI states
     loadingOverlay.style.display = 'none';
     downloadBtn.classList.add('hidden');
 
-    // User avatar update
+    // User avatar handling
     const userAvatar = localStorage.getItem('userAvatar');
     const loginText = document.getElementById('loginText');
     if (userAvatar && loginText) {
         loginText.innerHTML = `<img src="${userAvatar}" alt="User Avatar" class="w-8 h-8 rounded-full">`;
     }
 
-    // Drag and Drop Events
+    // Turnstile Functions
+    function initializeTurnstile() {
+        if (turnstileWidget) {
+            turnstile.remove(turnstileWidget);
+        }
+
+        turnstileWidget = turnstile.render('#turnstile-container', {
+            sitekey: '0x4AAAAAAAUhJHCEYNsicK5E',
+            callback: turnstileCallback,
+            theme: 'dark',
+            'expired-callback': () => {
+                isVerified = false;
+                showError("Verification expired. Please verify again.");
+            },
+            'error-callback': () => {
+                isVerified = false;
+                showError("Verification failed. Please try again.");
+            }
+        });
+    }
+
+    function showVerificationOverlay() {
+        const verificationOverlay = document.getElementById('verificationOverlay');
+        if (!verificationOverlay) {
+            console.error('Verification overlay element not found');
+            return;
+        }
+
+        verificationOverlay.style.display = 'flex';
+        initializeTurnstile();
+    }
+
+    async function turnstileCallback(token) {
+        try {
+            const response = await fetch('/verify-turnstile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ token })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                isVerified = true;
+                const verificationOverlay = document.getElementById('verificationOverlay');
+                verificationOverlay.style.display = 'none';
+                proceedWithDownload();
+            } else {
+                throw new Error('Verification failed');
+            }
+        } catch (error) {
+            console.error('Turnstile verification error:', error);
+            showError("Verification failed. Please try again.");
+            isVerified = false;
+            initializeTurnstile();
+        }
+    }
+
+    // Drag and Drop Functions
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dragDropArea.addEventListener(eventName, preventDefaults, false);
     });
@@ -630,6 +694,7 @@ body {
         handleFiles(files);
     }
 
+    // File Handling Functions
     dragDropArea.addEventListener('click', () => {
         fileInput.click();
     });
@@ -688,7 +753,7 @@ body {
         }
     }
 
-    // Handle format selection
+    // Format Selection Handling
     formatDropdownBtn.addEventListener('click', function() {
         formatDropdownContent.classList.toggle('hidden');
     });
@@ -698,29 +763,36 @@ body {
             selectedFormat = this.getAttribute('data-format');
             selectedFormatDisplay.textContent = this.textContent;
             document.querySelectorAll('.format-option').forEach(opt => opt.classList.remove('bg-gray-500'));
-            this.classList.add('bg-gray-500'); // Highlight the selected option
+            this.classList.add('bg-gray-500');
             formatDropdownContent.classList.add('hidden');
         });
     });
 
-    // Convert button action
+    // Conversion Functions
     convertBtn.addEventListener('click', function () {
         if (selectedFiles.length > 0) {
-            showLoading();
-            convertImages(selectedFiles, selectedFormat)
-                .then(convertedBlobs => {
-                    hideLoading();
-                    showSuccessWithDownload(convertedBlobs, selectedFormat);
-                })
-                .catch(error => {
-                    hideLoading();
-                    showError("Failed to convert images. Please try again.");
-                    console.error('Conversion error:', error);
-                });
+            if (!isVerified) {
+                showVerificationOverlay();
+                return;
+            }
+            proceedWithConversion();
         } else {
             showError("Please select at least one image first.");
         }
     });
+
+    async function proceedWithConversion() {
+        showLoading();
+        try {
+            const convertedBlobs = await convertImages(selectedFiles, selectedFormat);
+            hideLoading();
+            showSuccessWithDownload(convertedBlobs, selectedFormat);
+        } catch (error) {
+            hideLoading();
+            showError("Failed to convert images. Please try again.");
+            console.error('Conversion error:', error);
+        }
+    }
 
     function convertImages(files, format) {
         return Promise.all(files.map(file => convertImage(file, format)));
@@ -738,7 +810,7 @@ body {
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0);
 
-                    let mimeType = getMimeType(format);
+                    const mimeType = getMimeType(format);
                     if (!mimeType) {
                         reject(new Error('Unsupported format'));
                         return;
@@ -748,19 +820,15 @@ body {
                         resolve(blob);
                     }, mimeType);
                 };
-                img.onerror = function () {
-                    reject(new Error("Image load failed"));
-                };
+                img.onerror = () => reject(new Error("Image load failed"));
                 img.src = e.target.result;
             };
-            reader.onerror = function () {
-                reject(new Error("File reading failed"));
-            };
+            reader.onerror = () => reject(new Error("File reading failed"));
             reader.readAsDataURL(file);
         });
     }
 
-    function getMimeType(format) {
+  function getMimeType(format) {
         const formatMap = {
             png: 'image/png',
             jpeg: 'image/jpeg',
@@ -787,6 +855,7 @@ body {
         return formatMap[format.toLowerCase()] || null;
     }
 
+    // UI Feedback Functions
     function showSuccessWithDownload(blobs, format) {
         swal({
             title: "Success!",
@@ -834,7 +903,7 @@ body {
         swal("Error", message, "error");
     }
 
-    // Scroll to top functionality
+    // Scroll to Top Functionality
     window.addEventListener('scroll', () => {
         if (window.pageYOffset > 100) {
             scrollTopBtn.classList.remove('opacity-0', 'invisible');
@@ -849,13 +918,13 @@ body {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
-    // Initialize AOS (Animate On Scroll) library
+    // Initialize libraries
     AOS.init({
         duration: 1000,
         once: true
     });
 
-    // Initialize Typed.js for benefit cards
+    // Initialize Typed.js
     document.querySelectorAll('.typed-text').forEach(element => {
         new Typed(element, {
             strings: JSON.parse(element.getAttribute('data-typed')),
@@ -865,7 +934,7 @@ body {
         });
     });
 
-    // FAQ functionality
+    // FAQ Functionality
     document.querySelectorAll('.faq-item').forEach(item => {
         item.addEventListener('click', () => {
             item.classList.toggle('active');
@@ -881,65 +950,6 @@ body {
         });
     });
 });
-        let isVerified = false;
-
-// Function to show verification overlay
-function showVerificationOverlay() {
-    const verificationOverlay = document.getElementById('verificationOverlay');
-    verificationOverlay.style.display = 'flex';
-    
-    // Render a new Turnstile widget
-    turnstile.render('.cf-turnstile', {
-        sitekey: '0x4AAAAAAAUhJHCEYNsicK5E',
-        callback: turnstileCallback,
-        theme: 'dark'
-    });
-}
-
-// Turnstile callback function
-function turnstileCallback(token) {
-    isVerified = true;
-    const verificationOverlay = document.getElementById('verificationOverlay');
-    verificationOverlay.style.display = 'none';
-    proceedWithDownload(); // Call your download function here
-}
-
-// Example implementation with a download button
-document.getElementById('downloadBtn')?.addEventListener('click', () => {
-    if (!uploadedImage) {
-        // Show error if no image is uploaded
-        swal("Oops!", "Please upload an image first!", "warning");
-        return;
-    }
-
-    if (!isVerified) {
-        // Show verification overlay if not verified
-        showVerificationOverlay();
-        return;
-    }
-
-    // Proceed with download if verified
-    proceedWithDownload();
-});
-
-// Function to proceed with download after verification
-function proceedWithDownload() {
-    // Your download logic here
-    const format = formatSelect.value;
-    const newFileName = fileName.value || 'image';
-
-    // Show loading indicator
-    showLoader();
-
-    // Process download
-    setTimeout(() => {
-        if (format === 'pdf') {
-            convertToPDF(uploadedImage, newFileName);
-        } else {
-            convertToImage(uploadedImage, newFileName, format);
-        }
-    }, 1000);
-}
     </script>
 
 </body>
