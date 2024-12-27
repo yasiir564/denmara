@@ -601,88 +601,43 @@ body {
         loginText.innerHTML = `<img src="${userAvatar}" alt="User Avatar" class="w-8 h-8 rounded-full">`;
     }
 
-    // Turnstile Functions
-    function initializeTurnstile() {
-        if (turnstileWidget) {
-            turnstile.remove(turnstileWidget);
-        }
+   let isVerified = false; // Ensure that this variable is declared
 
-        turnstileWidget = turnstile.render('#turnstile-container', {
-            sitekey: '0x4AAAAAAAUhJHCEYNsicK5E',
-            callback: turnstileCallback,
-            theme: 'dark',
-            'expired-callback': () => {
-                isVerified = false;
-                showError("Verification expired. Please verify again.");
-            },
-            'error-callback': () => {
-                isVerified = false;
-                showError("Verification failed. Please try again.");
-            }
-        });
+// Initialize Turnstile widget
+function initializeTurnstile() {
+    if (turnstileWidget) {
+        turnstile.remove(turnstileWidget);
     }
 
-    function showVerificationOverlay() {
-        const verificationOverlay = document.getElementById('verificationOverlay');
-        if (!verificationOverlay) {
-            console.error('Verification overlay element not found');
-            return;
-        }
-
-        verificationOverlay.style.display = 'flex';
-        initializeTurnstile();
-    }
-
-    async function turnstileCallback(token) {
-        try {
-            const response = await fetch('/verify-turnstile', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ token })
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                isVerified = true;
-                const verificationOverlay = document.getElementById('verificationOverlay');
-                verificationOverlay.style.display = 'none';
-                proceedWithDownload();
-            } else {
-                throw new Error('Verification failed');
-            }
-        } catch (error) {
-            console.error('Turnstile verification error:', error);
-            showError("Verification failed. Please try again.");
+    turnstileWidget = turnstile.render('#turnstile-container', {
+        sitekey: '0x4AAAAAAAUhJHCEYNsicK5E',
+        callback: turnstileCallback,
+        theme: 'dark',
+        'expired-callback': () => {
             isVerified = false;
-            initializeTurnstile();
+            showError("Verification expired. Please verify again.");
+        },
+        'error-callback': () => {
+            isVerified = false;
+            showError("Verification failed. Please try again.");
         }
-    }
-        async function proceedWithDownload() {
-    try {
-        const convertedBlobs = await convertImages(selectedFiles, selectedFormat);
-        hideLoading();
-        showSuccessWithDownload(convertedBlobs, selectedFormat);
-    } catch (error) {
-        hideLoading();
-        showError("Failed to convert images. Please try again.");
-        console.error('Conversion error:', error);
-    }
+    });
 }
-convertBtn.addEventListener('click', function () {
-    if (selectedFiles.length > 0) {
-        if (!isVerified) {
-            showVerificationOverlay();
-            return;
-        }
-        proceedWithDownload(); // Changed from proceedWithConversion to proceedWithDownload
-    } else {
-        showError("Please select at least one image first.");
+
+// Show the verification overlay
+function showVerificationOverlay() {
+    const verificationOverlay = document.getElementById('verificationOverlay');
+    if (!verificationOverlay) {
+        console.error('Verification overlay element not found');
+        return;
     }
-});
-        async function turnstileCallback(token) {
+
+    verificationOverlay.style.display = 'flex';
+    initializeTurnstile();
+}
+
+// Turnstile callback function for verification
+async function turnstileCallback(token) {
     try {
         const response = await fetch('/verify-turnstile', {
             method: 'POST',
@@ -698,7 +653,7 @@ convertBtn.addEventListener('click', function () {
             isVerified = true;
             const verificationOverlay = document.getElementById('verificationOverlay');
             verificationOverlay.style.display = 'none';
-            proceedWithDownload(); // This will now handle both conversion and download
+            proceedWithDownload(); // Continue to download if verification is successful
         } else {
             throw new Error('Verification failed');
         }
@@ -706,9 +661,36 @@ convertBtn.addEventListener('click', function () {
         console.error('Turnstile verification error:', error);
         showError("Verification failed. Please try again.");
         isVerified = false;
-        initializeTurnstile();
+        initializeTurnstile(); // Reinitialize if verification fails
     }
 }
+
+// Proceed with downloading or converting images
+async function proceedWithDownload() {
+    try {
+        const convertedBlobs = await convertImages(selectedFiles, selectedFormat);
+        hideLoading();
+        showSuccessWithDownload(convertedBlobs, selectedFormat);
+    } catch (error) {
+        hideLoading();
+        showError("Failed to convert images. Please try again.");
+        console.error('Conversion error:', error);
+    }
+}
+
+// Convert button click handler
+convertBtn.addEventListener('click', function () {
+    if (selectedFiles.length > 0) {
+        if (!isVerified) {
+            showVerificationOverlay();
+            return;
+        }
+        proceedWithDownload(); // Proceed with download if verified
+    } else {
+        showError("Please select at least one image first.");
+    }
+});
+
 
     // Drag and Drop Functions
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
