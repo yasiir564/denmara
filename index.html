@@ -274,6 +274,22 @@
                 </button>
             </div>
         </div>
+        <div id="verificationOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-gray-800 rounded-xl p-8 max-w-md w-full mx-4 shadow-2xl">
+        <div class="text-center">
+            <h2 class="text-2xl font-bold text-white mb-4">Please Verify to Download</h2>
+            <p class="text-gray-300 mb-6">Complete the verification below to continue your download</p>
+            <div class="flex justify-center">
+                <div class="cf-turnstile" 
+                    data-sitekey="0x4AAAAAAAUhJHCEYNsicK5E" 
+                    data-callback="turnstileCallback" 
+                    data-theme="dark">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+        
 
         <div class="max-w-4xl mx-auto mt-20 mb-16">
             <h2 class="text-3xl font-bold text-center mb-12 gradient-bg text-white" data-aos="fade-up">Benefits ofusing  reetoul Image Wizard</h2>
@@ -455,13 +471,7 @@
                 <h3 class="text-xl font-semibold mt-4 mb-2">Watermark Tool</h3>
                 <p class="text-gray-300">Protect your images with custom watermarks</p>
             </a>
-        <div id="verificationOverlay" class="verification-overlay">
-    <div class="verification-container">
-        <h2 class="verification-title">Please Verify to Download</h2>
-        <p class="text-gray-300 mb-4">Complete the verification below to continue your download</p>
-        <div class="cf-turnstile" data-sitekey="0x4AAAAAAAUhJHCEYNsicK5E" data-callback="turnstileCallback" data-theme="dark"></div>
-    </div>
-</div>
+     
 
         <!-- Add tool container with initially hidden state -->
         <div id="toolContainer" class="hidden">
