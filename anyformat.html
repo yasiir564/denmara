@@ -13,6 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback" async defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <style>
@@ -289,6 +290,46 @@ body {
         font-size: 12px;
     }
 }
+    .verification-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.verification-container {
+    background: #1f2937;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+}
+
+.verification-title {
+    color: white;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.verification-description {
+    color: #9ca3af;
+    margin-bottom: 1.5rem;
+}
+
+.verification-widget-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
 </style>
 
 </head>
@@ -365,6 +406,21 @@ body {
                         <i class="fas fa-exchange-alt mr-2"></i>
                         <span>Convert Images</span>
                     </button>
+                    <div id="verificationOverlay" class="verification-overlay">
+    <div class="verification-container">
+        <div class="text-center">
+            <h2 class="verification-title">Please Verify to Download</h2>
+            <p class="verification-description">Complete the verification below to continue your download</p>
+            <div class="verification-widget-container">
+                <div class="cf-turnstile" 
+                    data-sitekey="0x4AAAAAAAUhJHCEYNsicK5E" 
+                    data-callback="turnstileCallback" 
+                    data-theme="dark">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
                     <button id="downloadBtn" class="action-button flex items-center bg-green-500 text-white p-2 rounded-lg hidden">
                         <i class="fas fa-download mr-2"></i>
                         <span>Download All</span>
@@ -825,6 +881,65 @@ body {
         });
     });
 });
+        let isVerified = false;
+
+// Function to show verification overlay
+function showVerificationOverlay() {
+    const verificationOverlay = document.getElementById('verificationOverlay');
+    verificationOverlay.style.display = 'flex';
+    
+    // Render a new Turnstile widget
+    turnstile.render('.cf-turnstile', {
+        sitekey: '0x4AAAAAAAUhJHCEYNsicK5E',
+        callback: turnstileCallback,
+        theme: 'dark'
+    });
+}
+
+// Turnstile callback function
+function turnstileCallback(token) {
+    isVerified = true;
+    const verificationOverlay = document.getElementById('verificationOverlay');
+    verificationOverlay.style.display = 'none';
+    proceedWithDownload(); // Call your download function here
+}
+
+// Example implementation with a download button
+document.getElementById('downloadBtn')?.addEventListener('click', () => {
+    if (!uploadedImage) {
+        // Show error if no image is uploaded
+        swal("Oops!", "Please upload an image first!", "warning");
+        return;
+    }
+
+    if (!isVerified) {
+        // Show verification overlay if not verified
+        showVerificationOverlay();
+        return;
+    }
+
+    // Proceed with download if verified
+    proceedWithDownload();
+});
+
+// Function to proceed with download after verification
+function proceedWithDownload() {
+    // Your download logic here
+    const format = formatSelect.value;
+    const newFileName = fileName.value || 'image';
+
+    // Show loading indicator
+    showLoader();
+
+    // Process download
+    setTimeout(() => {
+        if (format === 'pdf') {
+            convertToPDF(uploadedImage, newFileName);
+        } else {
+            convertToImage(uploadedImage, newFileName, format);
+        }
+    }, 1000);
+}
     </script>
 
 </body>
