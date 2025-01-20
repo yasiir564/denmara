@@ -511,140 +511,166 @@
     </div>
 
   <script>
-        const { jsPDF } = window.jspdf;
-        let isVerified = false;
-        let uploadedImage = null;
+       // DOM Elements
+const fileInput = document.getElementById('fileInput');
+const dragDropArea = document.getElementById('dragDropArea');
+const imagePreview = document.getElementById('imagePreview');
+const preview = document.getElementById('preview');
+const fileName = document.getElementById('fileName');
+const formatSelect = document.getElementById('formatSelect');
+const downloadBtn = document.getElementById('downloadBtn');
+const loader = document.getElementById('loader');
+const overlay = document.getElementById('overlay');
+const fullSizeImage = document.getElementById('fullSizeImage');
+const previewContainer = document.getElementById('previewContainer');
+const closeOverlay = document.getElementById('closeOverlay');
+const deleteImage = document.getElementById('deleteImage');
 
-        // DOM Elements
-        const fileInput = document.getElementById('fileInput');
-        const dragDropArea = document.getElementById('dragDropArea');
-        const imagePreview = document.getElementById('imagePreview');
-        const preview = document.getElementById('preview');
-        const fileName = document.getElementById('fileName');
-        const formatSelect = document.getElementById('formatSelect');
-        const downloadBtn = document.getElementById('downloadBtn');
-        const loader = document.getElementById('loader');
-        const overlay = document.getElementById('overlay');
-        const fullSizeImage = document.getElementById('fullSizeImage');
-        const previewContainer = document.getElementById('previewContainer');
-        const closeOverlay = document.getElementById('closeOverlay');
-        const deleteImage = document.getElementById('deleteImage');
-        const verificationOverlay = document.getElementById('verificationOverlay');
+let uploadedImage = null;
 
-        // Function to show verification overlay
-        function showVerificationOverlay() {
-            verificationOverlay.style.display = 'flex';
-            // Render a new Turnstile widget
-            turnstile.render('.cf-turnstile', {
-                sitekey: '0x4AAAAAAAUhJHCEYNsicK5E',
-                callback: turnstileCallback,
-                theme: 'dark'
-            });
+// Download handling
+downloadBtn?.addEventListener('click', () => {
+    if (!uploadedImage) {
+        showAlert("Please upload an image first!", "warning");
+        return;
+    }
+    
+    const format = formatSelect.value;
+    const newFileName = fileName.value || 'image';
+    
+    showLoader();
+    try {
+        if (format === 'pdf') {
+            convertToPDF(uploadedImage, newFileName);
+        } else {
+            convertToImage(uploadedImage, newFileName, format);
         }
+    } catch (error) {
+        hideLoader();
+        showAlert("An error occurred during conversion. Please try again.", "error");
+        console.error("Conversion error:", error);
+    }
+});
 
-        // Turnstile callback
-        function turnstileCallback(token) {
-            isVerified = true;
-            verificationOverlay.style.display = 'none';
-            proceedWithDownload();
-        }
-
-        // Download handling
-        downloadBtn?.addEventListener('click', () => {
-            if (!uploadedImage) {
-                swal("Oops!", "Please upload an image first!", "warning");
-                return;
-            }
-
-            if (!isVerified) {
-                showVerificationOverlay();
-                return;
-            }
-
-            proceedWithDownload();
-        });
-
-        function proceedWithDownload() {
-            const format = formatSelect.value;
-            const newFileName = fileName.value || 'image';
-
-            showLoader();
-
-            setTimeout(() => {
-                if (format === 'pdf') {
-                    convertToPDF(uploadedImage, newFileName);
-                } else {
-                    convertToImage(uploadedImage, newFileName, format);
-                }
-            }, 1000);
-        }
-
-        // File handling
-        fileInput?.addEventListener('change', handleFileSelect);
-        dragDropArea?.addEventListener('click', () => fileInput.click());
-        dragDropArea?.addEventListener('dragover', (e) => {
+// File handling with improved error checking
+function initializeFileHandlers() {
+    if (fileInput && dragDropArea) {
+        fileInput.addEventListener('change', handleFileSelect);
+        
+        dragDropArea.addEventListener('click', () => fileInput.click());
+        
+        dragDropArea.addEventListener('dragover', (e) => {
             e.preventDefault();
+            e.stopPropagation();
             dragDropArea.classList.add('dragover');
         });
-        dragDropArea?.addEventListener('dragleave', () => {
-            dragDropArea.classList.remove('dragover');
-        });
-        dragDropArea?.addEventListener('drop', (e) => {
+        
+        dragDropArea.addEventListener('dragleave', (e) => {
             e.preventDefault();
+            e.stopPropagation();
             dragDropArea.classList.remove('dragover');
-            handleFileSelect({ target: { files: e.dataTransfer.files } });
         });
-
-        // Image preview handling
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    preview.src = e.target.result;
-                    fullSizeImage.src = e.target.result;
-                    imagePreview?.classList.remove('hidden');
-                    dragDropArea?.classList.add('hidden');
-                    uploadedImage = file;
-                    fileName.value = file.name.split('.')[0];
-                    imagePreview.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                };
-                reader.readAsDataURL(file);
+        
+        dragDropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dragDropArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect({ target: { files } });
             }
-        }
+        });
+    }
+}
 
-        // Image conversion functions
-        function convertToImage(file, fileName, format) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0);
-                    canvas.toBlob((blob) => {
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `${fileName}.${format}`;
-                        a.click();
-                        URL.revokeObjectURL(url);
-                        hideLoader();
-                        swal("Success!", "Your image has been downloaded.", "success");
-                    }, `image/${format}`, 1.0);
-                };
-                img.src = e.target.result;
+// Improved file selection handler with validation
+function handleFileSelect(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+        showAlert("Please select a valid image file!", "warning");
+        return;
+    }
+
+    // Validate file size (max 10MB)
+    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+    if (file.size > maxSize) {
+        showAlert("File size too large! Please select an image under 10MB.", "warning");
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        preview.src = e.target.result;
+        fullSizeImage.src = e.target.result;
+        imagePreview?.classList.remove('hidden');
+        dragDropArea?.classList.add('hidden');
+        uploadedImage = file;
+        fileName.value = file.name.split('.')[0];
+        imagePreview.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+    
+    reader.onerror = () => {
+        showAlert("Error reading file. Please try again.", "error");
+    };
+    
+    reader.readAsDataURL(file);
+}
+
+// Image conversion functions with error handling
+function convertToImage(file, fileName, format) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+            const img = new Image();
+            
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                
+                canvas.toBlob((blob) => {
+                    if (!blob) {
+                        reject(new Error("Failed to convert image"));
+                        return;
+                    }
+                    
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${fileName}.${format}`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    hideLoader();
+                    showAlert("Your image has been downloaded!", "success");
+                    resolve();
+                }, `image/${format}`, 1.0);
             };
-            reader.readAsDataURL(file);
-        }
+            
+            img.onerror = () => reject(new Error("Failed to load image"));
+            img.src = e.target.result;
+        };
+        
+        reader.onerror = () => reject(new Error("Failed to read file"));
+        reader.readAsDataURL(file);
+    });
+}
 
-        function convertToPDF(file, fileName) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
+function convertToPDF(file, fileName) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+            const img = new Image();
+            
+            img.onload = () => {
+                try {
                     const canvas = document.createElement('canvas');
                     const scale = 2;
                     canvas.width = img.width * scale;
@@ -662,64 +688,95 @@
                     pdf.addImage(imgData, 'JPEG', 0, 0, img.width, img.height);
                     pdf.save(`${fileName}.pdf`);
                     hideLoader();
-                    swal("Success!", "Your PDF has been downloaded.", "success");
-                };
-                img.src = e.target.result;
+                    showAlert("Your PDF has been downloaded!", "success");
+                    resolve();
+                } catch (error) {
+                    reject(error);
+                }
             };
-            reader.readAsDataURL(file);
-        }
+            
+            img.onerror = () => reject(new Error("Failed to load image"));
+            img.src = e.target.result;
+        };
+        
+        reader.onerror = () => reject(new Error("Failed to read file"));
+        reader.readAsDataURL(file);
+    });
+}
 
-        // Utility functions
-        function showLoader() {
-            loader?.classList.remove('hidden');
-        }
+// Utility functions
+function showLoader() {
+    loader?.classList.remove('hidden');
+}
 
-        function hideLoader() {
-            loader?.classList.add('hidden');
-        }
+function hideLoader() {
+    loader?.classList.add('hidden');
+}
 
-        // Initialize everything when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize AOS
-            if (typeof AOS !== 'undefined') {
-                AOS.init({
-                    duration: 1000,
-                    once: true,
-                    offset: 100
-                });
-            }
+function showAlert(message, type) {
+    if (typeof swal !== 'undefined') {
+        swal("", message, type);
+    } else {
+        alert(message);
+    }
+}
 
-            // Initialize typed.js elements
-            document.querySelectorAll('.typed-text').forEach((element) => {
-                new Typed(element, {
-                    strings: JSON.parse(element.dataset.typed),
-                    typeSpeed: 30,
-                    backSpeed: 0,
-                    loop: false,
-                    showCursor: true,
-                    cursorChar: '|',
-                    autoInsertCss: true,
-                });
-            });
+// Delete image functionality
+deleteImage?.addEventListener('click', () => {
+    uploadedImage = null;
+    preview.src = '';
+    fullSizeImage.src = '';
+    fileName.value = '';
+    imagePreview?.classList.add('hidden');
+    dragDropArea?.classList.remove('hidden');
+});
 
-            // Initialize FAQ functionality
-            const faqItems = document.querySelectorAll('.faq-item');
-            faqItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    item.classList.toggle('active');
-                });
+// Initialize everything when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initializeFileHandlers();
+    
+    // Initialize AOS if available
+    if (typeof AOS !== 'undefined') {
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
+        });
+    }
+
+    // Initialize typed.js elements if available
+    if (typeof Typed !== 'undefined') {
+        document.querySelectorAll('.typed-text').forEach((element) => {
+            new Typed(element, {
+                strings: JSON.parse(element.dataset.typed),
+                typeSpeed: 30,
+                backSpeed: 0,
+                loop: false,
+                showCursor: true,
+                cursorChar: '|',
+                autoInsertCss: true,
             });
         });
+    }
 
-        // Header shadow on scroll
-        window.addEventListener('scroll', () => {
-            const header = document.querySelector('.header');
-            if (window.scrollY > 50) {
-                header?.classList.add('shadow-md');
-            } else {
-                header?.classList.remove('shadow-md');
-            }
+    // Initialize FAQ functionality
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+        item.addEventListener('click', () => {
+            item.classList.toggle('active');
         });
+    });
+});
+
+// Header shadow on scroll
+window.addEventListener('scroll', () => {
+    const header = document.querySelector('.header');
+    if (window.scrollY > 50) {
+        header?.classList.add('shadow-md');
+    } else {
+        header?.classList.remove('shadow-md');
+    }
+});
     </script>
 </body>
 </html>
